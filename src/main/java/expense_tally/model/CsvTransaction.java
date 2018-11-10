@@ -2,7 +2,7 @@ package expense_tally.model;
 
 import java.time.LocalDate;
 
-public class TransactionCsv {
+public class CsvTransaction {
     //Attributes
     private LocalDate transactionDate;
     private String reference;
@@ -13,7 +13,7 @@ public class TransactionCsv {
     private String transactionRef3;
 
     // Constructor
-    public TransactionCsv(LocalDate transactionDate,
+    public CsvTransaction(LocalDate transactionDate,
                           String reference,
                           double debitAmount,
                           double creditAmount,
@@ -29,7 +29,7 @@ public class TransactionCsv {
         this.transactionRef3 = transactionRef3;
     }
 
-    public TransactionCsv() {
+    public CsvTransaction() {
     }
 
     public LocalDate getTransactionDate() {
@@ -91,9 +91,9 @@ public class TransactionCsv {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TransactionCsv)) return false;
+        if (!(o instanceof CsvTransaction)) return false;
 
-        TransactionCsv that = (TransactionCsv) o;
+        CsvTransaction that = (CsvTransaction) o;
 
         if (Double.compare(that.debitAmount, debitAmount) != 0) return false;
         if (Double.compare(that.creditAmount, creditAmount) != 0) return false;
@@ -124,7 +124,7 @@ public class TransactionCsv {
 
     @Override
     public String toString() {
-        return "TransactionCsv{" +
+        return "CsvTransaction{" +
                 "transactionDate=" + transactionDate +
                 ", reference='" + reference + '\'' +
                 ", debitAmount=" + debitAmount +

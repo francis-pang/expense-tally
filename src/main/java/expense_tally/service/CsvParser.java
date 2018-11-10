@@ -1,5 +1,7 @@
 package expense_tally.service;
 
+import expense_tally.model.CsvTransaction;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,8 +12,8 @@ public class CsvParser {
     public CsvParser() {
     }
 
-    public List<expense_tally.model.TransactionCsv> parseCsvFile(String filename) throws IOException {
-        List<expense_tally.model.TransactionCsv> transactionCsvList = new ArrayList<>();
+    public List<CsvTransaction> parseCsvFile(String filename) throws IOException {
+        List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
         // Ignore until start with Transaction Date
         BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filename));
@@ -33,29 +35,29 @@ public class CsvParser {
                 continue;
             }
             String[] csvElements = line.split(",");
-            expense_tally.model.TransactionCsv transactionCsv = new expense_tally.model.TransactionCsv();
-            transactionCsv.setTransactionDate(LocalDate.parse(csvElements[0], formatter));
-            transactionCsv.setReference(csvElements[1]);
-            transactionCsv.setDebitAmount((csvElements[2].isBlank()) ? 0.00 : Double.parseDouble(csvElements[2]));
-            transactionCsv.setCreditAmount((csvElements[3].isBlank()) ? 0.00 : Double.parseDouble(csvElements[3]));
+            CsvTransaction csvTransaction = new CsvTransaction();
+            csvTransaction.setTransactionDate(LocalDate.parse(csvElements[0], formatter));
+            csvTransaction.setReference(csvElements[1]);
+            csvTransaction.setDebitAmount((csvElements[2].isBlank()) ? 0.00 : Double.parseDouble(csvElements[2]));
+            csvTransaction.setCreditAmount((csvElements[3].isBlank()) ? 0.00 : Double.parseDouble(csvElements[3]));
             if (csvElements.length >= 5) {
-                transactionCsv.setTransactionRef1(csvElements[4]);
+                csvTransaction.setTransactionRef1(csvElements[4]);
             } else {
-                transactionCsv.setTransactionRef1("");
+                csvTransaction.setTransactionRef1("");
             }
             if (csvElements.length >= 6) {
-                transactionCsv.setTransactionRef2(csvElements[5]);
+                csvTransaction.setTransactionRef2(csvElements[5]);
             } else {
-                transactionCsv.setTransactionRef2("");
+                csvTransaction.setTransactionRef2("");
             }
             if (csvElements.length >= 7) {
-                transactionCsv.setTransactionRef3(csvElements[6]);
+                csvTransaction.setTransactionRef3(csvElements[6]);
             } else {
-                transactionCsv.setTransactionRef3("");
+                csvTransaction.setTransactionRef3("");
             }
-            transactionCsvList.add(transactionCsv);
+            csvTransactionList.add(csvTransaction);
             line = csvBufferedReader.readLine();
         }
-        return transactionCsvList;
+        return csvTransactionList;
     }
 }
