@@ -13,7 +13,13 @@ public class TransactionCsv {
     private String transactionRef3;
 
     // Constructor
-    public TransactionCsv(LocalDate transactionDate, String reference, double debitAmount, double creditAmount, String transactionRef1, String transactionRef2, String transactionRef3) {
+    public TransactionCsv(LocalDate transactionDate,
+                          String reference,
+                          double debitAmount,
+                          double creditAmount,
+                          String transactionRef1,
+                          String transactionRef2,
+                          String transactionRef3) {
         this.transactionDate = transactionDate;
         this.reference = reference;
         this.debitAmount = debitAmount;
