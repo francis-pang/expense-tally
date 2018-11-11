@@ -1,4 +1,4 @@
-package database;
+package expense_tally.database;
 
 public class ExpenseReport {
     private int id;
@@ -8,8 +8,8 @@ public class ExpenseReport {
     private String subcategory;
     private String paymentMethod;
     private String description;
-    private int expensed;
-    private int modified;
+    private long expensed;
+    private long modified;
     private String referenceNumber;
     private String status;
     private String property;
@@ -79,19 +79,19 @@ public class ExpenseReport {
         this.description = description;
     }
 
-    public int getExpensed() {
+    public long getExpensed() {
         return expensed;
     }
 
-    public void setExpensed(int expensed) {
+    public void setExpensed(long expensed) {
         this.expensed = expensed;
     }
 
-    public int getModified() {
+    public long getModified() {
         return modified;
     }
 
-    public void setModified(int modified) {
+    public void setModified(long modified) {
         this.modified = modified;
     }
 
@@ -198,14 +198,14 @@ public class ExpenseReport {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (account != null ? account.hashCode() : 0);
+        result = 31 * result + account.hashCode();
         result = 31 * result + amount.hashCode();
-        result = 31 * result + (category != null ? category.hashCode() : 0);
-        result = 31 * result + (subcategory != null ? subcategory.hashCode() : 0);
-        result = 31 * result + paymentMethod.hashCode();
+        result = 31 * result + category.hashCode();
+        result = 31 * result + subcategory.hashCode();
+        result = 31 * result + (paymentMethod != null ? paymentMethod.hashCode() : 0);
         result = 31 * result + description.hashCode();
-        result = 31 * result + expensed;
-        result = 31 * result + modified;
+        result = 31 * result + (int) (expensed ^ (expensed >>> 32));
+        result = 31 * result + (int) (modified ^ (modified >>> 32));
         result = 31 * result + (referenceNumber != null ? referenceNumber.hashCode() : 0);
         result = 31 * result + status.hashCode();
         result = 31 * result + (property != null ? property.hashCode() : 0);
