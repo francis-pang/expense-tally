@@ -6,6 +6,7 @@ import expense_tally.database.SqlLiteConnectionManager;
 import expense_tally.model.CsvTransaction;
 import expense_tally.model.ExpenseTransaction;
 import expense_tally.service.CsvParser;
+import expense_tally.util.TemporalUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,13 +15,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.*;
-import java.time.temporal.TemporalUnit;
+import java.time.Duration;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.lang.Long;
 
 public class Application {
     private static final Logger LOGGER = Logger.getLogger(Application.class.getName());
@@ -79,14 +79,16 @@ public class Application {
     public static void main (String args[]) {
         // assumes the current class is called MyLogger
 
-        // Read CSV file
+        // Configurable
         final String filename = "src/main/resource/csv/3db7c598cadc80893570d55a0243df1c.P000000013229282.csv";
+        final String databaseFile = "jdbc:sqlite:D:/code/expense-tally/src/main/resource/database/2018-11-09.db";
 
         List<CsvTransaction> csvTransactions = readCsv(filename);
 
         List<ExpenseReport> expenseReports = null;
+        SqlLiteConnectionManager sqlLiteConnectionManager = new SqlLiteConnectionManager(databaseFile);
         try {
-            Connection databaseConnection = SqlLiteConnectionManager.connect();
+            Connection databaseConnection = sqlLiteConnectionManager.connect();
             expenseReports = importDataFromDatabase(databaseConnection);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -102,6 +104,8 @@ public class Application {
     }
 
     private static void reconcileBankData (List<CsvTransaction> csvTransactions, Map<Double, List<ExpenseTransaction>> expenseTransactionMap) {
+        final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 48;
+
         int numberOfNoMatchTransaction = 0;
         for (CsvTransaction csvTransaction : csvTransactions) {
             if (csvTransaction.getDebitAmount() == 0) {
@@ -117,9 +121,9 @@ public class Application {
             int noOfMatchingTransaction = 0;
             for(ExpenseTransaction matchingExpenseTransaction : expenseTransactionList) {
                 //LOGGER.fine("Comparing " + csvTransaction.getTransactionDate() + " vs " + LocalDate.ofInstant(matchingExpenseTransaction.getExpensedTime(), ZoneId.of("UTC").normalized()));
-                Duration transactionTimeDifference = Duration.between(matchingExpenseTransaction.getExpensedTime(), csvTransaction.getTransactionDate().atStartOfDay().toInstant(ZoneOffset.UTC));
-                if(transactionTimeDifference.toHours() > -24 &&
-                        transactionTimeDifference.toHours() <= 48) {
+                Duration transactionTimeDifference = Duration.between(matchingExpenseTransaction.getExpensedTime(),
+                        TemporalUtil.atEndOfDay(csvTransaction.getTransactionDate()).toInstant(ZoneOffset.UTC));
+                if(transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
                     noOfMatchingTransaction++;
                 }
             }
