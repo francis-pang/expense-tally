@@ -15,6 +15,7 @@ public class CsvParser {
     }
 
     public List<CsvTransaction> parseCsvFile(String filename) throws IOException {
+        final String CSV_HEADER_LINE = "Transaction Date";
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
         // Ignore until start with Transaction Date
@@ -23,10 +24,7 @@ public class CsvParser {
         do {
             line = csvBufferedReader.readLine();
 
-        } while (!line.startsWith("Transaction Date"));
-
-        //09 Nov 2018
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        } while (!line.startsWith(CSV_HEADER_LINE));
 
         // Skip empty lines, then use getter to retrieve information
         line = csvBufferedReader.readLine();
@@ -36,30 +34,39 @@ public class CsvParser {
                 line = csvBufferedReader.readLine();
                 continue;
             }
-            String[] csvElements = line.split(",");
-            CsvTransaction csvTransaction = new CsvTransaction();
-            csvTransaction.setTransactionDate(LocalDate.parse(csvElements[0], formatter));
-            csvTransaction.setReference(csvElements[1]);
-            csvTransaction.setDebitAmount((csvElements[2].isBlank()) ? 0.00 : Double.parseDouble(csvElements[2]));
-            csvTransaction.setCreditAmount((csvElements[3].isBlank()) ? 0.00 : Double.parseDouble(csvElements[3]));
-            if (csvElements.length >= 5) {
-                csvTransaction.setTransactionRef1(csvElements[4]);
-            } else {
-                csvTransaction.setTransactionRef1("");
-            }
-            if (csvElements.length >= 6) {
-                csvTransaction.setTransactionRef2(csvElements[5]);
-            } else {
-                csvTransaction.setTransactionRef2("");
-            }
-            if (csvElements.length >= 7) {
-                csvTransaction.setTransactionRef3(csvElements[6]);
-            } else {
-                csvTransaction.setTransactionRef3("");
-            }
-            csvTransactionList.add(csvTransaction);
+            csvTransactionList.add(parseSingleTransaction(line));
             line = csvBufferedReader.readLine();
         }
         return csvTransactionList;
+    }
+
+    private CsvTransaction parseSingleTransaction(String csvLine){
+        final String CSV_TRANSACTION_DATE_FORMAT = "dd MMM yyyy";
+
+        //09 Nov 2018
+        DateTimeFormatter csvTransactionDateFormatter = DateTimeFormatter.ofPattern(CSV_TRANSACTION_DATE_FORMAT);
+
+        String[] csvElements = csvLine.split(",");
+        CsvTransaction csvTransaction = new CsvTransaction();
+        csvTransaction.setTransactionDate(LocalDate.parse(csvElements[0], csvTransactionDateFormatter));
+        csvTransaction.setReference(csvElements[1]);
+        csvTransaction.setDebitAmount((csvElements[2].isBlank()) ? 0.00 : Double.parseDouble(csvElements[2]));
+        csvTransaction.setCreditAmount((csvElements[3].isBlank()) ? 0.00 : Double.parseDouble(csvElements[3]));
+        if (csvElements.length >= 5) {
+            csvTransaction.setTransactionRef1(csvElements[4]);
+        } else {
+            csvTransaction.setTransactionRef1("");
+        }
+        if (csvElements.length >= 6) {
+            csvTransaction.setTransactionRef2(csvElements[5]);
+        } else {
+            csvTransaction.setTransactionRef2("");
+        }
+        if (csvElements.length >= 7) {
+            csvTransaction.setTransactionRef3(csvElements[6]);
+        } else {
+            csvTransaction.setTransactionRef3("");
+        }
+        return csvTransaction;
     }
 }
