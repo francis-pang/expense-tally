@@ -23,5 +23,10 @@
 		  <version>5.3.1</version>
 		  <scope>test</scope>
 	  </dependency>
+	  <dependency>
+		  <groupId>org.junit-pioneer</groupId>
+		  <artifactId>junit-pioneer</artifactId>
+		  <version>0.3.0</version>
+	  </dependency>
   </dependencies>
 </project>
