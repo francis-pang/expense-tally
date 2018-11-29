@@ -1,4 +1,4 @@
-package expense_tally.database;
+package expense_tally.persistence;
 
 import expense_tally.model.ExpenseTransaction;
 
@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +30,7 @@ public class ExpenseTransactionDao {
     }
 
     private List<ExpenseReport> importDataFromDatabase(Connection databaseConnection) throws SQLException {
-        // Connect to expense_tally.database
+        // Connect to expense_tally.persistence
         List<ExpenseReport> expenseReports = new ArrayList<>();
         // Read all records into objects
         Statement retrieveAlLStatement = databaseConnection.createStatement();

@@ -1,4 +1,4 @@
-package expense_tally.service;
+package expense_tally.persistence;
 
 import expense_tally.model.CsvTransaction;
 
@@ -11,20 +11,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Single Responsibility Principle: Every class should only do one thing
- * CsvParser does 1 thing: Parse a CSV file, return the parsed content as a list of CSV Transactions
+ * Parses a CSV file of bank transaction.
+ *
+ * <p>Each record in the CSV file is a CsvTransaction. The format of the CSV file is pre-defined in a fixed sequence as below:</p>
+ *
+ * <ol>
+ *   <li>Transaction Date</li>
+ *   <li>Reference</li>
+ *   <li>Debit Amount</li>
+ *   <li>Credit Amount</li>
+ *   <li>Transaction Ref1</li>
+ *   <li>Transaction Ref2</li>
+ *   <li>Transaction Ref3</li>
+ * </ol>
+ *
+ * <p>Note that Transaction Ref1/2/3 are optional field. Empty field will be set to empty String.</p>
+ * @see CsvTransaction
  */
 public class CsvParser {
+    /**
+     * Default constructor
+     */
     public CsvParser() {
     }
 
+    /**
+     * Parse a CSV file in the pre-defined format from the file with the directory <i>filePath</i>.
+     * @param filePath file path of the CSV file, regardless relative or absolute path
+     * @return a list of CsvTransaction read from the CSV file
+     * @throws IOException when there is Input/Output error
+     */
     // TODO: Refactor to read from a buffer stream so that there isn't a need to unit test the part of reading from a file
-    public List<CsvTransaction> parseCsvFile(String filename) throws IOException {
+    public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
         final String CSV_HEADER_LINE = "Transaction Date";
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
         // Ignore until start with Transaction Date
-        BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filename));
+        BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filePath));
         String line;
         do {
             line = csvBufferedReader.readLine();
