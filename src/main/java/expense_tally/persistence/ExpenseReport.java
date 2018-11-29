@@ -1,4 +1,4 @@
-package expense_tally.database;
+package expense_tally.persistence;
 
 public class ExpenseReport {
     private int id;

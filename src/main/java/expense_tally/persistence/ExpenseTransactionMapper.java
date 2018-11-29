@@ -1,4 +1,4 @@
-package expense_tally.database;
+package expense_tally.persistence;
 
 import expense_tally.model.ExpenseTransaction;
 
