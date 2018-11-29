@@ -2,10 +2,11 @@ package expense_tally.service;
 
 import expense_tally.model.CsvTransaction;
 import expense_tally.model.ExpenseTransaction;
-import expense_tally.util.TemporalUtil;
 
 import java.time.Duration;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -33,9 +34,8 @@ public class ExpenseReconciler {
             }
             int noOfMatchingTransaction = 0;
             for(ExpenseTransaction matchingExpenseTransaction : expenseTransactionList) {
-                //LOGGER.fine("Comparing " + csvTransaction.getTransactionDate() + " vs " + LocalDate.ofInstant(matchingExpenseTransaction.getExpensedTime(), ZoneId.of("UTC").normalized()));
                 Duration transactionTimeDifference = Duration.between(matchingExpenseTransaction.getExpensedTime(),
-                        TemporalUtil.atEndOfDay(csvTransaction.getTransactionDate()).toInstant(ZoneOffset.UTC));
+                        endOfDay(csvTransaction.getTransactionDate()));
                 if(transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
                     noOfMatchingTransaction++;
                 }
@@ -55,5 +55,9 @@ public class ExpenseReconciler {
             }
         }
         LOGGER.info("Found " + numberOfNoMatchTransaction + " non-matching transactions.");
+    }
+
+    private static LocalDateTime endOfDay(LocalDate date) {
+        return LocalDateTime.of(date, LocalTime.MAX);
     }
 }
