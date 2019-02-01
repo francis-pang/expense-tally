@@ -1,5 +1,8 @@
 package expense_tally.persistence;
 
+import java.util.Objects;
+import java.util.StringJoiner;
+
 public class ExpenseReport {
     private int id;
     private String account;
@@ -67,8 +70,8 @@ public class ExpenseReport {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(String payment_method) {
-        this.paymentMethod = payment_method;
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public String getDescription() {
@@ -171,74 +174,53 @@ public class ExpenseReport {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ExpenseReport)) return false;
-
         ExpenseReport that = (ExpenseReport) o;
-
-        if (id != that.id) return false;
-        if (expensed != that.expensed) return false;
-        if (modified != that.modified) return false;
-        if (account != null ? !account.equals(that.account) : that.account != null) return false;
-        if (!amount.equals(that.amount)) return false;
-        if (category != null ? !category.equals(that.category) : that.category != null) return false;
-        if (subcategory != null ? !subcategory.equals(that.subcategory) : that.subcategory != null) return false;
-        if (!paymentMethod.equals(that.paymentMethod)) return false;
-        if (!description.equals(that.description)) return false;
-        if (referenceNumber != null ? !referenceNumber.equals(that.referenceNumber) : that.referenceNumber != null)
-            return false;
-        if (!status.equals(that.status)) return false;
-        if (property != null ? !property.equals(that.property) : that.property != null) return false;
-        if (property2 != null ? !property2.equals(that.property2) : that.property2 != null) return false;
-        if (property3 != null ? !property3.equals(that.property3) : that.property3 != null) return false;
-        if (property4 != null ? !property4.equals(that.property4) : that.property4 != null) return false;
-        if (property5 != null ? !property5.equals(that.property5) : that.property5 != null) return false;
-        if (tax != null ? !tax.equals(that.tax) : that.tax != null) return false;
-        return expenseTag != null ? expenseTag.equals(that.expenseTag) : that.expenseTag == null;
+        return id == that.id &&
+                expensed == that.expensed &&
+                modified == that.modified &&
+                Objects.equals(account, that.account) &&
+                Objects.equals(amount, that.amount) &&
+                Objects.equals(category, that.category) &&
+                Objects.equals(subcategory, that.subcategory) &&
+                Objects.equals(paymentMethod, that.paymentMethod) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(referenceNumber, that.referenceNumber) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(property, that.property) &&
+                Objects.equals(property2, that.property2) &&
+                Objects.equals(property3, that.property3) &&
+                Objects.equals(property4, that.property4) &&
+                Objects.equals(property5, that.property5) &&
+                Objects.equals(tax, that.tax) &&
+                Objects.equals(expenseTag, that.expenseTag);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + account.hashCode();
-        result = 31 * result + amount.hashCode();
-        result = 31 * result + category.hashCode();
-        result = 31 * result + subcategory.hashCode();
-        result = 31 * result + (paymentMethod != null ? paymentMethod.hashCode() : 0);
-        result = 31 * result + description.hashCode();
-        result = 31 * result + (int) (expensed ^ (expensed >>> 32));
-        result = 31 * result + (int) (modified ^ (modified >>> 32));
-        result = 31 * result + (referenceNumber != null ? referenceNumber.hashCode() : 0);
-        result = 31 * result + status.hashCode();
-        result = 31 * result + (property != null ? property.hashCode() : 0);
-        result = 31 * result + (property2 != null ? property2.hashCode() : 0);
-        result = 31 * result + (property3 != null ? property3.hashCode() : 0);
-        result = 31 * result + (property4 != null ? property4.hashCode() : 0);
-        result = 31 * result + (property5 != null ? property5.hashCode() : 0);
-        result = 31 * result + (tax != null ? tax.hashCode() : 0);
-        result = 31 * result + (expenseTag != null ? expenseTag.hashCode() : 0);
-        return result;
+        return Objects.hash(id, account, amount, category, subcategory, paymentMethod, description, expensed, modified, referenceNumber, status, property, property2, property3, property4, property5, tax, expenseTag);
     }
 
     @Override
     public String toString() {
-        return "ExpenseReport{" +
-                "id=" + id +
-                ", account='" + account + '\'' +
-                ", amount='" + amount + '\'' +
-                ", category='" + category + '\'' +
-                ", subcategory='" + subcategory + '\'' +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", description='" + description + '\'' +
-                ", expensed=" + expensed +
-                ", modified=" + modified +
-                ", referenceNumber='" + referenceNumber + '\'' +
-                ", status='" + status + '\'' +
-                ", property='" + property + '\'' +
-                ", property2='" + property2 + '\'' +
-                ", property3='" + property3 + '\'' +
-                ", property4='" + property4 + '\'' +
-                ", property5='" + property5 + '\'' +
-                ", tax='" + tax + '\'' +
-                ", expenseTag='" + expenseTag + '\'' +
-                '}';
+        return new StringJoiner(", ", ExpenseReport.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("account='" + account + "'")
+                .add("amount='" + amount + "'")
+                .add("category='" + category + "'")
+                .add("subcategory='" + subcategory + "'")
+                .add("paymentMethod='" + paymentMethod + "'")
+                .add("description='" + description + "'")
+                .add("expensed=" + expensed)
+                .add("modified=" + modified)
+                .add("referenceNumber='" + referenceNumber + "'")
+                .add("status='" + status + "'")
+                .add("property='" + property + "'")
+                .add("property2='" + property2 + "'")
+                .add("property3='" + property3 + "'")
+                .add("property4='" + property4 + "'")
+                .add("property5='" + property5 + "'")
+                .add("tax='" + tax + "'")
+                .add("expenseTag='" + expenseTag + "'")
+                .toString();
     }
 }
