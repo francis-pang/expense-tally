@@ -1,13 +1,11 @@
 package expense_tally;
 
-import expense_tally.database.ExpenseTransactionDao;
 import expense_tally.model.CsvTransaction;
 import expense_tally.model.ExpenseTransaction;
-import expense_tally.service.CsvParser;
+import expense_tally.persistence.CsvParser;
+import expense_tally.persistence.ExpenseTransactionDao;
 import expense_tally.service.ExpenseReconciler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ import java.util.logging.Logger;
 public class Application {
     private static final Logger LOGGER = Logger.getLogger(Application.class.getName());
 
-    public static void main (String args[]) {
+    public static void main (String[] args) {
         // assumes the current class is called MyLogger
 
         // Configurable
