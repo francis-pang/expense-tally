@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -57,7 +59,7 @@ public class ExpenseReconciler {
         LOGGER.info("Found " + numberOfNoMatchTransaction + " non-matching transactions.");
     }
 
-    private static LocalDateTime endOfDay(LocalDate date) {
-        return LocalDateTime.of(date, LocalTime.MAX);
+    private static ZonedDateTime endOfDay(LocalDate date) {
+        return LocalDateTime.of(date, LocalTime.MAX).atZone(ZoneId.of("Asia/Singapore"));
     }
 }
