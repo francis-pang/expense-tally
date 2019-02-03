@@ -18,7 +18,7 @@ public class ExpenseTransactionDao {
     private SqlLiteConnectionManager sqlLiteConnectionManager;
 
     public ExpenseTransactionDao(String databaseFile) {
-        SqlLiteConnectionManager sqlLiteConnectionManager = new SqlLiteConnectionManager(databaseFile);
+        this.sqlLiteConnectionManager = new SqlLiteConnectionManager(databaseFile);
     }
 
     public Map<Double, List<ExpenseTransaction>> getAllExpenseTransactions() throws SQLException {
@@ -26,7 +26,7 @@ public class ExpenseTransactionDao {
 
         Connection databaseConnection = sqlLiteConnectionManager.connect();
         List<ExpenseReport> expenseReports = importDataFromDatabase(databaseConnection);
-        return ExpenseTransactionMapper.mapExpenseReports(expenseReports);
+        return ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
     }
 
     private List<ExpenseReport> importDataFromDatabase(Connection databaseConnection) throws SQLException {
