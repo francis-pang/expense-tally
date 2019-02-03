@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>expense-tally</groupId>
   <artifactId>expense-tally</artifactId>
@@ -8,8 +8,8 @@
   <name>expense-tally</name>
   <url>http://maven.apache.org</url>
   <properties>
-	<maven.compiler.source>1.11</maven.compiler.source>
-	<maven.compiler.target>1.11</maven.compiler.target>
+    <maven.compiler.source>1.11</maven.compiler.source>
+    <maven.compiler.target>1.11</maven.compiler.target>
   </properties>
   <dependencies>
     <dependency>
@@ -17,16 +17,16 @@
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.25.2</version>
     </dependency>
-	  <dependency>
-		  <groupId>org.junit.jupiter</groupId>
-		  <artifactId>junit-jupiter-api</artifactId>
-		  <version>5.3.1</version>
-		  <scope>test</scope>
-	  </dependency>
-	  <dependency>
-		  <groupId>org.junit-pioneer</groupId>
-		  <artifactId>junit-pioneer</artifactId>
-		  <version>0.3.0</version>
-	  </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.4.0-RC2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit-pioneer</groupId>
+      <artifactId>junit-pioneer</artifactId>
+      <version>0.3.0</version>
+    </dependency>
   </dependencies>
 </project>
