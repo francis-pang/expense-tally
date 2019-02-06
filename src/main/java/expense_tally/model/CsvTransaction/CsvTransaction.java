@@ -1,4 +1,4 @@
-package expense_tally.model;
+package expense_tally.model.CsvTransaction;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -13,6 +13,7 @@ public class CsvTransaction {
     private String transactionRef1;
     private String transactionRef2;
     private String transactionRef3;
+    private TransactionType type;
 
     // Constructor
     public CsvTransaction(LocalDate transactionDate,
@@ -90,6 +91,14 @@ public class CsvTransaction {
         this.transactionRef3 = transactionRef3;
     }
 
+    public TransactionType getType() {
+        return type;
+    }
+
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -101,12 +110,13 @@ public class CsvTransaction {
                 Objects.equals(reference, that.reference) &&
                 Objects.equals(transactionRef1, that.transactionRef1) &&
                 Objects.equals(transactionRef2, that.transactionRef2) &&
-                Objects.equals(transactionRef3, that.transactionRef3);
+                Objects.equals(transactionRef3, that.transactionRef3) &&
+                type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transactionDate, reference, debitAmount, creditAmount, transactionRef1, transactionRef2, transactionRef3);
+        return Objects.hash(transactionDate, reference, debitAmount, creditAmount, transactionRef1, transactionRef2, transactionRef3, type);
     }
 
     @Override
@@ -119,6 +129,7 @@ public class CsvTransaction {
                 .add("transactionRef1='" + transactionRef1 + "'")
                 .add("transactionRef2='" + transactionRef2 + "'")
                 .add("transactionRef3='" + transactionRef3 + "'")
+                .add("type=" + type)
                 .toString();
     }
 }
