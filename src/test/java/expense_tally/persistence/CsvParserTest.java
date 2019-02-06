@@ -1,7 +1,6 @@
 package expense_tally.persistence;
 
-import expense_tally.model.CsvTransaction;
-import expense_tally.persistence.CsvParser;
+import expense_tally.model.CsvTransaction.CsvTransaction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +59,7 @@ class CsvParserTest {
      */
     @Test
     void parseOneRowDataFullyFilled() throws IOException {
-        csvFileWriter.write("Transaction Date,Reference,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+        csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
         csvFileWriter.write("09 Nov 2018,ICT, 148.88, 99.99,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
         csvFileWriter.close();
 
@@ -79,7 +78,7 @@ class CsvParserTest {
 
     @Test
     void parseHeaderWithNoRow() throws IOException {
-        csvFileWriter.write("Transaction Date,Reference,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+        csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
         csvFileWriter.close();
         List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(0, actualCsvTransaction.size());
@@ -87,7 +86,7 @@ class CsvParserTest {
 
     @Test
     void parseOneRowDataNoCredit() throws IOException {
-        csvFileWriter.write("Transaction Date,Reference,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+        csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
         csvFileWriter.write("09 Nov 2018,ICT, 148.88, ,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
         csvFileWriter.close();
 
@@ -106,7 +105,7 @@ class CsvParserTest {
 
     @Test
     void parseOneRowDataNoDebit() throws IOException {
-        csvFileWriter.write("Transaction Date,Reference,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+        csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
         csvFileWriter.write("09 Nov 2018,ICT, , 148.88,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
         csvFileWriter.close();
 
@@ -125,7 +124,7 @@ class CsvParserTest {
 
     @Test
     void parseOneRowDataNoTransactionRef() throws IOException {
-        csvFileWriter.write("Transaction Date,Reference,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+        csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
         csvFileWriter.write("09 Nov 2018,ICT, 148.88, ,,,\n");
         csvFileWriter.close();
 
@@ -153,7 +152,7 @@ class CsvParserTest {
 
     @Test
     void parseOneRowDataWithEmptyLines() throws IOException {
-        csvFileWriter.write("Transaction Date,Reference,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+        csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
         csvFileWriter.write("\n");
         csvFileWriter.write("09 Nov 2018,ICT, 148.88, ,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
         csvFileWriter.close();
