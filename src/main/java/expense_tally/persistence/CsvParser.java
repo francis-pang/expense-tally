@@ -1,6 +1,8 @@
 package expense_tally.persistence;
 
-import expense_tally.model.CsvTransaction;
+import expense_tally.model.CsvTransaction.CsvTransaction;
+import expense_tally.model.CsvTransaction.MasterCard;
+import expense_tally.model.CsvTransaction.TransactionType;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,6 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Parses a CSV file of bank transaction.
@@ -16,19 +19,22 @@ import java.util.List;
  * <p>Each record in the CSV file is a CsvTransaction. The format of the CSV file is pre-defined in a fixed sequence as below:</p>
  *
  * <ol>
- *   <li>Transaction Date</li>
- *   <li>Reference</li>
- *   <li>Debit Amount</li>
- *   <li>Credit Amount</li>
- *   <li>Transaction Ref1</li>
- *   <li>Transaction Ref2</li>
- *   <li>Transaction Ref3</li>
+ * <li>Transaction Date</li>
+ * <li>TransactionType</li>
+ * <li>Debit Amount</li>
+ * <li>Credit Amount</li>
+ * <li>Transaction Ref1</li>
+ * <li>Transaction Ref2</li>
+ * <li>Transaction Ref3</li>
  * </ol>
  *
  * <p>Note that Transaction Ref1/2/3 are optional field. Empty field will be set to empty String.</p>
+ *
  * @see CsvTransaction
  */
 public class CsvParser {
+    private static final Logger LOGGER = Logger.getLogger(CsvParser.class.getName());
+
     /**
      * Default constructor
      */
@@ -37,6 +43,7 @@ public class CsvParser {
 
     /**
      * Parse a CSV file in the pre-defined format from the file with the directory <i>filePath</i>.
+     *
      * @param filePath file path of the CSV file, regardless relative or absolute path
      * @return a list of CsvTransaction read from the CSV file
      * @throws IOException when there is Input/Output error
@@ -69,46 +76,92 @@ public class CsvParser {
 
     /**
      * Parse and process a line in the CSV file.
+     *
      * @param csvLine a single line of csv with proper line ending, delimited by the comma character
      * @return a CsvTransaction based on the line of csv. The sequence (position of each of the elements) of the csv
      * file is fixed
      */
-    private CsvTransaction parseSingleTransaction(String csvLine){
+    private CsvTransaction parseSingleTransaction(String csvLine) {
         final String CSV_TRANSACTION_DATE_FORMAT = "dd MMM yyyy"; //09 Nov 2018
         final String CSV_DELIMITER = ",";
-        final int TRANSACTION_DATE_POSITION = 1;
-        final int REFERENCE_POSITION = 2;
-        final int DEBIT_AMOUNT_POSITION = 3;
-        final int CREDIT_AMOUNT_POSITION = 4;
-        final int TRANSACTION_REF_1_POSITION = 5;
-        final int TRANSACTION_REF_2_POSITION = 6;
-        final int TRANSACTION_REF_3_POSITION = 7;
+        // All these are zero based position
+        final int TRANSACTION_DATE_POSITION = 0;
+        final int REFERENCE_POSITION = 1;
+        final int DEBIT_AMOUNT_POSITION = 2;
+        final int CREDIT_AMOUNT_POSITION = 3;
+        final int TRANSACTION_REF_1_POSITION = 4;
+        final int TRANSACTION_REF_2_POSITION = 5;
+        final int TRANSACTION_REF_3_POSITION = 6;
 
         DateTimeFormatter csvTransactionDateFormatter = DateTimeFormatter.ofPattern(CSV_TRANSACTION_DATE_FORMAT);
         String[] csvElements = csvLine.split(CSV_DELIMITER);
         CsvTransaction csvTransaction = new CsvTransaction();
-        csvTransaction.setTransactionDate(LocalDate.parse(csvElements[TRANSACTION_DATE_POSITION - 1], csvTransactionDateFormatter));
-        csvTransaction.setReference(csvElements[REFERENCE_POSITION - 1]);
-        csvTransaction.setDebitAmount((csvElements[DEBIT_AMOUNT_POSITION - 1].isBlank())
-            ? 0.00
-            : Double.parseDouble(csvElements[DEBIT_AMOUNT_POSITION - 1]));
-        csvTransaction.setCreditAmount((csvElements[CREDIT_AMOUNT_POSITION - 1].isBlank())
-            ? 0.00
-            : Double.parseDouble(csvElements[CREDIT_AMOUNT_POSITION - 1]));
+        String transactionReference = csvElements[REFERENCE_POSITION];
+        switch (transactionReference) {
+            case "MST": //FIXME: Check why enum String return doesn't work
+                csvTransaction = new MasterCard();
+                ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
+                csvTransaction.setType(TransactionType.MASTERCARD);
+                break;
+            case "POS": // NETS
+                csvTransaction.setType(TransactionType.NETS);
+                break;
+            case "ICT": // PayNow Transfer
+                if (TransactionType.PayNow.value().equals(csvElements[TRANSACTION_REF_1_POSITION])) {
+                    csvTransaction.setType(TransactionType.PayNow);
+                }
+                break;
+            case "IBG":
+                csvTransaction.setType(TransactionType.GIRO);
+                break;
+            case "ITR":
+                csvTransaction.setType(TransactionType.FUNDS_TRANSFER);
+                break;
+            case "BILL":
+                csvTransaction.setType(TransactionType.BILL_PAYMENT);
+                break;
+            case "AWL": // Cash withdrawal
+            case "INT": // Interest Earned
+            case "SI": // Standing Instruction
+            case "SAL": // Salary
+                /**
+                 * For this type of transaction, do not store them because they do not contribute to the reconciliation
+                 * process
+                 */
+                break;
+            default:
+                LOGGER.info("Found a new transaction type: " + transactionReference + " " + csvLine);
+                return csvTransaction;
+        }
+        csvTransaction.setReference(csvElements[REFERENCE_POSITION]);
+        csvTransaction.setTransactionDate(LocalDate.parse(csvElements[TRANSACTION_DATE_POSITION], csvTransactionDateFormatter));
+        csvTransaction.setDebitAmount((csvElements[DEBIT_AMOUNT_POSITION].isBlank())
+                ? 0.00
+                : Double.parseDouble(csvElements[DEBIT_AMOUNT_POSITION]));
+        csvTransaction.setCreditAmount((csvElements[CREDIT_AMOUNT_POSITION].isBlank())
+                ? 0.00
+                : Double.parseDouble(csvElements[CREDIT_AMOUNT_POSITION]));
         if (csvElements.length >= 5) {
-            csvTransaction.setTransactionRef1(csvElements[TRANSACTION_REF_1_POSITION - 1]);
+            csvTransaction.setTransactionRef1(csvElements[TRANSACTION_REF_1_POSITION]);
         } else {
             csvTransaction.setTransactionRef1("");
         }
         if (csvElements.length >= 6) {
-            csvTransaction.setTransactionRef2(csvElements[TRANSACTION_REF_2_POSITION - 1]);
+            csvTransaction.setTransactionRef2(csvElements[TRANSACTION_REF_2_POSITION]);
         } else {
             csvTransaction.setTransactionRef2("");
         }
         if (csvElements.length >= 7) {
-            csvTransaction.setTransactionRef3(csvElements[TRANSACTION_REF_3_POSITION - 1]);
+            csvTransaction.setTransactionRef3(csvElements[TRANSACTION_REF_3_POSITION]);
         } else {
             csvTransaction.setTransactionRef3("");
+        }
+        if (csvTransaction instanceof MasterCard) {
+            LOGGER.fine("Detect a PaymentCard transaction: " + csvTransaction.toString());
+            csvTransaction.setTransactionDate(
+                    MasterCard.extractTransactionDate(
+                            csvTransaction.getTransactionDate(),
+                            csvTransaction.getTransactionRef1()));
         }
         return csvTransaction;
     }
