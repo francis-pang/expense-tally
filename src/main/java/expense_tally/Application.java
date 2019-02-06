@@ -1,7 +1,8 @@
 package expense_tally;
 
-import expense_tally.model.CsvTransaction;
-import expense_tally.model.ExpenseTransaction;
+import expense_tally.model.CsvTransaction.CsvTransaction;
+import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
+import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
 import expense_tally.persistence.CsvParser;
 import expense_tally.persistence.ExpenseTransactionDao;
 import expense_tally.service.ExpenseReconciler;
@@ -32,7 +33,7 @@ public class Application {
         }
 
         ExpenseTransactionDao expenseTransactionDao = new ExpenseTransactionDao(databaseFile);
-        Map<Double, List<ExpenseTransaction>> expenseTransactionMap = null;
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap = null;
         try {
             expenseTransactionMap = expenseTransactionDao.getAllExpenseTransactions();
         } catch (SQLException e) {

@@ -1,6 +1,7 @@
 package expense_tally.persistence;
 
-import expense_tally.model.ExpenseTransaction;
+import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
+import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -21,8 +22,8 @@ public class ExpenseTransactionDao {
         this.sqlLiteConnectionManager = new SqlLiteConnectionManager(databaseFile);
     }
 
-    public Map<Double, List<ExpenseTransaction>> getAllExpenseTransactions() throws SQLException {
-        Map<Double, List<ExpenseTransaction>> expenseTransactionMap = new HashMap();
+    public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getAllExpenseTransactions() throws SQLException {
+        Map<Double, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap();
 
         Connection databaseConnection = sqlLiteConnectionManager.connect();
         List<ExpenseReport> expenseReports = importDataFromDatabase(databaseConnection);

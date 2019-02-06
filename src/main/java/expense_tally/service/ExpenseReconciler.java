@@ -1,7 +1,9 @@
 package expense_tally.service;
 
-import expense_tally.model.CsvTransaction;
-import expense_tally.model.ExpenseTransaction;
+import expense_tally.model.CsvTransaction.CsvTransaction;
+import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
+import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
+import expense_tally.model.ExpenseManager.PaymentMethod;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -19,8 +21,8 @@ import java.util.logging.Logger;
 public class ExpenseReconciler {
     private static final Logger LOGGER = Logger.getLogger(ExpenseReconciler.class.getName());
 
-    public static void reconcileBankData (List<CsvTransaction> csvTransactions, Map<Double, List<ExpenseTransaction>> expenseTransactionMap) {
-        final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 48;
+    public static void reconcileBankData (List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
+        final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
 
         int numberOfNoMatchTransaction = 0;
         for (CsvTransaction csvTransaction : csvTransactions) {
@@ -28,15 +30,41 @@ public class ExpenseReconciler {
                 LOGGER.fine("This is not a debit transaction");
                 continue;
             }
-            List<ExpenseTransaction> expenseTransactionList = expenseTransactionMap.get(csvTransaction.getDebitAmount());
-            if (expenseTransactionList == null) {
+            ExpenseManagerMapKey expenseManagerMapKey = null;
+            if (csvTransaction.getType() == null) {
+                LOGGER.warning("No valid type. Need to investigate this case. " + csvTransaction.toString());
+                continue;
+            }
+            switch(csvTransaction.getType()) {
+                case MASTERCARD:
+                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
+                    break;
+                case NETS:
+                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.NETS);
+                    break;
+                case PayNow:
+                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
+                    break;
+                case FUNDS_TRANSFER:
+                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
+                    break;
+                case BILL_PAYMENT:
+                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
+                    break;
+                default:
+                    LOGGER.warning("Found an unknown transaction type: " + csvTransaction.getType());
+                    continue;
+            }
+            expenseManagerMapKey.setAmount(csvTransaction.getDebitAmount());
+            List<ExpenseManagerTransaction> expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
+            if (expenseManagerTransactionList == null) {
                 LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
                 numberOfNoMatchTransaction++;
                 continue;
             }
             int noOfMatchingTransaction = 0;
-            for(ExpenseTransaction matchingExpenseTransaction : expenseTransactionList) {
-                Duration transactionTimeDifference = Duration.between(matchingExpenseTransaction.getExpensedTime(),
+            for(ExpenseManagerTransaction matchingExpenseManagerTransaction : expenseManagerTransactionList) {
+                Duration transactionTimeDifference = Duration.between(matchingExpenseManagerTransaction.getExpensedTime(),
                         endOfDay(csvTransaction.getTransactionDate()));
                 if(transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
                     noOfMatchingTransaction++;
