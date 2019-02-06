@@ -1,6 +1,8 @@
-package expense_tally.model;
+package expense_tally.model.CsvTransaction;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public class CsvTransaction {
     //Attributes
@@ -11,6 +13,7 @@ public class CsvTransaction {
     private String transactionRef1;
     private String transactionRef2;
     private String transactionRef3;
+    private TransactionType type;
 
     // Constructor
     public CsvTransaction(LocalDate transactionDate,
@@ -88,50 +91,45 @@ public class CsvTransaction {
         this.transactionRef3 = transactionRef3;
     }
 
+    public TransactionType getType() {
+        return type;
+    }
+
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CsvTransaction)) return false;
-
         CsvTransaction that = (CsvTransaction) o;
-
-        if (Double.compare(that.debitAmount, debitAmount) != 0) return false;
-        if (Double.compare(that.creditAmount, creditAmount) != 0) return false;
-        if (!transactionDate.equals(that.transactionDate)) return false;
-        if (!reference.equals(that.reference)) return false;
-        if (transactionRef1 != null ? !transactionRef1.equals(that.transactionRef1) : that.transactionRef1 != null)
-            return false;
-        if (transactionRef2 != null ? !transactionRef2.equals(that.transactionRef2) : that.transactionRef2 != null)
-            return false;
-        return transactionRef3 != null ? transactionRef3.equals(that.transactionRef3) : that.transactionRef3 == null;
+        return Double.compare(that.debitAmount, debitAmount) == 0 &&
+                Double.compare(that.creditAmount, creditAmount) == 0 &&
+                Objects.equals(transactionDate, that.transactionDate) &&
+                Objects.equals(reference, that.reference) &&
+                Objects.equals(transactionRef1, that.transactionRef1) &&
+                Objects.equals(transactionRef2, that.transactionRef2) &&
+                Objects.equals(transactionRef3, that.transactionRef3) &&
+                type == that.type;
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = transactionDate.hashCode();
-        result = 31 * result + reference.hashCode();
-        temp = Double.doubleToLongBits(debitAmount);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(creditAmount);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (transactionRef1 != null ? transactionRef1.hashCode() : 0);
-        result = 31 * result + (transactionRef2 != null ? transactionRef2.hashCode() : 0);
-        result = 31 * result + (transactionRef3 != null ? transactionRef3.hashCode() : 0);
-        return result;
+        return Objects.hash(transactionDate, reference, debitAmount, creditAmount, transactionRef1, transactionRef2, transactionRef3, type);
     }
 
     @Override
     public String toString() {
-        return "CsvTransaction{" +
-                "transactionDate=" + transactionDate +
-                ", reference='" + reference + '\'' +
-                ", debitAmount=" + debitAmount +
-                ", creditAmount=" + creditAmount +
-                ", transactionRef1='" + transactionRef1 + '\'' +
-                ", transactionRef2='" + transactionRef2 + '\'' +
-                ", transactionRef3='" + transactionRef3 + '\'' +
-                '}';
+        return new StringJoiner(", ", CsvTransaction.class.getSimpleName() + "[", "]")
+                .add("transactionDate=" + transactionDate)
+                .add("reference='" + reference + "'")
+                .add("debitAmount=" + debitAmount)
+                .add("creditAmount=" + creditAmount)
+                .add("transactionRef1='" + transactionRef1 + "'")
+                .add("transactionRef2='" + transactionRef2 + "'")
+                .add("transactionRef3='" + transactionRef3 + "'")
+                .add("type=" + type)
+                .toString();
     }
 }

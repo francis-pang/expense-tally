@@ -1,0 +1,38 @@
+Use Case Number	ID: 1
+
+Application: Expense Tally
+
+Use Case Name: Tally my expense with CSV file against the Expense Manager
+
+Use Case Description: Reconcile the Expense Manager against the DBS bank transaction in the form of CSV file
+
+Primary Actor: User
+
+Precondition:
+1. There is at least 1 DBS CSV transaction file
+2. There is database record file for the record stated in the CSV file
+
+Trigger: Monthly scheduled task
+
+Basic Flow:
+1. The application parse the CSV file
+2. The application reads the database record from the corresponding date range
+3. The application compares the records in the CSV file against the records in the database
+4. For the records that isn't found in the CSV, the application will consolidate them, and insert them into the database.
+5. For the records that isn't found in the database, the application will consolidate them and show them to the users.
+
+Alternate Flows & Errors:
+1a. The application fails to parse the CSV file due to file permission
+    1. Error message appears
+    2. Program terminates prematurely.
+1b. Format of the CSV file change
+    1. Error message appears
+    2. Program terminates prematurely.
+2a. The database file doesn't contain data for the required date range - Program proceeds
+2b. Connection error to database
+    1. Error message appears
+    2. Program terminates prematurely.
+4a. Error when trying to inserting into database
+   1. Error message appears
+   2. Program logs the error
+   3. Program stores the records to be inserted into a file

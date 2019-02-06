@@ -1,8 +1,8 @@
-package expense_tally.model;
+package expense_tally.model.ExpenseManager;
 
 import java.time.Instant;
 
-public class ExpenseTransaction {
+public class ExpenseManagerTransaction {
     private Double amount;
     private String category;
     private String subcategory;
@@ -11,7 +11,7 @@ public class ExpenseTransaction {
     private Instant expensedTime;
     private Double referenceAmount;
 
-    public ExpenseTransaction() {
+    public ExpenseManagerTransaction() {
     }
 
     public Double getAmount() {
@@ -73,9 +73,9 @@ public class ExpenseTransaction {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ExpenseTransaction)) return false;
+        if (!(o instanceof ExpenseManagerTransaction)) return false;
 
-        ExpenseTransaction that = (ExpenseTransaction) o;
+        ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
 
         if (!amount.equals(that.amount)) return false;
         if (!category.equals(that.category)) return false;
@@ -100,7 +100,7 @@ public class ExpenseTransaction {
 
     @Override
     public String toString() {
-        return "ExpenseTransaction{" +
+        return "ExpenseManagerTransaction{" +
                 "amount=" + amount +
                 ", category='" + category + '\'' +
                 ", subcategory='" + subcategory + '\'' +
