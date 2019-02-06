@@ -25,3 +25,8 @@ hs_err_pid*
 # IntelliJ IDEA Project file
 .idea/
 *.iml
+
+# Maven build file
+target/
+build/
+out/

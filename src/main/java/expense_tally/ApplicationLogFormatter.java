@@ -3,6 +3,14 @@ package expense_tally;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+/**
+ * A customised formatter to display the format of the log to be shown throughout the application.
+ *
+ * <p>This application log will be used in the <i>logging.properties</i> file.</p>
+ * @see Formatter
+ *
+ * @author Francis Pang
+ */
 public class ApplicationLogFormatter extends Formatter {
     /**
      * Format the given log record and return the formatted string.
