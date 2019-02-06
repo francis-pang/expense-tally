@@ -4,6 +4,11 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * This class describe the raw format of a CSV transaction. This is exactly what each line of CSV record in the DBS
+ * exported transaction history looks like.
+ * Right now, there is an additional field named <i>TransactionType</i> parked inside this class for convenience sake.
+ */
 public class CsvTransaction {
     //Attributes
     private LocalDate transactionDate;
@@ -13,9 +18,27 @@ public class CsvTransaction {
     private String transactionRef1;
     private String transactionRef2;
     private String transactionRef3;
+    /*
+     * TODO: This attribute should be moved out. In a broader sense, the application should let the parser p
+     */
     private TransactionType type;
 
-    // Constructor
+    /*
+     * Having studied the builder design pattern, I find that the builder pattern is an overkill for constructing
+     * this simple object. Instead, I have just read an chapter off Effective Java (3rd edition) to understand that
+     * we can use static factory methods pattern.
+     * TODO: Convert to static factory methods
+     */
+    /**
+     * Create a new CSV transaction with all the given parameters.
+     * @param transactionDate
+     * @param reference
+     * @param debitAmount
+     * @param creditAmount
+     * @param transactionRef1
+     * @param transactionRef2
+     * @param transactionRef3
+     */
     public CsvTransaction(LocalDate transactionDate,
                           String reference,
                           double debitAmount,
@@ -32,9 +55,16 @@ public class CsvTransaction {
         this.transactionRef3 = transactionRef3;
     }
 
+    /**
+     * Creates a new, empty CSV transaction with default double value and null non-primitive object attributes.
+     */
     public CsvTransaction() {
     }
 
+    /**
+     * return transaction date of this CSV transaction
+     * @return transaction date
+     */
     public LocalDate getTransactionDate() {
         return transactionDate;
     }
