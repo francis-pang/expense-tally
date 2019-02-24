@@ -34,6 +34,7 @@ import java.util.logging.Logger;
  */
 public class CsvParser {
     private static final Logger LOGGER = Logger.getLogger(CsvParser.class.getName());
+    private static final String CSV_HEADER_LINE = "Transaction Date";
 
     /**
      * Default constructor
@@ -50,7 +51,8 @@ public class CsvParser {
      */
     // TODO: Refactor to read from a buffer stream so that there isn't a need to unit test the part of reading from a file
     public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
-        final String CSV_HEADER_LINE = "Transaction Date";
+
+
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
         // Ignore until start with Transaction Date
@@ -124,13 +126,14 @@ public class CsvParser {
             case "INT": // Interest Earned
             case "SI": // Standing Instruction
             case "SAL": // Salary
+            case "MER": // MAS Electronic Payment System Receipt
                 /**
                  * For this type of transaction, do not store them because they do not contribute to the reconciliation
                  * process
                  */
                 break;
             default:
-                LOGGER.info("Found a new transaction type: " + transactionReference + " " + csvLine);
+                LOGGER.info("Found a new transaction type: " + transactionReference + "; " + csvLine);
                 return csvTransaction;
         }
         csvTransaction.setReference(csvElements[REFERENCE_POSITION]);
