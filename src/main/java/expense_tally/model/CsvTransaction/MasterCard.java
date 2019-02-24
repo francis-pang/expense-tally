@@ -1,6 +1,7 @@
 package expense_tally.model.CsvTransaction;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.StringJoiner;
 
@@ -23,11 +24,15 @@ public class MasterCard extends CsvTransaction {
     public static LocalDate extractTransactionDate(LocalDate bankTransactionDate, String reference1) {
         final String RAW_DATE_FORMAT = "yyyyddMMM";
         int yearOfTransaction = bankTransactionDate.getYear();
-        String transactionDate = yearOfTransaction + // Year
+        String monthOfTransactionString = convertToTitleCase(extractLastWord(reference1).substring(2, 5));
+        if ("Dec".equals(monthOfTransactionString) && bankTransactionDate.getMonth() == Month.JANUARY) {
+            yearOfTransaction--;
+        }
+        String transactionDateString = yearOfTransaction + // Year
                 extractLastWord(reference1).substring(0, 2) +  //Day
-                convertToTitleCase(extractLastWord(reference1).substring(2, 5)); //Month
+                monthOfTransactionString; //Month
         DateTimeFormatter transactionDateFormatter = DateTimeFormatter.ofPattern(RAW_DATE_FORMAT);
-        return LocalDate.parse(transactionDate, transactionDateFormatter);
+        return LocalDate.parse(transactionDateString, transactionDateFormatter);
     }
 
     private static String extractLastWord(String string) {
