@@ -1,6 +1,8 @@
 package expense_tally.model.ExpenseManager;
 
 import java.time.Instant;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public class ExpenseManagerTransaction {
     private Double amount;
@@ -74,40 +76,31 @@ public class ExpenseManagerTransaction {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ExpenseManagerTransaction)) return false;
-
         ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
-
-        if (!amount.equals(that.amount)) return false;
-        if (!category.equals(that.category)) return false;
-        if (!subcategory.equals(that.subcategory)) return false;
-        if (!paymentMethod.equals(that.paymentMethod)) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        if (!expensedTime.equals(that.expensedTime)) return false;
-        return referenceAmount != null ? referenceAmount.equals(that.referenceAmount) : that.referenceAmount == null;
+        return Objects.equals(amount, that.amount) &&
+                Objects.equals(category, that.category) &&
+                Objects.equals(subcategory, that.subcategory) &&
+                Objects.equals(paymentMethod, that.paymentMethod) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(expensedTime, that.expensedTime) &&
+                Objects.equals(referenceAmount, that.referenceAmount);
     }
 
     @Override
     public int hashCode() {
-        int result = amount.hashCode();
-        result = 31 * result + category.hashCode();
-        result = 31 * result + subcategory.hashCode();
-        result = 31 * result + paymentMethod.hashCode();
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + expensedTime.hashCode();
-        result = 31 * result + (referenceAmount != null ? referenceAmount.hashCode() : 0);
-        return result;
+        return Objects.hash(amount, category, subcategory, paymentMethod, description, expensedTime, referenceAmount);
     }
 
     @Override
     public String toString() {
-        return "ExpenseManagerTransaction{" +
-                "amount=" + amount +
-                ", category='" + category + '\'' +
-                ", subcategory='" + subcategory + '\'' +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", description='" + description + '\'' +
-                ", expensedTime=" + expensedTime +
-                ", referenceAmount='" + referenceAmount + '\'' +
-                '}';
+        return new StringJoiner(", ", ExpenseManagerTransaction.class.getSimpleName() + "[", "]")
+                .add("amount=" + amount)
+                .add("category='" + category + "'")
+                .add("subcategory='" + subcategory + "'")
+                .add("paymentMethod='" + paymentMethod + "'")
+                .add("description='" + description + "'")
+                .add("expensedTime=" + expensedTime)
+                .add("referenceAmount=" + referenceAmount)
+                .toString();
     }
 }
