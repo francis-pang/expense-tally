@@ -30,11 +30,11 @@ public class ExpenseReconciler {
                 LOGGER.fine("This is not a debit transaction");
                 continue;
             }
-            ExpenseManagerMapKey expenseManagerMapKey = null;
             if (csvTransaction.getType() == null) {
                 LOGGER.warning("No valid type. Need to investigate this case. " + csvTransaction.toString());
                 continue;
             }
+            ExpenseManagerMapKey expenseManagerMapKey;
             switch(csvTransaction.getType()) {
                 case MASTERCARD:
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
