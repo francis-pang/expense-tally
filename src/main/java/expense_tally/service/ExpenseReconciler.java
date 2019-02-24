@@ -79,8 +79,7 @@ public class ExpenseReconciler {
                     LOGGER.finer("Found a matching transaction");
                     break;
                 default:
-                    LOGGER.info("Found more than 1 matching transaction for this");
-                    LOGGER.info(csvTransaction.toString());
+                    LOGGER.info("Found more than 1 matching transaction for this: " + csvTransaction.toString());
                     break;
             }
         }
