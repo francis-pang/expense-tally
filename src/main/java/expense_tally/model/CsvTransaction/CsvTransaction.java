@@ -31,13 +31,16 @@ public class CsvTransaction {
      */
     /**
      * Create a new CSV transaction with all the given parameters.
-     * @param transactionDate
-     * @param reference
-     * @param debitAmount
-     * @param creditAmount
-     * @param transactionRef1
-     * @param transactionRef2
-     * @param transactionRef3
+     * @param transactionDate the transaction date
+     * @param reference the abbreviation of the type of transaction
+     * @param debitAmount amount of money deducted from the bank account
+     * @param creditAmount amount of money credited into the bank account
+     * @param transactionRef1 transaction reference line 1, used to store additional label or information of the
+     *                        transaction
+     * @param transactionRef2 transaction reference line 2, used to store additional label or information of the
+     *                        transaction
+     * @param transactionRef3 transaction reference line 3, used to store additional label or information of the
+     *                        transaction
      */
     public CsvTransaction(LocalDate transactionDate,
                           String reference,
@@ -63,24 +66,42 @@ public class CsvTransaction {
 
     /**
      * return transaction date of this CSV transaction
-     * @return transaction date
+     * @return transaction date when the transaction is reconciled/ marked as completed by the bank
      */
     public LocalDate getTransactionDate() {
         return transactionDate;
     }
 
+    /**
+     * The transaction date refers to the date when the bank regards the transaction as completed/ recorded. This
+     * date will always be later than the actual transaction date when the purchase is made. There is no indication
+     * of time stamp as well.
+     * @param transactionDate transaction date
+     */
     public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getReference() {
         return reference;
     }
 
+    /**
+     *
+     * @param reference
+     */
     public void setReference(String reference) {
         this.reference = reference;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getDebitAmount() {
         return debitAmount;
     }
