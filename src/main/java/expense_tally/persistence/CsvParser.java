@@ -70,7 +70,11 @@ public class CsvParser {
                 line = csvBufferedReader.readLine();
                 continue;
             }
-            csvTransactionList.add(parseSingleTransaction(line));
+            CsvTransaction csvTransaction = parseSingleTransaction(line);
+            if (csvTransaction != null) {
+                csvTransactionList.add(parseSingleTransaction(line));
+            }
+
             line = csvBufferedReader.readLine();
         }
         return csvTransactionList;
@@ -131,7 +135,7 @@ public class CsvParser {
                  * For this type of transaction, do not store them because they do not contribute to the reconciliation
                  * process
                  */
-                break;
+                return null; //TODO: Find a way to better elegantly handle this
             default:
                 LOGGER.info("Found a new transaction type: " + transactionReference + "; " + csvLine);
                 return csvTransaction;
