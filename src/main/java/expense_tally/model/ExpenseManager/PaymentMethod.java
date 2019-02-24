@@ -6,7 +6,7 @@ public enum PaymentMethod {
     ELECTRONIC_TRANSFER("Electronic Transfer"),
     NETS("NETS"),
     GIRO("Giro"),
-    DEBIT_CARD("Debit"),
+    DEBIT_CARD("Debit 5542-2741-0014-1067"),
     EZ_LINK("Ez-link"),
     GRAY_PAY("Grab Pay");
     private String value;
