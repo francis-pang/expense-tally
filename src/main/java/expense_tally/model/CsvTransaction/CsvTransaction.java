@@ -65,7 +65,7 @@ public class CsvTransaction {
     }
 
     /**
-     * return transaction date of this CSV transaction
+     * Returns transaction date of this CSV transaction
      * @return transaction date when the transaction is reconciled/ marked as completed by the bank
      */
     public LocalDate getTransactionDate() {
@@ -73,9 +73,10 @@ public class CsvTransaction {
     }
 
     /**
-     * The transaction date refers to the date when the bank regards the transaction as completed/ recorded. This
+     * Set the transaction date
+     * <p>The transaction date refers to the date when the bank regards the transaction as completed/ recorded. This
      * date will always be later than the actual transaction date when the purchase is made. There is no indication
-     * of time stamp as well.
+     * of time stamp as well.</p>
      * @param transactionDate transaction date
      */
     public void setTransactionDate(LocalDate transactionDate) {
@@ -83,69 +84,125 @@ public class CsvTransaction {
     }
 
     /**
-     *
-     * @return
+     * Returns the <i>reference</i> of this transaction.
+     * <p>Reference represents the shorthand for the type of transaction. The list of transaction type seen is
+     * declared in {@link expense_tally.model.CsvTransaction.TransactionType}.</p>
+     * @return reference of this transaction
      */
     public String getReference() {
         return reference;
     }
 
     /**
-     *
-     * @param reference
+     * Sets the refernce of this transaction
+     * @param reference of this transaction
      */
     public void setReference(String reference) {
         this.reference = reference;
     }
 
     /**
-     *
-     * @return
+     * Returns the amount of money deducted from the bank account
+     * @return the amount of money deducted from the bank account
      */
     public double getDebitAmount() {
         return debitAmount;
     }
 
+    /**
+     * Set the amount of money deducted from the bank account
+     * @param debitAmount amount of money deducted from the bank account
+     */
     public void setDebitAmount(double debitAmount) {
         this.debitAmount = debitAmount;
     }
 
+    /**
+     * Returns the amount of money credited into the bank account
+     * @return the amount of money credited into the bank account
+     */
     public double getCreditAmount() {
         return creditAmount;
     }
 
+    /**
+     * Sets the amount of money credited into the bank account
+     * @param creditAmount amount of money credited into the bank account
+     */
     public void setCreditAmount(double creditAmount) {
         this.creditAmount = creditAmount;
     }
 
+    /**
+     * Returns the transaction reference line 1 of this transaction.
+     * <p>Transaction reference line 1 contains the transaction date for
+     * {@link expense_tally.model.CsvTransaction.MasterCard} transactions.</p>
+     * @return the transaction reference line 1 of this transaction.
+     */
     public String getTransactionRef1() {
         return transactionRef1;
     }
 
+    /**
+     * Set the transaction reference line 1 of this transaction.
+     * <p>Transaction reference line 1 contains the transaction date for
+     * {@link expense_tally.model.CsvTransaction.MasterCard} transactions.</p>
+     * @param transactionRef1 transaction reference line 1
+     */
     public void setTransactionRef1(String transactionRef1) {
         this.transactionRef1 = transactionRef1;
     }
 
+    /**
+     * Returns the transaction reference line 2 of this transaction
+     * <p>Transaction reference line 2 refers to the card number for
+     * {@link expense_tally.model.CsvTransaction.MasterCard} transactions. It represents the handwritten description
+     * in PayNow transaction.</p>
+     * @return the transaction reference line 2 of this transaction
+     */
     public String getTransactionRef2() {
         return transactionRef2;
     }
 
+    /**
+     * Sets the transaction reference line 2 of this transaction
+     * <p>{@link expense_tally.model.CsvTransaction.MasterCard} transactions. It represents the handwritten description
+     * in PayNow transaction.</p>
+     * @param transactionRef2 transaction reference line 2 of this transaction
+     */
     public void setTransactionRef2(String transactionRef2) {
         this.transactionRef2 = transactionRef2;
     }
 
+    /**
+     * Returns the transaction reference line 3 of this transaction
+     * @return the transaction reference line 3 of this transaction
+     */
     public String getTransactionRef3() {
         return transactionRef3;
     }
 
+    /**
+     * Set the transaction reference line 3 of this transaction
+     * @param transactionRef3 transaction reference line 3
+     */
     public void setTransactionRef3(String transactionRef3) {
         this.transactionRef3 = transactionRef3;
     }
 
+    /**
+     * Returns the type of transaction
+     * @return the type of transaction
+     */
     public TransactionType getType() {
         return type;
     }
 
+    /**
+     * Set the type of transaction specified by <i>type</i>
+     * @param type type of transaction
+     * @see TransactionType
+     */
     public void setType(TransactionType type) {
         this.type = type;
     }

@@ -1,5 +1,8 @@
 package expense_tally.model.ExpenseManager;
 
+/**
+ * Different type of payment method for {@link expense_tally.model.ExpenseManager.ExpenseManagerTransaction}
+ */
 public enum PaymentMethod {
     CASH("Cash"),
     CREDIT_CARD("Credit Card"),
@@ -11,14 +14,27 @@ public enum PaymentMethod {
     GRAY_PAY("Grab Pay");
     private String value;
 
+    /**
+     * Construct a payment method with the <i>value</i>
+     * @param value string representing the payment method
+     */
     PaymentMethod(String value) {
         this.value = value;
     }
 
+    /**
+     * Returns the value of this payment method
+     * @return the value of this payment method
+     */
     public String value() {
         return this.value;
     }
 
+    /**
+     * Returns the payment method represented by this <i>value</i>
+     * @param value content of the payment method
+     * @return the payment method represented by this <i>value</i>
+     */
     public static PaymentMethod resolve(String value) {
         if (value == null || "".equals(value.trim())) {
             return null;

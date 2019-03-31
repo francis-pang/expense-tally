@@ -18,18 +18,37 @@ import java.util.Map;
 public class ExpenseTransactionDao {
     private SqlLiteConnectionManager sqlLiteConnectionManager;
 
+    /**
+     * Construct a ExpenseTransactionDao with the file path of the database file
+     * <p>The file path <i>databaseFile</i> can be relative to the classpath or a absolute path.</p>
+     * @param databaseFile file path of the database file
+     */
     public ExpenseTransactionDao(String databaseFile) {
         this.sqlLiteConnectionManager = new SqlLiteConnectionManager(databaseFile);
     }
 
+    /**
+     * Returns all the mappings between the content of the customised key and the list of
+     * {@link expense_tally.model.ExpenseManager.ExpenseManagerTransaction}.
+     * @return all the mapping between the content of the customised key and the list of
+     * {@link expense_tally.model.ExpenseManager.ExpenseManagerTransaction}.
+     * @throws SQLException when there is an error accessing the database
+     * @see expense_tally.model.ExpenseManager.ExpenseManagerMapKey
+     */
     public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getAllExpenseTransactions() throws SQLException {
         Map<Double, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap();
-
         Connection databaseConnection = sqlLiteConnectionManager.connect();
         List<ExpenseReport> expenseReports = importDataFromDatabase(databaseConnection);
         return ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
     }
 
+    /**
+     * Returns all the expenses stored in the database of expense manager application
+     * @param databaseConnection the connection to the expense manager database
+     * @return a list of expenses representing the transaction amount, catagroy, subcatagory, payment meothd,
+     * description, time of expesnse, and other related field
+     * @throws SQLException when there is an error accessing the database
+     */
     private List<ExpenseReport> importDataFromDatabase(Connection databaseConnection) throws SQLException {
         // Connect to expense_tally.persistence
         List<ExpenseReport> expenseReports = new ArrayList<>();
@@ -59,7 +78,6 @@ public class ExpenseTransactionDao {
             expenseReport.setExpenseTag(retrieveAllResultSet.getString("expense_tag"));
             expenseReports.add(expenseReport);
         }
-
         retrieveAllResultSet.close();
         databaseConnection.close();
         return expenseReports;
