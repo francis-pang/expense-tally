@@ -21,8 +21,12 @@ public class Application {
         // assumes the current class is called MyLogger
 
         // Configurable
-        final String filename = "src/main/resource/csv/3db7c598cadc80893570d55a0243df1c.P000000013229282.csv";
-        final String databaseFile = "jdbc:sqlite:D:/code/expense-tally/src/main/resource/database/2018-11-09.db";
+        final String filename = "src/main/resource/csv/d03521949520f3bd1fc4b9d5f32e40df" +
+                ".P000000013229282_01Dec-02Feb" +
+                ".csv";
+        final String databaseFile = "jdbc:sqlite:D:\\code\\expense-tally\\src\\main\\resource" +
+                "\\database\\personal_finance" +
+                ".db";
 
         List<CsvTransaction> csvTransactions = new ArrayList<>();
         CsvParser transactionCsvParser = new CsvParser();
