@@ -16,11 +16,18 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * A service class to perform the object to reconcile the incoming reconciler
+ * Reconciles the expenses between the Expense Manager application and the CSV file.
  */
 public class ExpenseReconciler {
     private static final Logger LOGGER = Logger.getLogger(ExpenseReconciler.class.getName());
 
+    /**
+     * Reconcile the data in the CSV file against the database record in the Expense Manager database
+     * <p>This is a one way matching exercise. The reconciler iterates through each record in the CSV files to match
+     * for at least a record in the database</p>
+     * @param csvTransactions list of transactions in the CSV file
+     * @param expenseTransactionMap a collection of the database record in the Expense Manager
+     */
     public static void reconcileBankData (List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
         final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
 
@@ -42,7 +49,7 @@ public class ExpenseReconciler {
                 case NETS:
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.NETS);
                     break;
-                case PayNow:
+                case PAY_NOW:
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
                     break;
                 case FUNDS_TRANSFER:
@@ -86,6 +93,11 @@ public class ExpenseReconciler {
         LOGGER.info("Found " + numberOfNoMatchTransaction + " non-matching transactions.");
     }
 
+    /**
+     * Returns an instance of {@link java.time.ZonedDateTime} for a given <i>date</i>
+     * @param date representing date
+     * @return an instance of {@link java.time.ZonedDateTime} for a given <i>date</i>
+     */
     private static ZonedDateTime endOfDay(LocalDate date) {
         return LocalDateTime.of(date, LocalTime.MAX).atZone(ZoneId.of("Asia/Singapore"));
     }
