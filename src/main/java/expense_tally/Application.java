@@ -1,11 +1,11 @@
 package expense_tally;
 
-import expense_tally.model.CsvTransaction.CsvTransaction;
-import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
-import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
-import expense_tally.persistence.CsvParser;
-import expense_tally.persistence.ExpenseTransactionDao;
-import expense_tally.service.ExpenseReconciler;
+import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.expense_manager.model.ExpenseManagerMapKey;
+import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.csv_parser.CsvParser;
+import expense_tally.expense_manager.ExpenseTransactionDao;
+import expense_tally.reconciliation.ExpenseReconciler;
 
 import java.io.IOException;
 import java.sql.SQLException;

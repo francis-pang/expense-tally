@@ -1,9 +1,9 @@
-package expense_tally.service;
+package expense_tally.reconciliation;
 
-import expense_tally.model.CsvTransaction.CsvTransaction;
-import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
-import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
-import expense_tally.model.ExpenseManager.PaymentMethod;
+import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.expense_manager.model.ExpenseManagerMapKey;
+import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.PaymentMethod;
 
 import java.time.Duration;
 import java.time.LocalDate;

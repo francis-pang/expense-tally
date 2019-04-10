@@ -1,8 +1,8 @@
-package expense_tally.persistence;
+package expense_tally.csv_parser;
 
-import expense_tally.model.CsvTransaction.CsvTransaction;
-import expense_tally.model.CsvTransaction.MasterCard;
-import expense_tally.model.CsvTransaction.TransactionType;
+import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.csv_parser.model.MasterCard;
+import expense_tally.csv_parser.model.TransactionType;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

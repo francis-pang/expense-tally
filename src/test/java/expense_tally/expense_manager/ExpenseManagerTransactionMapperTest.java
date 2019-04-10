@@ -1,6 +1,8 @@
-package expense_tally.persistence;
+package expense_tally.expense_manager;
 
-import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
+import expense_tally.expense_manager.ExpenseReport;
+import expense_tally.expense_manager.ExpenseTransactionMapper;
+import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

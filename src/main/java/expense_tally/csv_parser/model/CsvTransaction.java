@@ -1,4 +1,4 @@
-package expense_tally.model.CsvTransaction;
+package expense_tally.csv_parser.model;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -86,7 +86,7 @@ public class CsvTransaction {
     /**
      * Returns the <i>reference</i> of this transaction.
      * <p>Reference represents the shorthand for the type of transaction. The list of transaction type seen is
-     * declared in {@link expense_tally.model.CsvTransaction.TransactionType}.</p>
+     * declared in {@link TransactionType}.</p>
      * @return reference of this transaction
      */
     public String getReference() {
@@ -136,7 +136,7 @@ public class CsvTransaction {
     /**
      * Returns the transaction reference line 1 of this transaction.
      * <p>Transaction reference line 1 contains the transaction date for
-     * {@link expense_tally.model.CsvTransaction.MasterCard} transactions.</p>
+     * {@link MasterCard} transactions.</p>
      * @return the transaction reference line 1 of this transaction.
      */
     public String getTransactionRef1() {
@@ -146,7 +146,7 @@ public class CsvTransaction {
     /**
      * Set the transaction reference line 1 of this transaction.
      * <p>Transaction reference line 1 contains the transaction date for
-     * {@link expense_tally.model.CsvTransaction.MasterCard} transactions.</p>
+     * {@link MasterCard} transactions.</p>
      * @param transactionRef1 transaction reference line 1
      */
     public void setTransactionRef1(String transactionRef1) {
@@ -156,7 +156,7 @@ public class CsvTransaction {
     /**
      * Returns the transaction reference line 2 of this transaction
      * <p>Transaction reference line 2 refers to the card number for
-     * {@link expense_tally.model.CsvTransaction.MasterCard} transactions. It represents the handwritten description
+     * {@link MasterCard} transactions. It represents the handwritten description
      * in PayNow transaction.</p>
      * @return the transaction reference line 2 of this transaction
      */
@@ -166,7 +166,7 @@ public class CsvTransaction {
 
     /**
      * Sets the transaction reference line 2 of this transaction
-     * <p>{@link expense_tally.model.CsvTransaction.MasterCard} transactions. It represents the handwritten description
+     * <p>{@link MasterCard} transactions. It represents the handwritten description
      * in PayNow transaction.</p>
      * @param transactionRef2 transaction reference line 2 of this transaction
      */

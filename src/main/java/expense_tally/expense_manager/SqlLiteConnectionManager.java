@@ -1,4 +1,4 @@
-package expense_tally.persistence;
+package expense_tally.expense_manager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

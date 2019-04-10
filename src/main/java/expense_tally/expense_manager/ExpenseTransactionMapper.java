@@ -1,8 +1,8 @@
-package expense_tally.persistence;
+package expense_tally.expense_manager;
 
-import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
-import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
-import expense_tally.model.ExpenseManager.PaymentMethod;
+import expense_tally.expense_manager.model.ExpenseManagerMapKey;
+import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.PaymentMethod;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * A static class to provide methods for mapping {@link expense_tally.persistence.ExpenseReport} to
+ * A static class to provide methods for mapping {@link ExpenseReport} to
  * {@link ExpenseManagerTransaction}.
  *
  * <p>This class is an use case of the Mapper design pattern, in which the class's main purpose is to provide a set of
- * helpful method to map {@link expense_tally.persistence.ExpenseReport} into
+ * helpful method to map {@link ExpenseReport} into
  * {@link ExpenseManagerTransaction} of various forms. This implementation is inspired by
  * <a href="https://stackoverflow.com/a/11832149/1522867">a stackoverflow answer</a>. The deciding factor between
  * the design patterns of Mapper, Builder and Factory pattern is essential <q>as things evolve, some applications are
