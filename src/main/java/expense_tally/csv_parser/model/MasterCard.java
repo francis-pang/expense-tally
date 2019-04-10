@@ -1,4 +1,4 @@
-package expense_tally.model.CsvTransaction;
+package expense_tally.csv_parser.model;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -10,7 +10,7 @@ import java.util.StringJoiner;
  * is processed between the merchants and the card issuing banks. The payment can be of debit, credit or prepaid in
  * nature.
  *
- * @see expense_tally.model.CsvTransaction.CsvTransaction
+ * @see CsvTransaction
  */
 public class MasterCard extends CsvTransaction {
     //TODO: Change to custom format

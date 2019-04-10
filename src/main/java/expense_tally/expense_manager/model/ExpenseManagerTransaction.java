@@ -1,4 +1,4 @@
-package expense_tally.model.ExpenseManager;
+package expense_tally.expense_manager.model;
 
 import java.time.Instant;
 import java.util.Objects;

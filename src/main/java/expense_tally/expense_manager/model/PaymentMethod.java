@@ -1,7 +1,7 @@
-package expense_tally.model.ExpenseManager;
+package expense_tally.expense_manager.model;
 
 /**
- * Different type of payment method for {@link expense_tally.model.ExpenseManager.ExpenseManagerTransaction}
+ * Different type of payment method for {@link ExpenseManagerTransaction}
  */
 public enum PaymentMethod {
     CASH("Cash"),

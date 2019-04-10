@@ -1,7 +1,8 @@
-package expense_tally.persistence;
+package expense_tally.csv_parser;
 
-import expense_tally.model.CsvTransaction.CsvTransaction;
-import expense_tally.model.CsvTransaction.TransactionType;
+import expense_tally.csv_parser.CsvParser;
+import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.csv_parser.model.TransactionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
