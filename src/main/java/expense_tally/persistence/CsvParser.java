@@ -113,8 +113,8 @@ public class CsvParser {
                 csvTransaction.setType(TransactionType.NETS);
                 break;
             case "ICT": // PayNow Transfer
-                if (TransactionType.PayNow.value().equals(csvElements[TRANSACTION_REF_1_POSITION])) {
-                    csvTransaction.setType(TransactionType.PayNow);
+                if (TransactionType.PAY_NOW.value().equals(csvElements[TRANSACTION_REF_1_POSITION])) {
+                    csvTransaction.setType(TransactionType.PAY_NOW);
                 }
                 break;
             case "IBG":
