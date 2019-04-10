@@ -1,6 +1,7 @@
 package expense_tally.persistence;
 
 import expense_tally.model.CsvTransaction.CsvTransaction;
+import expense_tally.model.CsvTransaction.TransactionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,8 @@ class CsvParserTest {
     }
 
     private CsvTransaction assembleCsvTransaction(LocalDate transactionDate, String reference, Double debitAmount,
-        Double creditAmount, String transactionRef1, String transactionRef2, String transactionRef3) {
+            Double creditAmount, String transactionRef1, String transactionRef2, String transactionRef3,
+            TransactionType transactionType) {
         CsvTransaction csvTransaction = new CsvTransaction();
         csvTransaction.setTransactionDate(transactionDate);
         csvTransaction.setReference(reference);
@@ -50,6 +52,7 @@ class CsvParserTest {
         csvTransaction.setTransactionRef1(transactionRef1);
         csvTransaction.setTransactionRef2(transactionRef2);
         csvTransaction.setTransactionRef3(transactionRef3);
+        csvTransaction.setType(transactionType);
         return csvTransaction;
     }
 
@@ -71,7 +74,8 @@ class CsvParserTest {
             99.99,
             "PayNow Transfer",
             "To: YUEN HUI SHAN  VIVIEN",
-            "OTHR eAngBao for Vivien.");
+            "OTHR eAngBao for Vivien.",
+                TransactionType.PAY_NOW);
         List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
@@ -98,7 +102,8 @@ class CsvParserTest {
                 0.00,
                 "PayNow Transfer",
                 "To: YUEN HUI SHAN  VIVIEN",
-                "OTHR eAngBao for Vivien.");
+                "OTHR eAngBao for Vivien.",
+                TransactionType.PAY_NOW);
         List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
@@ -117,7 +122,8 @@ class CsvParserTest {
                 148.88,
                 "PayNow Transfer",
                 "To: YUEN HUI SHAN  VIVIEN",
-                "OTHR eAngBao for Vivien.");
+                "OTHR eAngBao for Vivien.",
+                TransactionType.PAY_NOW);
         List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
@@ -136,7 +142,8 @@ class CsvParserTest {
                 0.00,
                 "",
                 "",
-                "");
+                "",
+                null);
         List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
@@ -165,7 +172,8 @@ class CsvParserTest {
                 0.00,
                 "PayNow Transfer",
                 "To: YUEN HUI SHAN  VIVIEN",
-                "OTHR eAngBao for Vivien.");
+                "OTHR eAngBao for Vivien.",
+                TransactionType.PAY_NOW);
         List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
