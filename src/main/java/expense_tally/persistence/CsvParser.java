@@ -106,14 +106,16 @@ public class CsvParser {
         switch (transactionReference) {
             case "MST": //FIXME: Check why enum String return doesn't work
                 csvTransaction = new MasterCard();
-                ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
-                csvTransaction.setType(TransactionType.MASTERCARD);
+                if (csvElements.length >= TRANSACTION_REF_2_POSITION) {
+                    ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
+                    csvTransaction.setType(TransactionType.MASTERCARD);
+                }
                 break;
             case "POS": // NETS
                 csvTransaction.setType(TransactionType.NETS);
                 break;
             case "ICT": // PayNow Transfer
-                if (TransactionType.PAY_NOW.value().equals(csvElements[TRANSACTION_REF_1_POSITION])) {
+                if (csvElements.length >= TRANSACTION_REF_2_POSITION && TransactionType.PAY_NOW.value().equals(csvElements[TRANSACTION_REF_1_POSITION])) {
                     csvTransaction.setType(TransactionType.PAY_NOW);
                 }
                 break;
