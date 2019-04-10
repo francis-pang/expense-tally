@@ -38,6 +38,7 @@ class CsvParserTest {
 
     @AfterEach
     void tearDown() {
+        //FIXME: Why is this csvFile not deleted?
         csvFile.delete();
     }
 
