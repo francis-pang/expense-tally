@@ -1,6 +1,5 @@
 package expense_tally.csv_parser;
 
-import expense_tally.csv_parser.CsvParser;
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.TransactionType;
 import org.junit.jupiter.api.AfterEach;
@@ -77,7 +76,7 @@ class CsvParserTest {
             "To: YUEN HUI SHAN  VIVIEN",
             "OTHR eAngBao for Vivien.",
                 TransactionType.PAY_NOW);
-        List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
+        List<CsvTransaction> actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
 
@@ -85,7 +84,7 @@ class CsvParserTest {
     void parseHeaderWithNoRow() throws IOException {
         csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
         csvFileWriter.close();
-        List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
+        List<CsvTransaction> actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(0, actualCsvTransaction.size());
     }
 
@@ -105,7 +104,7 @@ class CsvParserTest {
                 "To: YUEN HUI SHAN  VIVIEN",
                 "OTHR eAngBao for Vivien.",
                 TransactionType.PAY_NOW);
-        List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
+        List<CsvTransaction> actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
 
@@ -125,7 +124,7 @@ class CsvParserTest {
                 "To: YUEN HUI SHAN  VIVIEN",
                 "OTHR eAngBao for Vivien.",
                 TransactionType.PAY_NOW);
-        List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
+        List<CsvTransaction> actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
 
@@ -145,7 +144,7 @@ class CsvParserTest {
                 "",
                 "",
                 null);
-        List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
+        List<CsvTransaction> actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
 
@@ -154,7 +153,7 @@ class CsvParserTest {
         csvFileWriter.write("09 Nov 2018,ICT, 148.88, ,,,\n");
         csvFileWriter.close();
 
-        List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
+        List<CsvTransaction> actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(0, actualCsvTransaction.size());
     }
 
@@ -175,7 +174,7 @@ class CsvParserTest {
                 "To: YUEN HUI SHAN  VIVIEN",
                 "OTHR eAngBao for Vivien.",
                 TransactionType.PAY_NOW);
-        List actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
+        List<CsvTransaction> actualCsvTransaction = csvParser.parseCsvFile(csvFile.getAbsolutePath());
         assertEquals(expectedCsvTransaction, actualCsvTransaction.get(0));
     }
 }
