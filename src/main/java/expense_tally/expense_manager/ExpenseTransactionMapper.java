@@ -2,6 +2,7 @@ package expense_tally.expense_manager;
 
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.ExpenseReport;
 import expense_tally.expense_manager.model.PaymentMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +39,7 @@ public final class ExpenseTransactionMapper {
      * @return a {@link Map} with transaction amount as key, and the list of expense transactions as value.
      */
     public static Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> mapExpenseReportsToMap(List<ExpenseReport> expenseReports) {
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap();
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap<>();
         for(ExpenseReport expenseReport : expenseReports) {
             ExpenseManagerTransaction expenseManagerTransaction = mapAExpenseReport(expenseReport);
             Double transactionAmount = (expenseManagerTransaction.getReferenceAmount() > 0)
@@ -50,7 +51,7 @@ public final class ExpenseTransactionMapper {
             if (expenseTransactionMap.containsKey(expenseManagerMapKey)) {
                 expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
             } else {
-                expenseManagerTransactionList = new ArrayList();
+                expenseManagerTransactionList = new ArrayList<>();
             }
             expenseManagerTransactionList.add(expenseManagerTransaction);
             expenseTransactionMap.put(expenseManagerMapKey, expenseManagerTransactionList);
