@@ -53,8 +53,6 @@ public class CsvParser {
      */
     // TODO: Refactor to read from a buffer stream so that there isn't a need to unit test the part of reading from a file
     public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
-
-
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
         // Ignore until start with Transaction Date
@@ -87,7 +85,7 @@ public class CsvParser {
      *
      * @param csvLine a single line of csv with proper line ending, delimited by the comma character
      * @return a CsvTransaction based on the line of csv. The sequence (position of each of the elements) of the csv
-     * file is fixed
+     * file is fixed. If it is a AWL/ INT/ SI/ ITR/ BILL type of transaction, null will be returned.
      */
     private CsvTransaction parseSingleTransaction(String csvLine) {
         final String CSV_TRANSACTION_DATE_FORMAT = "dd MMM yyyy"; //09 Nov 2018
@@ -104,46 +102,6 @@ public class CsvParser {
         DateTimeFormatter csvTransactionDateFormatter = DateTimeFormatter.ofPattern(CSV_TRANSACTION_DATE_FORMAT);
         String[] csvElements = csvLine.split(CSV_DELIMITER);
         CsvTransaction csvTransaction = new CsvTransaction();
-        String transactionReference = csvElements[REFERENCE_POSITION];
-        switch (transactionReference) {
-            case "MST": //FIXME: Check why enum String return doesn't work
-                csvTransaction = new MasterCard();
-                if (csvElements.length >= TRANSACTION_REF_2_POSITION) {
-                    ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
-                    csvTransaction.setType(TransactionType.MASTERCARD);
-                }
-                break;
-            case "POS": // NETS
-                csvTransaction.setType(TransactionType.NETS);
-                break;
-            case "ICT": // PayNow Transfer
-                if (csvElements.length >= TRANSACTION_REF_2_POSITION && TransactionType.PAY_NOW.value().equals(csvElements[TRANSACTION_REF_1_POSITION])) {
-                    csvTransaction.setType(TransactionType.PAY_NOW);
-                }
-                break;
-            case "IBG":
-                csvTransaction.setType(TransactionType.GIRO);
-                break;
-            case "ITR":
-                csvTransaction.setType(TransactionType.FUNDS_TRANSFER);
-                break;
-            case "BILL":
-                csvTransaction.setType(TransactionType.BILL_PAYMENT);
-                break;
-            case "AWL": // Cash withdrawal
-            case "INT": // Interest Earned
-            case "SI": // Standing Instruction
-            case "SAL": // Salary
-            case "MER": // MAS Electronic Payment System Receipt
-                /**
-                 * For this type of transaction, do not store them because they do not contribute to the reconciliation
-                 * process
-                 */
-                return null; //TODO: Find a way to better elegantly handle this
-            default:
-                LOGGER.info("Found a new transaction type: " + transactionReference + "; " + csvLine);
-                return csvTransaction;
-        }
         csvTransaction.setReference(csvElements[REFERENCE_POSITION]);
         csvTransaction.setTransactionDate(LocalDate.parse(csvElements[TRANSACTION_DATE_POSITION], csvTransactionDateFormatter));
         csvTransaction.setDebitAmount((csvElements[DEBIT_AMOUNT_POSITION].isBlank())

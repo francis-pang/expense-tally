@@ -1,10 +1,10 @@
 package expense_tally;
 
+import expense_tally.csv_parser.CsvParser;
 import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.expense_manager.ExpenseTransactionDao;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.csv_parser.CsvParser;
-import expense_tally.expense_manager.ExpenseTransactionDao;
 import expense_tally.reconciliation.ExpenseReconciler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,14 +20,14 @@ public class Application {
 
     public static void main (String[] args) {
         // Configurable
-        final String filename = "src/main/resource/csv/d03521949520f3bd1fc4b9d5f32e40df" +
-                ".P000000013229282_01Dec-02Feb" +
+        final String filename = "src/main/resource/csv/ef2c1c826daba449ae521f85345076d6" +
+                ".P000000013229282_26Jan-25Apr" +
                 ".csv";
         final String databaseFile = "jdbc:sqlite:D:\\code\\expense-tally\\src\\main\\resource" +
                 "\\database\\personal_finance" +
                 ".db";
 
-        List<CsvTransaction> csvTransactions = new ArrayList<>();
+      List<CsvTransaction> csvTransactions = new ArrayList<>();
         CsvParser transactionCsvParser = new CsvParser();
         try {
             csvTransactions = transactionCsvParser.parseCsvFile(filename);
@@ -35,9 +35,9 @@ public class Application {
             e.printStackTrace();
         }
 
+        ExpenseTransactionDao expenseTransactionDao = new ExpenseTransactionDao(databaseFile);
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap = null;
         try {
-            ExpenseTransactionDao expenseTransactionDao = new ExpenseTransactionDao(databaseFile);
             expenseTransactionMap = expenseTransactionDao.getAllExpenseTransactions();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());

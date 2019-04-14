@@ -2,6 +2,7 @@ package expense_tally.expense_manager;
 
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.ExpenseReport;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

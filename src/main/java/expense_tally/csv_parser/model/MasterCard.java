@@ -3,6 +3,7 @@ package expense_tally.csv_parser.model;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
@@ -37,6 +38,17 @@ public class MasterCard extends CsvTransaction {
      */
     public MasterCard() {
         super();
+    }
+
+    public MasterCard(CsvTransaction csvTransaction) {
+        this.setReference(csvTransaction.getReference());
+        this.setTransactionDate(csvTransaction.getTransactionDate());
+        this.setDebitAmount(csvTransaction.getDebitAmount());
+        this.setCreditAmount(csvTransaction.getCreditAmount());
+        this.setTransactionRef1(csvTransaction.getTransactionRef1());
+        this.setTransactionRef2(csvTransaction.getTransactionRef2());
+        this.setTransactionRef3(csvTransaction.getTransactionRef3());
+        this.setType(TransactionType.MASTERCARD);
     }
 
     /**
@@ -80,16 +92,28 @@ public class MasterCard extends CsvTransaction {
     //TODO: Look for a pre-defined library of this functionality so that there is no need to maintain this
     // functionality.
     private static String convertToTitleCase(String string) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(string.substring(0, 1).toUpperCase());
-        stringBuilder.append(string.substring(1).toLowerCase());
-        return stringBuilder.toString();
+        return string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", MasterCard.class.getSimpleName() + "[", "]")
                 .add(super.toString())
+                .add("cardNumber=" + cardNumber)
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MasterCard)) return false;
+        if (!super.equals(o)) return false;
+        MasterCard that = (MasterCard) o;
+        return cardNumber.equals(that.cardNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), cardNumber);
     }
 }
