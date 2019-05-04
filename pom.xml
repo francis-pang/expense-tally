@@ -8,8 +8,8 @@
   <name>expense-tally</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <maven.compiler.source>1.12</maven.compiler.source>
-    <maven.compiler.target>1.12</maven.compiler.target>
+    <javaVersion>12</javaVersion>
+    <javaCompilerVersion>1.12</javaCompilerVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -59,6 +59,9 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
+          <release>${javaVersion}</release>
+          <source>${javaCompilerVersion}</source>
+          <target>${javaCompilerVersion}</target>
           <compilerArgument>-Xlint:all</compilerArgument>
           <showWarnings>true</showWarnings>
           <showDeprecation>true</showDeprecation>
@@ -83,6 +86,33 @@
             <exclude>some test to exclude here</exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <!-- testing code coverage -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.3</version>
+        <configuration>
+          <excludes>
+            <!-- Exclude all the model package -->
+            <exclude>expense_tally/**/model/*</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>during-test-report</id>
+            <!-- The default is package, I change this so that the report is generated during test phase -->
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
