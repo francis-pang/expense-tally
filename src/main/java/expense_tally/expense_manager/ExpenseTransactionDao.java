@@ -55,7 +55,6 @@ public class ExpenseTransactionDao {
         // Read all records into objects
         Statement retrieveAlLStatement = databaseConnection.createStatement();
         ResultSet retrieveAllResultSet = retrieveAlLStatement.executeQuery("SELECT * FROM expense_report");
-        System.out.println(retrieveAllResultSet.getFetchSize());
         while(retrieveAllResultSet.next()) {
             ExpenseReport expenseReport = new ExpenseReport();
             expenseReport.setId(retrieveAllResultSet.getInt("_id"));
