@@ -1,8 +1,10 @@
-package expense_tally.persistence;
+package expense_tally.csv_parser;
 
-import expense_tally.model.CsvTransaction.CsvTransaction;
-import expense_tally.model.CsvTransaction.MasterCard;
-import expense_tally.model.CsvTransaction.TransactionType;
+import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.csv_parser.model.MasterCard;
+import expense_tally.csv_parser.model.TransactionType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,7 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+
 
 /**
  * Parses a CSV file of bank transaction.
@@ -33,7 +35,7 @@ import java.util.logging.Logger;
  * @see CsvTransaction
  */
 public class CsvParser {
-    private static final Logger LOGGER = Logger.getLogger(CsvParser.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CsvParser.class);
     private static final String CSV_HEADER_LINE = "Transaction Date";
 
     /**
@@ -51,8 +53,6 @@ public class CsvParser {
      */
     // TODO: Refactor to read from a buffer stream so that there isn't a need to unit test the part of reading from a file
     public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
-
-
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
         // Ignore until start with Transaction Date
@@ -85,7 +85,7 @@ public class CsvParser {
      *
      * @param csvLine a single line of csv with proper line ending, delimited by the comma character
      * @return a CsvTransaction based on the line of csv. The sequence (position of each of the elements) of the csv
-     * file is fixed
+     * file is fixed. If it is a AWL/ INT/ SI/ ITR/ BILL type of transaction, null will be returned.
      */
     private CsvTransaction parseSingleTransaction(String csvLine) {
         final String CSV_TRANSACTION_DATE_FORMAT = "dd MMM yyyy"; //09 Nov 2018
@@ -102,44 +102,6 @@ public class CsvParser {
         DateTimeFormatter csvTransactionDateFormatter = DateTimeFormatter.ofPattern(CSV_TRANSACTION_DATE_FORMAT);
         String[] csvElements = csvLine.split(CSV_DELIMITER);
         CsvTransaction csvTransaction = new CsvTransaction();
-        String transactionReference = csvElements[REFERENCE_POSITION];
-        switch (transactionReference) {
-            case "MST": //FIXME: Check why enum String return doesn't work
-                csvTransaction = new MasterCard();
-                ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
-                csvTransaction.setType(TransactionType.MASTERCARD);
-                break;
-            case "POS": // NETS
-                csvTransaction.setType(TransactionType.NETS);
-                break;
-            case "ICT": // PayNow Transfer
-                if (TransactionType.PAY_NOW.value().equals(csvElements[TRANSACTION_REF_1_POSITION])) {
-                    csvTransaction.setType(TransactionType.PAY_NOW);
-                }
-                break;
-            case "IBG":
-                csvTransaction.setType(TransactionType.GIRO);
-                break;
-            case "ITR":
-                csvTransaction.setType(TransactionType.FUNDS_TRANSFER);
-                break;
-            case "BILL":
-                csvTransaction.setType(TransactionType.BILL_PAYMENT);
-                break;
-            case "AWL": // Cash withdrawal
-            case "INT": // Interest Earned
-            case "SI": // Standing Instruction
-            case "SAL": // Salary
-            case "MER": // MAS Electronic Payment System Receipt
-                /**
-                 * For this type of transaction, do not store them because they do not contribute to the reconciliation
-                 * process
-                 */
-                return null; //TODO: Find a way to better elegantly handle this
-            default:
-                LOGGER.info("Found a new transaction type: " + transactionReference + "; " + csvLine);
-                return csvTransaction;
-        }
         csvTransaction.setReference(csvElements[REFERENCE_POSITION]);
         csvTransaction.setTransactionDate(LocalDate.parse(csvElements[TRANSACTION_DATE_POSITION], csvTransactionDateFormatter));
         csvTransaction.setDebitAmount((csvElements[DEBIT_AMOUNT_POSITION].isBlank())
@@ -163,12 +125,41 @@ public class CsvParser {
         } else {
             csvTransaction.setTransactionRef3("");
         }
-        if (csvTransaction instanceof MasterCard) {
-            LOGGER.fine("Detect a PaymentCard transaction: " + csvTransaction.toString());
-            csvTransaction.setTransactionDate(
-                    MasterCard.extractTransactionDate(
-                            csvTransaction.getTransactionDate(),
-                            csvTransaction.getTransactionRef1()));
+        csvTransaction.setType(TransactionType.resolve(csvTransaction.getReference()));
+        if (csvTransaction.getType() == null) {
+            LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
+            return csvTransaction;
+        }
+        switch (csvTransaction.getType()) {
+            case MASTERCARD:
+                csvTransaction = new MasterCard(csvTransaction);
+                LOGGER.debug("Detect a PaymentCard transaction: " + csvTransaction.toString());
+                if (!csvTransaction.getTransactionRef2().isBlank()) {
+                    ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
+                }
+                csvTransaction.setTransactionDate(
+                        MasterCard.extractTransactionDate(
+                                csvTransaction.getTransactionDate(),
+                                csvTransaction.getTransactionRef1()));
+                break;
+            case FAST_PAYMENT:
+                if (csvTransaction.getTransactionRef1() != null &&
+                    TransactionType.PAY_NOW.value().equals(csvTransaction.getTransactionRef1())) {
+                    csvTransaction.setType(TransactionType.PAY_NOW);
+                }
+                break;
+            case CASH_WITHDRAWAL:
+            case INTEREST_EARNED:
+            case STANDING_INSTRUCTION:
+            case SALARY:
+            case MAS_ELECTRONIC_PAYMENT_SYSTEM_RECEIPT:
+                /*
+                 * For this type of transaction, do not store them because they do not contribute to the reconciliation
+                 * process
+                 */
+                return null; //TODO: Find a way to better elegantly handle this
+            default:
+                LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
         }
         return csvTransaction;
     }

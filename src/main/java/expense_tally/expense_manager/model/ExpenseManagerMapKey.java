@@ -1,11 +1,11 @@
-package expense_tally.model.ExpenseManager;
+package expense_tally.expense_manager.model;
 
 import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
  * Custom class to store the content of key for a map between the this key and the list of
- * {@link expense_tally.model.ExpenseManager.ExpenseManagerTransaction}.
+ * {@link ExpenseManagerTransaction}.
  */
 //TODO: This class can be generalised so that the key can be reused
 public class ExpenseManagerMapKey {

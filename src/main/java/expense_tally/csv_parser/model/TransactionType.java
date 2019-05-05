@@ -1,4 +1,4 @@
-package expense_tally.model.CsvTransaction;
+package expense_tally.csv_parser.model;
 
 import java.util.StringJoiner;
 
@@ -10,9 +10,15 @@ public enum TransactionType {
     MASTERCARD ("MST"),
     NETS("NETS"),
     GIRO("IBG"),
+    FAST_PAYMENT("ICT"),
     FUNDS_TRANSFER("ITR"),
     BILL_PAYMENT("BILL"),
-    PAY_NOW("PayNow Transfer");
+    PAY_NOW("PayNow Transfer"),
+    CASH_WITHDRAWAL("AWL"),
+    INTEREST_EARNED("INT"),
+    STANDING_INSTRUCTION("SI"),
+    SALARY("SAL"),
+    MAS_ELECTRONIC_PAYMENT_SYSTEM_RECEIPT("MER");
 
     private final String value;
 
@@ -30,6 +36,20 @@ public enum TransactionType {
      */
     public String value() {
         return this.value;
+    }
+
+    /**
+     * Returns the {@link TransactionType} given its string form
+     * @param transactionTypeStr trsnaction type in string form
+     * @return the type of transaction given its string form, null if not found
+     */
+    public static TransactionType resolve(String transactionTypeStr) {
+        for (TransactionType transactionType: values()) {
+            if (transactionType.value.equals(transactionTypeStr)) {
+                return transactionType;
+            }
+        }
+        return null;
     }
 
     @Override

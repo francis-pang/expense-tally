@@ -1,9 +1,11 @@
-package expense_tally.service;
+package expense_tally.reconciliation;
 
-import expense_tally.model.CsvTransaction.CsvTransaction;
-import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
-import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
-import expense_tally.model.ExpenseManager.PaymentMethod;
+import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.expense_manager.model.ExpenseManagerMapKey;
+import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.PaymentMethod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -13,13 +15,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Reconciles the expenses between the Expense Manager application and the CSV file.
  */
 public class ExpenseReconciler {
-    private static final Logger LOGGER = Logger.getLogger(ExpenseReconciler.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ExpenseReconciler.class);
 
     /**
      * Reconcile the data in the CSV file against the database record in the Expense Manager database
@@ -34,11 +35,11 @@ public class ExpenseReconciler {
         int numberOfNoMatchTransaction = 0;
         for (CsvTransaction csvTransaction : csvTransactions) {
             if (csvTransaction.getDebitAmount() == 0) {
-                LOGGER.fine("This is not a debit transaction");
+                LOGGER.debug("This is not a debit transaction");
                 continue;
             }
             if (csvTransaction.getType() == null) {
-                LOGGER.warning("No valid type. Need to investigate this case. " + csvTransaction.toString());
+                LOGGER.warn("No valid type. Need to investigate this case. " + csvTransaction.toString());
                 continue;
             }
             ExpenseManagerMapKey expenseManagerMapKey;
@@ -59,7 +60,7 @@ public class ExpenseReconciler {
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
                     break;
                 default:
-                    LOGGER.warning("Found an unknown transaction type: " + csvTransaction.getType());
+                    LOGGER.warn("Found an unknown transaction type: " + csvTransaction.getType());
                     continue;
             }
             expenseManagerMapKey.setAmount(csvTransaction.getDebitAmount());
@@ -83,7 +84,7 @@ public class ExpenseReconciler {
                     numberOfNoMatchTransaction++;
                     break;
                 case 1:
-                    LOGGER.finer("Found a matching transaction");
+                    LOGGER.trace("Found a matching transaction");
                     break;
                 default:
                     LOGGER.info("Found more than 1 matching transaction for this: " + csvTransaction.toString());

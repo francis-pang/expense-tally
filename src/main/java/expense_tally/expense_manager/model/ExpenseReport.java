@@ -1,4 +1,4 @@
-package expense_tally.persistence;
+package expense_tally.expense_manager.model;
 
 import java.util.Objects;
 import java.util.StringJoiner;
