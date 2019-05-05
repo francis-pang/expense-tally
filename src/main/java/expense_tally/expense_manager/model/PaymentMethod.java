@@ -6,12 +6,12 @@ package expense_tally.expense_manager.model;
 public enum PaymentMethod {
     CASH("Cash"),
     CREDIT_CARD("Credit Card"),
+    DEBIT_CARD("Debit 5548-2741-0014-1067"),
     ELECTRONIC_TRANSFER("Electronic Transfer"),
-    NETS("NETS"),
     GIRO("Giro"),
-    DEBIT_CARD("Debit 5542-2741-0014-1067"),
-    EZ_LINK("Ez-link"),
-    GRAY_PAY("Grab Pay");
+    GRAY_PAY("Grab Pay"),
+    NETS("NETS"),
+    I_BANKING("iBanking");
     private String value;
 
     /**
