@@ -3,6 +3,8 @@ package expense_tally.csv_parser;
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.MasterCard;
 import expense_tally.csv_parser.model.TransactionType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,7 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+
 
 /**
  * Parses a CSV file of bank transaction.
@@ -33,7 +35,7 @@ import java.util.logging.Logger;
  * @see CsvTransaction
  */
 public class CsvParser {
-    private static final Logger LOGGER = Logger.getLogger(CsvParser.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CsvParser.class);
     private static final String CSV_HEADER_LINE = "Transaction Date";
 
     /**
@@ -165,12 +167,41 @@ public class CsvParser {
         } else {
             csvTransaction.setTransactionRef3("");
         }
-        if (csvTransaction instanceof MasterCard) {
-            LOGGER.fine("Detect a PaymentCard transaction: " + csvTransaction.toString());
-            csvTransaction.setTransactionDate(
-                    MasterCard.extractTransactionDate(
-                            csvTransaction.getTransactionDate(),
-                            csvTransaction.getTransactionRef1()));
+        csvTransaction.setType(TransactionType.resolve(csvTransaction.getReference()));
+        if (csvTransaction.getType() == null) {
+            LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
+            return csvTransaction;
+        }
+        switch (csvTransaction.getType()) {
+            case MASTERCARD:
+                csvTransaction = new MasterCard(csvTransaction);
+                LOGGER.debug("Detect a PaymentCard transaction: " + csvTransaction.toString());
+                if (!csvTransaction.getTransactionRef2().isBlank()) {
+                    ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
+                }
+                csvTransaction.setTransactionDate(
+                        MasterCard.extractTransactionDate(
+                                csvTransaction.getTransactionDate(),
+                                csvTransaction.getTransactionRef1()));
+                break;
+            case FAST_PAYMENT:
+                if (csvTransaction.getTransactionRef1() != null &&
+                    TransactionType.PAY_NOW.value().equals(csvTransaction.getTransactionRef1())) {
+                    csvTransaction.setType(TransactionType.PAY_NOW);
+                }
+                break;
+            case CASH_WITHDRAWAL:
+            case INTEREST_EARNED:
+            case STANDING_INSTRUCTION:
+            case SALARY:
+            case MAS_ELECTRONIC_PAYMENT_SYSTEM_RECEIPT:
+                /*
+                 * For this type of transaction, do not store them because they do not contribute to the reconciliation
+                 * process
+                 */
+                return null; //TODO: Find a way to better elegantly handle this
+            default:
+                LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
         }
         return csvTransaction;
     }

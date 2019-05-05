@@ -3,13 +3,15 @@ package expense_tally.expense_manager;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.PaymentMethod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
 
 /**
  * A static class to provide methods for mapping {@link ExpenseReport} to
@@ -28,7 +30,7 @@ import java.util.logging.Logger;
  * @see ExpenseReport
  */
 public final class ExpenseTransactionMapper {
-    private static final Logger LOGGER = Logger.getLogger(ExpenseTransactionMapper.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
 
     /**
      * Return a {@link Map} of {@link ExpenseManagerTransaction} mapped from a list of {@link ExpenseReport}.
@@ -84,7 +86,7 @@ public final class ExpenseTransactionMapper {
         expenseManagerTransaction.setPaymentMethod(expenseReport.getPaymentMethod());
         if (!expenseReport.getReferenceNumber().isBlank()) {
             expenseManagerTransaction.setReferenceAmount(Double.parseDouble(expenseReport.getReferenceNumber().replaceAll("[^\\d\\.]+", "")));
-            LOGGER.fine("TransactionType Amount is " + expenseManagerTransaction.getReferenceAmount());
+            LOGGER.trace("TransactionType Amount is " + expenseManagerTransaction.getReferenceAmount());
         } else {
             expenseManagerTransaction.setReferenceAmount(0.0);
         }
