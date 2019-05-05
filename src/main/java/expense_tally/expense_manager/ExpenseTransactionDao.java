@@ -1,7 +1,8 @@
-package expense_tally.persistence;
+package expense_tally.expense_manager;
 
-import expense_tally.model.ExpenseManager.ExpenseManagerMapKey;
-import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.ExpenseManagerMapKey;
+import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.ExpenseReport;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,11 +30,11 @@ public class ExpenseTransactionDao {
 
     /**
      * Returns all the mappings between the content of the customised key and the list of
-     * {@link expense_tally.model.ExpenseManager.ExpenseManagerTransaction}.
+     * {@link ExpenseManagerTransaction}.
      * @return all the mapping between the content of the customised key and the list of
-     * {@link expense_tally.model.ExpenseManager.ExpenseManagerTransaction}.
+     * {@link ExpenseManagerTransaction}.
      * @throws SQLException when there is an error accessing the database
-     * @see expense_tally.model.ExpenseManager.ExpenseManagerMapKey
+     * @see ExpenseManagerMapKey
      */
     public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getAllExpenseTransactions() throws SQLException {
         Map<Double, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap();
@@ -55,7 +56,6 @@ public class ExpenseTransactionDao {
         // Read all records into objects
         Statement retrieveAlLStatement = databaseConnection.createStatement();
         ResultSet retrieveAllResultSet = retrieveAlLStatement.executeQuery("SELECT * FROM expense_report");
-        System.out.println(retrieveAllResultSet.getFetchSize());
         while(retrieveAllResultSet.next()) {
             ExpenseReport expenseReport = new ExpenseReport();
             expenseReport.setId(retrieveAllResultSet.getInt("_id"));

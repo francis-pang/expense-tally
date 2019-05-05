@@ -1,0 +1,39 @@
+Configutation:
+  name: Default
+
+  Properties:
+#    Property:
+#      name: log-path
+#      value: "logs"
+
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        # Output the following pattern of log format:
+        # Time, up to milliseconds, local time zone %d{DEFAULT_MICROS}
+        # Severity Level
+        # Fully quantified class name, with method name
+        # Line number
+        # Message
+        pattern: "%d{dd MMM yyyy HH:mm:ss.SSS} [%-5level{lowerCase=false}] %class{-1}.%method:%line - %message{nolookups}{ansi}%n"
+        disableAnsi: "false"
+
+#    File:
+#      name: File_Appender
+#      fileName: ${log-path}/logfile.log
+#      PatternLayout:
+#        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: Console_Appender
+
+    Logger:
+      - name: expense_tally
+        level: debug
+        AppenderRef:
+          - ref: Console_Appender

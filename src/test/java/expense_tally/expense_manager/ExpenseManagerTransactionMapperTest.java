@@ -1,6 +1,7 @@
-package expense_tally.persistence;
+package expense_tally.expense_manager;
 
-import expense_tally.model.ExpenseManager.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.ExpenseManagerTransaction;
+import expense_tally.expense_manager.model.ExpenseReport;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -12,29 +13,50 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExpenseManagerTransactionMapperTest {
 
+    private ExpenseManagerTransaction constuctExpectedExpenseManagerTransaction (
+        double amount,
+        String catagory,
+        String subcategory,
+        String paymethMethod,
+        String description,
+        Instant expensedTime,
+        double referenceAmount
+    ) {
+        ExpenseManagerTransaction expectedExpenseManagerTransaction = new ExpenseManagerTransaction();
+        expectedExpenseManagerTransaction.setAmount(amount);
+        expectedExpenseManagerTransaction.setCategory(catagory);
+        expectedExpenseManagerTransaction.setSubcategory(subcategory);
+        expectedExpenseManagerTransaction.setPaymentMethod(paymethMethod);
+        expectedExpenseManagerTransaction.setDescription(description);
+        expectedExpenseManagerTransaction.setExpensedTime(expensedTime);
+        expectedExpenseManagerTransaction.setReferenceAmount(referenceAmount);
+        return expectedExpenseManagerTransaction;
+    }
+
     /**
      * 1. Empty list
      * 2. Null list
      * 3. List with 1 elements
      * 4. List with more than 1 elements, maybe 3. Among the elements, we will have varying test cases
+     * 5. List with 1 element, blank reference
      */
     @Test
     void mapExpenseReportsToMap() {
     }
 
     @Test
-    void mapEmptyExpenseReportsToList() {
+    void mapExpenseReportsToList_emptyExpenseReports() {
         List<ExpenseReport> testingExpenseReports = new ArrayList<>();
         assertEquals(0, ExpenseTransactionMapper.mapExpenseReportsToList(testingExpenseReports).size());
     }
 
     @Test
-    void mapNullExpenseReportsToList() {
+    void mapExpenseReportsToList_nullExpenseReports() {
         assertThrows(NullPointerException.class, () -> ExpenseTransactionMapper.mapExpenseReportsToList(null));
     }
 
     @Test
-    void mapOneExpenseReportToList() {
+    void mapExpenseReportsToList_oneExpenseReport() {
         // Create test data
         ExpenseReport expenseReport = new ExpenseReport();
         expenseReport.setId(1);
@@ -59,15 +81,20 @@ class ExpenseManagerTransactionMapperTest {
         testingExpenseReports.add(expenseReport);
 
         // Expected result
-        ExpenseManagerTransaction expectedExpenseManagerTransaction = new ExpenseManagerTransaction();
-        expectedExpenseManagerTransaction.setAmount(1.78);
-        expectedExpenseManagerTransaction.setCategory("Category");
-        expectedExpenseManagerTransaction.setSubcategory("Subcategory");
-        expectedExpenseManagerTransaction.setPaymentMethod("PaymentMethod");
-        expectedExpenseManagerTransaction.setDescription("Description");
-        expectedExpenseManagerTransaction.setExpensedTime(Instant.ofEpochMilli(1543509392));
-        expectedExpenseManagerTransaction.setReferenceAmount(7.00);
+        ExpenseManagerTransaction expectedExpenseManagerTransaction = constuctExpectedExpenseManagerTransaction(
+            1.78,
+            "Category",
+            "Subcategory",
+            "PaymentMethod",
+            "Description",
+            Instant.ofEpochMilli(1543509392),
+            7.00);
 
         assertEquals(expectedExpenseManagerTransaction, ExpenseTransactionMapper.mapExpenseReportsToList(testingExpenseReports).get(0));
+    }
+
+    @Test
+    void mapExpenseReportsToList_oneExpenseWithNullReference() {
+        //TODO: Fill this up
     }
 }
