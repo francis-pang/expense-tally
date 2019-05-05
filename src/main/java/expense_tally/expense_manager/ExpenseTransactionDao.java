@@ -37,7 +37,7 @@ public class ExpenseTransactionDao {
      * @see ExpenseManagerMapKey
      */
     public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getAllExpenseTransactions() throws SQLException {
-        Map<Double, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap();
+        Map<Double, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap<>();
         Connection databaseConnection = sqlLiteConnectionManager.connect();
         List<ExpenseReport> expenseReports = importDataFromDatabase(databaseConnection);
         return ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
