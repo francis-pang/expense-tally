@@ -159,7 +159,7 @@ public class CsvParser {
                  */
                 return null; //TODO: Find a way to better elegantly handle this
             default:
-                LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
+                // Do nothing
         }
         return csvTransaction;
     }
