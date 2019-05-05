@@ -28,12 +28,10 @@ Configutation:
 
   Loggers:
     Root:
-      level: info
-      AppenderRef:
-        - ref: Console_Appender
+      level: error
 
     Logger:
       - name: expense_tally
-        level: debug
+        level: warn
         AppenderRef:
           - ref: Console_Appender

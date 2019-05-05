@@ -35,7 +35,7 @@ public class ExpenseReconciler {
         int numberOfNoMatchTransaction = 0;
         for (CsvTransaction csvTransaction : csvTransactions) {
             if (csvTransaction.getDebitAmount() == 0) {
-                LOGGER.debug("This is not a debit transaction");
+                LOGGER.trace("This is not a debit transaction");
                 continue;
             }
             if (csvTransaction.getType() == null) {
@@ -48,16 +48,24 @@ public class ExpenseReconciler {
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
                     break;
                 case NETS:
+                case POINT_OF_SALE:
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.NETS);
                     break;
                 case PAY_NOW:
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
                     break;
-                case FUNDS_TRANSFER:
+                case FUNDS_TRANSFER_I:
+                case FUNDS_TRANSFER_A:
+                case FAST_PAYMENT:
+                case FAST_COLLECTION:
                     expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
                     break;
                 case BILL_PAYMENT:
-                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
+                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.I_BANKING);
+                    break;
+                case GIRO:
+                case GIRO_COLLECTION:
+                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.GIRO);
                     break;
                 default:
                     LOGGER.warn("Found an unknown transaction type: " + csvTransaction.getType());
@@ -74,13 +82,14 @@ public class ExpenseReconciler {
             for(ExpenseManagerTransaction matchingExpenseManagerTransaction : expenseManagerTransactionList) {
                 Duration transactionTimeDifference = Duration.between(matchingExpenseManagerTransaction.getExpensedTime(),
                         endOfDay(csvTransaction.getTransactionDate()));
-                if(transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
+                if(transactionTimeDifference.toHours() >= 0 &&
+                   transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
                     noOfMatchingTransaction++;
                 }
             }
             switch(noOfMatchingTransaction) {
                 case 0:
-                    LOGGER.info("After going through the list of matching amount, transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
+                    LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
                     numberOfNoMatchTransaction++;
                     break;
                 case 1:
