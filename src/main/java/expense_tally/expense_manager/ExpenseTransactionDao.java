@@ -16,16 +16,18 @@ import java.util.Map;
 /**
  * Data access object for expense transaction
  */
+//TODO: Extract the logic out to have a service layer class
 public class ExpenseTransactionDao {
     private SqlLiteConnectionManager sqlLiteConnectionManager;
+    private static ExpenseTransactionDao expenseTransactionDao;
 
-    /**
-     * Construct a ExpenseTransactionDao with the file path of the database file
-     * <p>The file path <i>databaseFile</i> can be relative to the classpath or a absolute path.</p>
-     * @param databaseFile file path of the database file
-     */
-    public ExpenseTransactionDao(String databaseFile) {
-        this.sqlLiteConnectionManager = new SqlLiteConnectionManager(databaseFile);
+    private ExpenseTransactionDao() {}
+
+    public static ExpenseTransactionDao getExpenseTransactionDao() {
+        if(expenseTransactionDao == null) {
+            expenseTransactionDao = new ExpenseTransactionDao();
+        }
+        return expenseTransactionDao;
     }
 
     /**
@@ -33,10 +35,13 @@ public class ExpenseTransactionDao {
      * {@link ExpenseManagerTransaction}.
      * @return all the mapping between the content of the customised key and the list of
      * {@link ExpenseManagerTransaction}.
+     * <p>The file path <i>databaseFile</i> can be relative to the classpath or a absolute path.</p>
+     * @param databaseFile file path of the database file
      * @throws SQLException when there is an error accessing the database
      * @see ExpenseManagerMapKey
      */
-    public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getAllExpenseTransactions() throws SQLException {
+    public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getAllExpenseTransactionsFrom(String databaseFile) throws SQLException {
+        this.sqlLiteConnectionManager = new SqlLiteConnectionManager(databaseFile);
         Map<Double, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap<>();
         Connection databaseConnection = sqlLiteConnectionManager.connect();
         List<ExpenseReport> expenseReports = importDataFromDatabase(databaseConnection);

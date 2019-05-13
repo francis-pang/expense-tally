@@ -1,49 +1,38 @@
 package expense_tally;
 
-import expense_tally.csv_parser.CsvParser;
-import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.expense_manager.ExpenseTransactionDao;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.reconciliation.ExpenseReconciler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class Application {
-    private static final Logger LOGGER = LogManager.getLogger(Application.class);
+  private static final Logger LOGGER = LogManager.getLogger(Application.class);
 
-    public static void main (String[] args) {
-        // Configurable
-        final String filename = "src/main/resource/csv/ef2c1c826daba449ae521f85345076d6" +
-                ".P000000013229282_26Jan-25Apr" +
-                ".csv";
-        final String databaseFile = "jdbc:sqlite:D:\\code\\expense-tally\\src\\main\\resource" +
-                "\\database\\personal_finance" +
-                ".db";
+  public static void main(String[] args) {
+    final int INSUFFICIENT_PARAMETERS_ERR_CODE = 1;
+    final int CSV_FILE_PARSING_ERR_CODE = 2;
+    final int DATABASE_ERR_CODE = 3;
 
-      List<CsvTransaction> csvTransactions = new ArrayList<>();
-        CsvParser transactionCsvParser = new CsvParser();
-        try {
-            csvTransactions = transactionCsvParser.parseCsvFile(filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        ExpenseTransactionDao expenseTransactionDao = new ExpenseTransactionDao(databaseFile);
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap = null;
-        try {
-            expenseTransactionMap = expenseTransactionDao.getAllExpenseTransactions();
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        // Reconcile data
-        ExpenseReconciler.reconcileBankData(csvTransactions, expenseTransactionMap);
+    //TODO: For now, we ignore any parameters after 2nd parameters, next time we can handle them.
+    Driver driver = new Driver();
+    try {
+      driver.readArgs(args);
+    } catch (IllegalArgumentException ex) {
+      LOGGER.error("Error processing argument", ex);
+      System.exit(INSUFFICIENT_PARAMETERS_ERR_CODE);
     }
+
+    try {
+      driver.reconcileData();
+    } catch (IOException ioException) {
+      LOGGER.error("Error reading CSV file",ioException);
+      System.exit(CSV_FILE_PARSING_ERR_CODE);
+      //TODO: Print a error message, then exit the program
+    } catch (SQLException sqlException) {
+      LOGGER.error("Error reading from database", sqlException);
+      //TODO: Print a error message, then exit the program
+      System.exit(DATABASE_ERR_CODE);
+    }
+  }
 }

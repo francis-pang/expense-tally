@@ -37,11 +37,20 @@ import java.util.List;
 public class CsvParser {
     private static final Logger LOGGER = LogManager.getLogger(CsvParser.class);
     private static final String CSV_HEADER_LINE = "Transaction Date";
+    private static CsvParser csvParser;
 
     /**
      * Default constructor
      */
-    public CsvParser() {
+    private CsvParser() {
+    }
+
+    // Singleton implementation
+    public static CsvParser getCsvParser() {
+        if (csvParser == null) {
+            csvParser = new CsvParser();
+        }
+        return csvParser;
     }
 
     /**

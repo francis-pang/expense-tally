@@ -6,7 +6,6 @@ import expense_tally.expense_manager.model.PaymentMethod;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,8 +26,7 @@ class ExpenseTransactionDaoTest {
   @Mock
   SqlLiteConnectionManager mockSqlLiteConnectionManager = mock(SqlLiteConnectionManager.class);
 
-  @InjectMocks
-  static ExpenseTransactionDao testExpenseTransactionDao = new ExpenseTransactionDao("test-file.db");
+  ExpenseTransactionDao testExpenseTransactionDao = ExpenseTransactionDao.getExpenseTransactionDao();
 
   /**
    * A simple happy case where a single transaction database table is being read and parsed correctly
@@ -63,7 +61,7 @@ class ExpenseTransactionDaoTest {
     when(mockResultSet.getString("expense_tag")).thenReturn("");
     when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
 
-    Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMap = testExpenseTransactionDao.getAllExpenseTransactions();
+    Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMap = testExpenseTransactionDao.getAllExpenseTransactionsFrom("test-file.db");
 
     // Extract the list of transactions
     ExpenseManagerMapKey testExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.CASH);
@@ -94,7 +92,7 @@ class ExpenseTransactionDaoTest {
         when(mockResultSet.next()).thenReturn(false);
         when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
 
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMap = testExpenseTransactionDao.getAllExpenseTransactions();
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMap = testExpenseTransactionDao.getAllExpenseTransactionsFrom("test-file.db");
         assertThat(actualExpenseManagerMap).hasSize(0);
     }
 
