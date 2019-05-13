@@ -26,7 +26,7 @@ class CsvParserTest {
 
     @BeforeAll
     static void setUpOnce() {
-        csvParser = new CsvParser();
+        csvParser = CsvParser.getCsvParser();
         currentRelativePath = Paths.get("");
     }
 
