@@ -6,9 +6,9 @@ import java.util.StringJoiner;
 
 public class ExpenseManagerTransaction {
     private Double amount;
-    private String category;
-    private String subcategory;
-    private String paymentMethod;
+    private ExpenseCategory category;
+    private ExpenseSubCategory subcategory;
+    private PaymentMethod paymentMethod;
     private String description;
     private Instant expensedTime;
     private Double referenceAmount;
@@ -24,27 +24,27 @@ public class ExpenseManagerTransaction {
         this.amount = amount;
     }
 
-    public String getCategory() {
+    public ExpenseCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(ExpenseCategory category) {
         this.category = category;
     }
 
-    public String getSubcategory() {
+    public ExpenseSubCategory getSubcategory() {
         return subcategory;
     }
 
-    public void setSubcategory(String subcategory) {
+    public void setSubcategory(ExpenseSubCategory subcategory) {
         this.subcategory = subcategory;
     }
 
-    public String getPaymentMethod() {
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
@@ -77,13 +77,13 @@ public class ExpenseManagerTransaction {
         if (this == o) return true;
         if (!(o instanceof ExpenseManagerTransaction)) return false;
         ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
-        return Objects.equals(amount, that.amount) &&
-                Objects.equals(category, that.category) &&
-                Objects.equals(subcategory, that.subcategory) &&
-                Objects.equals(paymentMethod, that.paymentMethod) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(expensedTime, that.expensedTime) &&
-                Objects.equals(referenceAmount, that.referenceAmount);
+        return amount.equals(that.amount) &&
+            category == that.category &&
+            subcategory == that.subcategory &&
+            paymentMethod == that.paymentMethod &&
+            description.equals(that.description) &&
+            expensedTime.equals(that.expensedTime) &&
+            referenceAmount.equals(that.referenceAmount);
     }
 
     @Override
@@ -94,13 +94,13 @@ public class ExpenseManagerTransaction {
     @Override
     public String toString() {
         return new StringJoiner(", ", ExpenseManagerTransaction.class.getSimpleName() + "[", "]")
-                .add("amount=" + amount)
-                .add("category='" + category + "'")
-                .add("subcategory='" + subcategory + "'")
-                .add("paymentMethod='" + paymentMethod + "'")
-                .add("description='" + description + "'")
-                .add("expensedTime=" + expensedTime)
-                .add("referenceAmount=" + referenceAmount)
-                .toString();
+            .add("amount=" + amount)
+            .add("category=" + category)
+            .add("subcategory=" + subcategory)
+            .add("paymentMethod=" + paymentMethod)
+            .add("description='" + description + "'")
+            .add("expensedTime=" + expensedTime)
+            .add("referenceAmount=" + referenceAmount)
+            .toString();
     }
 }
