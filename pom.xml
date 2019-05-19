@@ -40,6 +40,11 @@
       <version>3.27.2.1</version>
     </dependency>
     <dependency>
+      <groupId>org.bytedeco</groupId>
+      <artifactId>tesseract-platform</artifactId>
+      <version>4.0.0-1.5</version>
+    </dependency>
+    <dependency>
       <groupId>org.junit-pioneer</groupId>
       <artifactId>junit-pioneer</artifactId>
       <version>0.3.0</version>
