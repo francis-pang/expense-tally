@@ -11,11 +11,11 @@ public class ExpenseReport {
     private String subcategory;
     private String paymentMethod;
     private String description;
-    private long expensed;
-    private long modified;
+    private long expensedTime;
+    private long modificationTime;
     private String referenceNumber;
     private String status;
-    private String property;
+    private String property1;
     private String property2;
     private String property3;
     private String property4;
@@ -82,20 +82,20 @@ public class ExpenseReport {
         this.description = description;
     }
 
-    public long getExpensed() {
-        return expensed;
+    public long getExpensedTime() {
+        return expensedTime;
     }
 
-    public void setExpensed(long expensed) {
-        this.expensed = expensed;
+    public void setExpensedTime(long expensedTime) {
+        this.expensedTime = expensedTime;
     }
 
-    public long getModified() {
-        return modified;
+    public long getModificationTime() {
+        return modificationTime;
     }
 
-    public void setModified(long modified) {
-        this.modified = modified;
+    public void setModificationTime(long modificationTime) {
+        this.modificationTime = modificationTime;
     }
 
     public String getReferenceNumber() {
@@ -114,12 +114,12 @@ public class ExpenseReport {
         this.status = status;
     }
 
-    public String getProperty() {
-        return property;
+    public String getProperty1() {
+        return property1;
     }
 
-    public void setProperty(String property) {
-        this.property = property;
+    public void setProperty1(String property1) {
+        this.property1 = property1;
     }
 
     public String getProperty2() {
@@ -176,8 +176,8 @@ public class ExpenseReport {
         if (!(o instanceof ExpenseReport)) return false;
         ExpenseReport that = (ExpenseReport) o;
         return id == that.id &&
-                expensed == that.expensed &&
-                modified == that.modified &&
+                expensedTime == that.expensedTime &&
+                modificationTime == that.modificationTime &&
                 Objects.equals(account, that.account) &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(category, that.category) &&
@@ -186,7 +186,7 @@ public class ExpenseReport {
                 Objects.equals(description, that.description) &&
                 Objects.equals(referenceNumber, that.referenceNumber) &&
                 Objects.equals(status, that.status) &&
-                Objects.equals(property, that.property) &&
+                Objects.equals(property1, that.property1) &&
                 Objects.equals(property2, that.property2) &&
                 Objects.equals(property3, that.property3) &&
                 Objects.equals(property4, that.property4) &&
@@ -197,7 +197,7 @@ public class ExpenseReport {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, account, amount, category, subcategory, paymentMethod, description, expensed, modified, referenceNumber, status, property, property2, property3, property4, property5, tax, expenseTag);
+        return Objects.hash(id, account, amount, category, subcategory, paymentMethod, description, expensedTime, modificationTime, referenceNumber, status, property1, property2, property3, property4, property5, tax, expenseTag);
     }
 
     @Override
@@ -210,11 +210,11 @@ public class ExpenseReport {
                 .add("subcategory='" + subcategory + "'")
                 .add("paymentMethod='" + paymentMethod + "'")
                 .add("description='" + description + "'")
-                .add("expensed=" + expensed)
-                .add("modified=" + modified)
+                .add("expensedTime=" + expensedTime)
+                .add("modificationTime=" + modificationTime)
                 .add("referenceNumber='" + referenceNumber + "'")
                 .add("status='" + status + "'")
-                .add("property='" + property + "'")
+                .add("property1='" + property1 + "'")
                 .add("property2='" + property2 + "'")
                 .add("property3='" + property3 + "'")
                 .add("property4='" + property4 + "'")

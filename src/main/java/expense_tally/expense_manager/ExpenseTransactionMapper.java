@@ -1,8 +1,10 @@
 package expense_tally.expense_manager;
 
+import expense_tally.expense_manager.model.ExpenseCategory;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.ExpenseReport;
+import expense_tally.expense_manager.model.ExpenseSubCategory;
 import expense_tally.expense_manager.model.PaymentMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * A static class to provide methods for mapping {@link ExpenseReport} to
@@ -80,18 +81,17 @@ public final class ExpenseTransactionMapper {
     private static ExpenseManagerTransaction mapAExpenseReport(ExpenseReport expenseReport) {
         ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
         expenseManagerTransaction.setAmount(Double.parseDouble(expenseReport.getAmount()));
-        expenseManagerTransaction.setCategory(expenseReport.getCategory());
+        expenseManagerTransaction.setCategory(ExpenseCategory.resolve(expenseReport.getCategory()));
         expenseManagerTransaction.setDescription(expenseReport.getDescription());
-        Instant expensedTime = Instant.ofEpochMilli(expenseReport.getExpensed()); //This time is in UTC
-        expenseManagerTransaction.setExpensedTime(Instant.ofEpochMilli(expenseReport.getExpensed()));
-        expenseManagerTransaction.setPaymentMethod(expenseReport.getPaymentMethod());
+        expenseManagerTransaction.setExpensedTime(Instant.ofEpochMilli(expenseReport.getExpensedTime())); //This time is in UTC
+        expenseManagerTransaction.setPaymentMethod(PaymentMethod.resolve(expenseReport.getPaymentMethod()));
         if (!expenseReport.getReferenceNumber().isBlank()) {
             expenseManagerTransaction.setReferenceAmount(Double.parseDouble(expenseReport.getReferenceNumber().replaceAll("[^\\d\\.]+", "")));
             LOGGER.trace("TransactionType Amount is " + expenseManagerTransaction.getReferenceAmount());
         } else {
             expenseManagerTransaction.setReferenceAmount(0.0);
         }
-        expenseManagerTransaction.setSubcategory(expenseReport.getSubcategory());
+        expenseManagerTransaction.setSubcategory(ExpenseSubCategory.resolve(expenseReport.getSubcategory()));
         return expenseManagerTransaction;
     }
 }

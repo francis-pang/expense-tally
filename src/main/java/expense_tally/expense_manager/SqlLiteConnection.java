@@ -11,14 +11,14 @@ import java.sql.SQLException;
  * , SQLite library is linked and form part of the application. Hence there isn't a database server. The entire
  * database (definitions, tables, indices, and the data itself) is stored inside a single cross-platform file.</p>
  */
-public class SqlLiteConnectionManager {
+public class SqlLiteConnection implements DatabaseConnectable {
     private String databaseFile;
 
     /**
-     * Construct a SqlLiteConnectionManager with the file path to the database file
+     * Construct a SqlLiteConnection with the file path to the database file
      * @param databaseFile file path of the database file
      */
-    public SqlLiteConnectionManager(String databaseFile) {
+    public SqlLiteConnection(String databaseFile) {
         this.databaseFile = databaseFile;
     }
 
@@ -27,8 +27,8 @@ public class SqlLiteConnectionManager {
      * @return the connection to the database
      * @throws SQLException when there is an error accessing the database
      */
+    @Override
     public Connection connect() throws SQLException {
-        Connection databaseConnection = DriverManager.getConnection(databaseFile);
-        return databaseConnection;
+        return DriverManager.getConnection(databaseFile);
     }
 }
