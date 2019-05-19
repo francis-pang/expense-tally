@@ -1,7 +1,10 @@
 package expense_tally.expense_manager;
 
+import expense_tally.expense_manager.model.ExpenseCategory;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.ExpenseReport;
+import expense_tally.expense_manager.model.ExpenseSubCategory;
+import expense_tally.expense_manager.model.PaymentMethod;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -24,9 +27,9 @@ class ExpenseManagerTransactionMapperTest {
     ) {
         ExpenseManagerTransaction expectedExpenseManagerTransaction = new ExpenseManagerTransaction();
         expectedExpenseManagerTransaction.setAmount(amount);
-        expectedExpenseManagerTransaction.setCategory(catagory);
-        expectedExpenseManagerTransaction.setSubcategory(subcategory);
-        expectedExpenseManagerTransaction.setPaymentMethod(paymethMethod);
+        expectedExpenseManagerTransaction.setCategory(ExpenseCategory.resolve(catagory));
+        expectedExpenseManagerTransaction.setSubcategory(ExpenseSubCategory.resolve(subcategory));
+        expectedExpenseManagerTransaction.setPaymentMethod(PaymentMethod.resolve(paymethMethod));
         expectedExpenseManagerTransaction.setDescription(description);
         expectedExpenseManagerTransaction.setExpensedTime(expensedTime);
         expectedExpenseManagerTransaction.setReferenceAmount(referenceAmount);
@@ -66,11 +69,11 @@ class ExpenseManagerTransactionMapperTest {
         expenseReport.setSubcategory("Subcategory");
         expenseReport.setPaymentMethod("PaymentMethod");
         expenseReport.setDescription("Description");
-        expenseReport.setExpensed(1543509392);
-        expenseReport.setModified(6);
+        expenseReport.setExpensedTime(1543509392);
+        expenseReport.setModificationTime(6);
         expenseReport.setReferenceNumber("7");
         expenseReport.setStatus("Clear");
-        expenseReport.setProperty("Property");
+        expenseReport.setProperty1("Property");
         expenseReport.setProperty2("Property2");
         expenseReport.setProperty3("Property3");
         expenseReport.setProperty4("Property4");
