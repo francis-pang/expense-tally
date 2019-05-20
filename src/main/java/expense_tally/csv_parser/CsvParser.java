@@ -34,24 +34,9 @@ import java.util.List;
  *
  * @see CsvTransaction
  */
-public class CsvParser {
+public class CsvParser implements CsvParsable {
     private static final Logger LOGGER = LogManager.getLogger(CsvParser.class);
-    private static final String CSV_HEADER_LINE = "Transaction Date";
-    private static CsvParser csvParser;
-
-    /**
-     * Default constructor
-     */
-    private CsvParser() {
-    }
-
-    // Singleton implementation
-    public static CsvParser getCsvParser() {
-        if (csvParser == null) {
-            csvParser = new CsvParser();
-        }
-        return csvParser;
-    }
+    private final String CSV_HEADER_LINE = "Transaction Date";
 
     /**
      * Parse a CSV file in the pre-defined format from the file with the directory <i>filePath</i>.
@@ -61,6 +46,7 @@ public class CsvParser {
      * @throws IOException when there is Input/Output error
      */
     // TODO: Refactor to read from a buffer stream so that there isn't a need to unit test the part of reading from a file
+    @Override
     public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
@@ -114,11 +100,11 @@ public class CsvParser {
         csvTransaction.setReference(csvElements[REFERENCE_POSITION]);
         csvTransaction.setTransactionDate(LocalDate.parse(csvElements[TRANSACTION_DATE_POSITION], csvTransactionDateFormatter));
         csvTransaction.setDebitAmount((csvElements[DEBIT_AMOUNT_POSITION].isBlank())
-                ? 0.00
-                : Double.parseDouble(csvElements[DEBIT_AMOUNT_POSITION]));
+            ? 0.00
+            : Double.parseDouble(csvElements[DEBIT_AMOUNT_POSITION]));
         csvTransaction.setCreditAmount((csvElements[CREDIT_AMOUNT_POSITION].isBlank())
-                ? 0.00
-                : Double.parseDouble(csvElements[CREDIT_AMOUNT_POSITION]));
+            ? 0.00
+            : Double.parseDouble(csvElements[CREDIT_AMOUNT_POSITION]));
         if (csvElements.length >= 5) {
             csvTransaction.setTransactionRef1(csvElements[TRANSACTION_REF_1_POSITION]);
         } else {
@@ -136,24 +122,27 @@ public class CsvParser {
         }
         csvTransaction.setType(TransactionType.resolve(csvTransaction.getReference()));
         if (csvTransaction.getType() == null) {
-            LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
+            CsvParser.LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
             return csvTransaction;
         }
         switch (csvTransaction.getType()) {
             case MASTERCARD:
                 csvTransaction = new MasterCard(csvTransaction);
-                LOGGER.debug("Detect a PaymentCard transaction: " + csvTransaction.toString());
+                CsvParser.LOGGER.debug("Detect a PaymentCard transaction: " + csvTransaction.toString());
                 if (!csvTransaction.getTransactionRef2().isBlank()) {
                     ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
+                } else {
+                    CsvParser.LOGGER.trace("This MasterCard transaction doesn't record the card number.\n"
+                        + csvTransaction.toString());
                 }
+                //FIXME: Error handling when there is no transaction date to be parsed
                 csvTransaction.setTransactionDate(
-                        MasterCard.extractTransactionDate(
-                                csvTransaction.getTransactionDate(),
-                                csvTransaction.getTransactionRef1()));
+                    MasterCard.extractTransactionDate(
+                        csvTransaction.getTransactionDate(),
+                        csvTransaction.getTransactionRef1()));
                 break;
             case FAST_PAYMENT:
-                if (csvTransaction.getTransactionRef1() != null &&
-                    TransactionType.PAY_NOW.value().equals(csvTransaction.getTransactionRef1())) {
+                if (TransactionType.PAY_NOW.value().equals(csvTransaction.getTransactionRef1())) {
                     csvTransaction.setType(TransactionType.PAY_NOW);
                 }
                 break;

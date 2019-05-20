@@ -40,7 +40,7 @@ public class Driver {
 
   public void reconcileData() throws IOException, SQLException {
     List<CsvTransaction> csvTransactions = new ArrayList<>();
-    CsvParser transactionCsvParser = CsvParser.getCsvParser();
+    CsvParser transactionCsvParser = new CsvParser();
     csvTransactions = transactionCsvParser.parseCsvFile(csvFilename);
 
     DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFilename);
