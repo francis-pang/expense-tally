@@ -42,26 +42,31 @@ class ExpenseReportReaderTest {
     when(mockConnection.createStatement()).thenReturn(mockStatement);
     when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
 
+    /*
+     * Following the practice of writing good test from https://github
+     * .com/mockito/mockito/wiki/How-to-write-good-tests, this mock follows the principles of "Avoid coding a
+     * tautology". We explicitly write the value so that we do not duplicate the logic between the tests and the code.
+     */
     when(mockResultSet.next()).thenReturn(true).thenReturn(false);
-    when(mockResultSet.getInt(ExpenseReportReader.Column.ID)).thenReturn(1);
-    when(mockResultSet.getString(ExpenseReportReader.Column.ACCOUNT)).thenReturn("2016");
-    when(mockResultSet.getString(ExpenseReportReader.Column.AMOUNT)).thenReturn("20");
-    when(mockResultSet.getString(ExpenseReportReader.Column.CATEGORY)).thenReturn("Entertainment");
-    when(mockResultSet.getString(ExpenseReportReader.Column.SUBCATEGORY)).thenReturn("Alcohol/ Restaurant");
-    when(mockResultSet.getString(ExpenseReportReader.Column.PAYMENT_METHOD)).thenReturn("Cash");
-    when(mockResultSet.getString(ExpenseReportReader.Column.DESCRIPTION)).thenReturn("Lunch. Mala Hui cui Guan. " +
-        "Shared with Sal, Lisa, Rick.");
-    when(mockResultSet.getLong(ExpenseReportReader.Column.EXPENSED_TIME)).thenReturn(Long.valueOf("1459489440000"));
-    when(mockResultSet.getLong(ExpenseReportReader.Column.MODIFICATION_TIME)).thenReturn(Long.valueOf("1459816738453"));
-    when(mockResultSet.getString(ExpenseReportReader.Column.REFERENCE_NUMBER)).thenReturn("");
-    when(mockResultSet.getString(ExpenseReportReader.Column.STATUS)).thenReturn("Cleared");
-    when(mockResultSet.getString(ExpenseReportReader.Column.PROPERTY_1)).thenReturn("");
-    when(mockResultSet.getString(ExpenseReportReader.Column.PROPERTY_2)).thenReturn("2016-04-01-13-44-00-573.jpg");
-    when(mockResultSet.getString(ExpenseReportReader.Column.PROPERTY_3)).thenReturn("");
-    when(mockResultSet.getString(ExpenseReportReader.Column.PROPERTY_4)).thenReturn("");
-    when(mockResultSet.getString(ExpenseReportReader.Column.PROPERTY_5)).thenReturn("");
-    when(mockResultSet.getString(ExpenseReportReader.Column.TAX)).thenReturn("");
-    when(mockResultSet.getString(ExpenseReportReader.Column.EXPENSE_TAG)).thenReturn("");
+    when(mockResultSet.getInt("_id")).thenReturn(1);
+    when(mockResultSet.getString("account")).thenReturn("2016");
+    when(mockResultSet.getString("amount")).thenReturn("20");
+    when(mockResultSet.getString("category")).thenReturn("Entertainment");
+    when(mockResultSet.getString("subcategory")).thenReturn("Alcohol/ Restaurant");
+    when(mockResultSet.getString("payment_method")).thenReturn("Cash");
+    when(mockResultSet.getString("description")).thenReturn("Lunch. Mala Hui cui Guan. Shared with Sal," +
+        " Lisa, Rick.");
+    when(mockResultSet.getLong("expensed")).thenReturn(Long.valueOf("1459489440000"));
+    when(mockResultSet.getLong("modified")).thenReturn(Long.valueOf("1459816738453"));
+    when(mockResultSet.getString("reference_number")).thenReturn("");
+    when(mockResultSet.getString("status")).thenReturn("Cleared");
+    when(mockResultSet.getString("property")).thenReturn("");
+    when(mockResultSet.getString("property2")).thenReturn("2016-04-01-13-44-00-573.jpg");
+    when(mockResultSet.getString("property3")).thenReturn("");
+    when(mockResultSet.getString("property4")).thenReturn("");
+    when(mockResultSet.getString("property5")).thenReturn("");
+    when(mockResultSet.getString("tax")).thenReturn("");
+    when(mockResultSet.getString("expense_tag")).thenReturn("");
 
     List<ExpenseReport> actualExpenseReportList = testExpenseReadable.getExpenseTransactions();
 
