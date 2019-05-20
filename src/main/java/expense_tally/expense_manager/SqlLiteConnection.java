@@ -1,5 +1,8 @@
 package expense_tally.expense_manager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,6 +15,7 @@ import java.sql.SQLException;
  * database (definitions, tables, indices, and the data itself) is stored inside a single cross-platform file.</p>
  */
 public class SqlLiteConnection implements DatabaseConnectable {
+    private static final Logger LOGGER = LogManager.getLogger(SqlLiteConnection.class);
     private String databaseFile;
 
     /**
@@ -19,7 +23,8 @@ public class SqlLiteConnection implements DatabaseConnectable {
      * @param databaseFile file path of the database file
      */
     public SqlLiteConnection(String databaseFile) {
-        this.databaseFile = databaseFile;
+      final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
+      this.databaseFile = SQLITE_JDBC_PREFIX + databaseFile;
     }
 
     /**
