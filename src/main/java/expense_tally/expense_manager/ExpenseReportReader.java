@@ -73,7 +73,7 @@ public class ExpenseReportReader implements ExpenseReadable {
     while (retrieveAllResultSet.next()) {
       ExpenseReport expenseReport = new ExpenseReport();
       expenseReport.setId(retrieveAllResultSet.getInt(Column.ID));
-      expenseReport.setAccount(retrieveAllResultSet.getString(Column.ACCOUINT));
+      expenseReport.setAccount(retrieveAllResultSet.getString(Column.ACCOUNT));
       expenseReport.setAmount(retrieveAllResultSet.getString(Column.AMOUNT));
       expenseReport.setCategory(retrieveAllResultSet.getString(Column.CATEGORY));
       expenseReport.setSubcategory(retrieveAllResultSet.getString(Column.SUBCATEGORY));
@@ -99,7 +99,7 @@ public class ExpenseReportReader implements ExpenseReadable {
 
   public static class Column {
     public static final String ID = "_id";
-    public static final String ACCOUINT = "acocunt";
+    public static final String ACCOUNT = "account";
     public static final String AMOUNT = "amount";
     public static final String CATEGORY = "category";
     public static final String SUBCATEGORY = "subcategory";
