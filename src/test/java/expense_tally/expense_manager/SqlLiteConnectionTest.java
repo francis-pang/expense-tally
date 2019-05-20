@@ -22,7 +22,8 @@ class SqlLiteConnectionTest {
   }
 
   @Test
-  void connect_connectionFail() {
+  void connect_connectionFail() throws SQLException {
+    Mockito.doThrow(SQLException.class).when(spyDatabaseConnectable).connect();
     Assertions.assertThatThrownBy(() ->{
       spyDatabaseConnectable.connect();
     }).isInstanceOf(SQLException.class);
