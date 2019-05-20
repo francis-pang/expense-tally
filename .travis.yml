@@ -1,4 +1,12 @@
 dist: xenial
 language: java
 jdk:
-  - openjdk12
+- openjdk12
+addons:
+  sonarcloud:
+    organization: boyshawn-github
+    token:
+      secure: KCmFp7BlEJq7syXoEqSMQ9dntbJnrClOJfzKFdGcFxJVn0dkFD4GE3+K2iyAM1p6q95agb/UNYimpFyavZlQWlVqfmHpJQdEpKZ2mfmsNMNotlotA3Y0ueg413dEc7YDWh4bwms0f+TsAiLLt2FLc0584RQfmr9RZeyKjunRJeFEh2fwjP18KkqwFdsx04aMEvvqH5viv6MkurkNjA2EQcOOlQKslexOon7cgKw5+g25cBt7xBca3wIxa6s/bC1lLJsdla770NzElz7WuR8ifS4260cKpIrx1AwhtuQGjeobauTxX55YMYVFVfBOgbsMdnc0YCduJ9LeStb3v+9MPImvOdjwxmvVdwA+HlQ6QyAch5GI8Ci5um8NDYqmfFyOVqcsubr+ERbh8qAtXX83lbBGoFarln7t5BndvSONfUkJ8/OySAoGFvZmcCmnUEkX0xVrE1tDBvLtc4rnQKzVqbWiW2fEWSTIJHAjF4wQcbOY++3oospltHXk5Z32dMMSmTEuADtmwxinM1MrKFXrlSdKHS3vtEUAaWTQHWPj5JI1EOGxTZamae/C7VJz0bPnq2mtbYswGbSUgB99UlYeZmomd1HvOOJHtr8yIv2Lqniv81zZF5i0Chwqz8qu64XzqbB/Myd71Lhho5RlVJJ0E/DZftezgNH2Bnh2ZUaRkxQ=
+script:
+- sonar-scanner
+- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
