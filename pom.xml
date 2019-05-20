@@ -10,6 +10,10 @@
   <properties>
     <javaVersion>12</javaVersion>
     <javaCompilerVersion>1.12</javaCompilerVersion>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.projectKey>boyshawn_expense-tally</sonar.projectKey>
+    <sonar.login>f3e43ff4f0692fcd97fc41da1a7f890c79a86b5b</sonar.login>
+    <sonar.organization>boyshawn-github</sonar.organization>
   </properties>
 
   <dependencies>
@@ -52,13 +56,13 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.5.0-M1</version>
+      <version>[5.5.0-M1,)</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.5.0-M1</version>
+      <version>[5.5.0-M1,)</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -76,7 +80,7 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.12.2</version>
+      <version>[3,)</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -209,6 +213,13 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Sonarqube plugin -->
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>3.6.0.1398</version>
       </plugin>
     </plugins>
   </build>
