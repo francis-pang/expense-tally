@@ -13,6 +13,9 @@ public class ExpenseReport {
     private String description;
     private long expensedTime;
     private long modificationTime;
+    /**
+     * The reference amount that is input when the expensed amount is not the same
+     */
     private String referenceNumber;
     private String status;
     private String property1;
