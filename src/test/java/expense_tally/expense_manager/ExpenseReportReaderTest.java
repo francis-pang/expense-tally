@@ -44,7 +44,7 @@ class ExpenseReportReaderTest {
 
     when(mockResultSet.next()).thenReturn(true).thenReturn(false);
     when(mockResultSet.getInt(ExpenseReportReader.Column.ID)).thenReturn(1);
-    when(mockResultSet.getString(ExpenseReportReader.Column.ACCOUINT)).thenReturn("2016");
+    when(mockResultSet.getString(ExpenseReportReader.Column.ACCOUNT)).thenReturn("2016");
     when(mockResultSet.getString(ExpenseReportReader.Column.AMOUNT)).thenReturn("20");
     when(mockResultSet.getString(ExpenseReportReader.Column.CATEGORY)).thenReturn("Entertainment");
     when(mockResultSet.getString(ExpenseReportReader.Column.SUBCATEGORY)).thenReturn("Alcohol/ Restaurant");

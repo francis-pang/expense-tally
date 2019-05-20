@@ -45,13 +45,14 @@ public class Driver {
 
     DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFilename);
     ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
-    List<ExpenseReport> expenseReports = null;
     try {
-      expenseReports = expenseReadable.getExpenseTransactions();
-    } catch (SQLException e) {
-      LOGGER.error(e.getStackTrace());
+      List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
+      reconcileData(csvTransactions, ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports));
+    } catch (SQLException ex) {
+      LOGGER.error("Problem accessing the database. Database file location=" + databaseFilename,ex);
+      throw ex;
     }
-    reconcileData(csvTransactions, ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports));
+
   }
 
   public void reconcileData(List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
