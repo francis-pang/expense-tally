@@ -29,7 +29,7 @@ public class ExpenseReconciler {
      * @param csvTransactions list of transactions in the CSV file
      * @param expenseTransactionMap a collection of the database record in the Expense Manager
      */
-    public static void reconcileBankData (List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey,
+    public static int reconcileBankData (List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey,
          List<ExpenseManagerTransaction>> expenseTransactionMap) {
         final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
 
@@ -102,6 +102,7 @@ public class ExpenseReconciler {
             }
         }
         LOGGER.info("Found " + numberOfNoMatchTransaction + " non-matching transactions.");
+        return numberOfNoMatchTransaction;
     }
 
     /**
