@@ -88,12 +88,11 @@
   <build>
     <plugins>
       <!-- Check for version -->
+      <!-- Command to use: mvn versions:use-latest-releases -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <version>2.7</version>
-        <configuration>
-        </configuration>
       </plugin>
       <!-- Need this to specify the compiler argument -->
       <plugin>
