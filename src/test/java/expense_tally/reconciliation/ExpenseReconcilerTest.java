@@ -64,7 +64,7 @@ class ExpenseReconcilerTest {
      * - 1 Expense Manager transaction
      * - 1 CSV Transaction
      *
-     * Scenario: That that they don't match
+     * Scenario: That that they don't match due to different debit amount
      */
     @Test
     void reconcileBankData_singleNonMatchingCreditCsvTransaction() {
@@ -81,10 +81,10 @@ class ExpenseReconcilerTest {
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMap = new HashMap<>();
         ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
-        expenseManagerMapKey.setAmount(0.80);
+        expenseManagerMapKey.setAmount(0.70);
         List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
         expenseManagerTransactionList.add(constructExpenseManagerTransaction(
-            0.80,
+            0.70,
             ExpenseCategory.FOOD,
             ExpenseSubCategory.FOOD_COURT_AND_FAST_FOOD,
             PaymentMethod.ELECTRONIC_TRANSFER,
@@ -103,7 +103,6 @@ class ExpenseReconcilerTest {
      *
      * Scenario: That that they match
      */
-
     @Test
     void reconcileBankData_singleMastchingTransaction() {
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
@@ -133,24 +132,51 @@ class ExpenseReconcilerTest {
         assertThat(ExpenseReconciler.reconcileBankData(csvTransactionList, expenseManagerMap)).isEqualTo(0);
     }
 
-
+    /*
+     * Test Input:
+     * - 1 Expense Manager transaction
+     * - 1 CSV Transaction
+     *
+     * Scenario: That that they match
+     */
     @Test
     void reconcileBankData_singleNonMatchingTransaction() {
 
     }
 
+    /*
+     * Test Input:
+     * - 6 Expense Manager transaction
+     * - 3 CSV Transaction
+     *
+     * Scenario: Mixture of matches and non-matches
+     */
     @Test
     void reconcileBankData_multipleNonMatchingCsvTransaction() {
 
     }
 
+    /*
+     * Test Input:
+     * - 3 Expense Manager transaction on the same day
+     * - 1 CSV Transaction with matching date
+     *
+     * Scenario: That that they match
+     */
     @Test
     void reconcileBankData_multipleMatchingTransactionSameDay() {
 
     }
 
+    /*
+     * Test Input:
+     * - 1 Expense Manager transaction
+     * - 1 CSV Transaction with matching transaction, but different reference date from MasterCard
+     *
+     * Scenario: The transaction does not match
+     */
     @Test
-    void reconcileBankData_multipleMatchingTransactionDifferentDay() {
+    void reconcileBankData_singleMatchingTransactionDifferentDay() {
 
     }
 }
