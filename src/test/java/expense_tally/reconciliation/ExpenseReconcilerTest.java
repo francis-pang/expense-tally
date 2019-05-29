@@ -22,9 +22,34 @@ class ExpenseReconcilerTest {
 
     /**
      * Test Case:
-     * 1. Take a
+     * CsvTransaction:
+     * Size - 0, 1, many,
+     * Transaction Type: refers to {@link expense_tally.csv_parser.model.TransactionType}. e.g POS, ATR, AWL
+     * debit amount - negative, 0, positive
+     * credit amount - negative, 0, positive
+     * Reference - ?? (There are some extra logic)
+     * Transaction ref1/2/3 - What is the special holder for each of the ref?
+     *
+     * ExpenseManagerTransaction:
+     * Size - 0, 1, many
+     * amount - negative, 0, positive
+     * ExpenseCategory - Refers to {@link expense_tally.expense_manager.model.ExpenseCategory}
+     * ExpenseSubCategory - Refers to {@link expense_tally.expense_manager.model.ExpenseSubCategory}
+     * Payment Method - Refers to {@link expense_tally.expense_manager.model.PaymentMethod}
+     * Description - empty, non-empty
+     * Expensed Time- past/ future?
+     * reference amount - tally?
+     *
+     * Cross Link case:
+     * 1) Matching everything except for Payment Method
+     * 2a) Match everything except for transaction date (out of acceptable range)
+     * 2b) Match everything except for transaction date (within acceptable range)
+     * 3) Debit amount doesn't tally
+     * 4) Debit amount doesn't tally, but credit amount tally
+     * 5)
      */
 
+    //TODO: Generalise a builder class to build CsvTransaction. This can be used for all test classes
     private CsvTransaction constructCsvTransaction(String transactionDate, String reference, double debitAmount,
                                                    double creditAmount, String transactionRef1,
                                                    String transactionRef2, String transactionRef3,
@@ -45,6 +70,7 @@ class ExpenseReconcilerTest {
         return csvTransaction;
     }
 
+    //TODO: Generalise a builder class to build ExpenseManagerTransaction. This can be used for all test classes
     private ExpenseManagerTransaction constructExpenseManagerTransaction(
         double amount, ExpenseCategory expenseCategory, ExpenseSubCategory expenseSubCategory,
         PaymentMethod paymentMethod, String description, String expensedTime, double referenceAmount) {
