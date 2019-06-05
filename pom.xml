@@ -14,12 +14,14 @@
         <sonar.projectKey>boyshawn_expense-tally</sonar.projectKey>
         <sonar.login>f3e43ff4f0692fcd97fc41da1a7f890c79a86b5b</sonar.login>
         <sonar.organization>boyshawn-github</sonar.organization>
+        <maven.developmentVersion>0-SNAPSHOT</maven.developmentVersion>
     </properties>
 
     <scm>
-      <connection>scm:git:git://github.com/boyshawn/expense-tally.git</connection>
-      <developerConnection>scm:git:git://github.com/boyshawn/expense-tally.git</developerConnection>
-      <tag>1.2</tag>
+        <connection>scm:git:git://github.com/boyshawn/expense-tally.git</connection>
+        <developerConnection>scm:git:git://github.com/boyshawn/expense-tally.git</developerConnection>
+
+        <tag>1.2</tag>
     </scm>
 
     <dependencies>
@@ -233,6 +235,21 @@
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>3.6.0.1398</version>
+            </plugin>
+
+            <!-- Perform maven release to update the POM version-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <executions>
+                    <execution>
+                        <id>update-pom</id>
+                        <goals>
+                            <goal>update-versions</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
