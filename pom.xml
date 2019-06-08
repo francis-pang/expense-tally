@@ -191,7 +191,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>expense_tally.Application</mainClass>
+              <mainClass>expense_tally.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
