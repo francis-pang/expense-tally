@@ -32,6 +32,7 @@ public class Driver {
   public void readArgs(String[] args) throws IllegalArgumentException {
     final String DATABASE_PARAMETER = "database-filepath";
     final String CSV_PARAMETER = "csv-filepath";
+    final String PARAMETER_PREFIX = "--";
     final char EQUAL_SIGN = '=';
     final String EQUAL_SEPARATOR = "=";
     final char DOUBLE_QUOTATION = '"';
@@ -67,14 +68,14 @@ public class Driver {
         throw new IllegalArgumentException("Unknown value found: " + value);
       } else {
         switch (parameter) {
-          case DATABASE_PARAMETER:
+          case PARAMETER_PREFIX + DATABASE_PARAMETER:
             databaseFilename = value;
             break;
-          case CSV_PARAMETER:
+          case PARAMETER_PREFIX + CSV_PARAMETER:
             csvFilename = value;
             break;
           default:
-            throw new IllegalArgumentException("Unknown value found: " + value);
+            throw new IllegalArgumentException("Unknown parameter found: " + parameter);
         }
       }
       argumentIndex++;
