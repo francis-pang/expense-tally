@@ -29,13 +29,56 @@ public class Driver {
   public Driver() {
   }
 
-  public void readArgs(String[] args) throws IllegalArgumentException{
-    if (args.length < 2) {
-      LOGGER.error("Insufficient parameters provided. Exiting now. Args=" + Arrays.toString(args));
-      throw new IllegalArgumentException("Insufficient parameters provided.");
+  public void readArgs(String[] args) throws IllegalArgumentException {
+    final String DATABASE_PARAMETER = "database-filepath";
+    final String CSV_PARAMETER = "csv-filepath";
+    final char EQUAL_SIGN = '=';
+    final String EQUAL_SEPARATOR = "=";
+    final char DOUBLE_QUOTATION = '"';
+    /*
+     * Expect to received --database-filepath = XXXX --csv-filepath= XXXX
+     * Allow 3 format of declaring parameter
+     * 1. parameter=XXXX //TODO
+     * 2. parameter = xxxxx
+     * 3. parameter =xxxxx
+     */
+    if (args.length % 2 != 0) {
+      LOGGER.error("Argument is not in odd number. Args=" + Arrays.toString(args));
+      throw new IllegalArgumentException("Odd number of parameters provided.");
     }
     this.csvFilename = args[0];
     this.databaseFilename = args[1];
+    // Parse first string
+    // Strip the equal sign at the place if any
+
+    int argumentIndex = 0;
+    while (argumentIndex < args.length) {
+      String parameter = args[argumentIndex].trim().replace(EQUAL_SIGN, Character.MIN_VALUE);
+      argumentIndex++;
+      // Next string can be an equal, or an actual parameter with equal in front
+      String value = args[argumentIndex].trim();
+      boolean canHaveEqualInFront = true;
+      if (EQUAL_SEPARATOR.equals(value)) {
+        argumentIndex++;
+        value = args[argumentIndex].replace(DOUBLE_QUOTATION, Character.MIN_VALUE); //Ignore the current parameter
+        canHaveEqualInFront = false;
+      }
+      if (value.charAt(0) == EQUAL_SIGN && !canHaveEqualInFront) {
+        throw new IllegalArgumentException("Unknown value found: " + value);
+      } else {
+        switch (parameter) {
+          case DATABASE_PARAMETER:
+            databaseFilename = value;
+            break;
+          case CSV_PARAMETER:
+            csvFilename = value;
+            break;
+          default:
+            throw new IllegalArgumentException("Unknown value found: " + value);
+        }
+      }
+      argumentIndex++;
+    }
   }
 
   public void reconcileData() throws IOException, SQLException {
@@ -49,7 +92,7 @@ public class Driver {
       List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
       reconcileData(csvTransactions, ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports));
     } catch (SQLException ex) {
-      LOGGER.error("Problem accessing the database. Database file location=" + databaseFilename,ex);
+      LOGGER.error("Problem accessing the database. Database file location=" + databaseFilename, ex);
       throw ex;
     }
 
