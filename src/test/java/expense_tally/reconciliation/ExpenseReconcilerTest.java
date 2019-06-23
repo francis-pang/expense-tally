@@ -67,6 +67,35 @@ class ExpenseReconcilerTest {
         return csvTransaction;
     }
 
+    /*
+     * Test Input:
+     * 0 Expense Manager
+     * 1 CSV Transaction
+     *
+     * Output: No matching records
+     */
+    @Test
+    void reconcileBankData_noExpenseManager() {
+        List<CsvTransaction> testCsvTransactions = new ArrayList<>();
+        testCsvTransactions.add(constructCsvTransaction("24-6-2019", "", 1, 0, "", "", "",
+                TransactionType.BILL_PAYMENT));
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactions, new HashMap<>())).isEqualTo(1);
+    }
+
+
+    /**
+     * Test Input:
+     * 1 Expense Manager
+     * 0 CSV Transaction
+     */
+    @Test
+    void reconcileBankData_noCsvTransaction() {
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap = new HashMap<>();
+        ExpenseManagerTransactionBuilder builder = new ExpenseManagerTransactionBuilder();
+        ExpenseManagerTransaction expenseManagerTransaction = builder.build();
+        ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expenseManagerTransaction.getPaymentMethod());
+        expenseManagerMapKey.setAmount(expenseManagerTransaction.getAmount());
+        assertThat(ExpenseReconciler.reconcileBankData(new ArrayList<>(), testExpenseTransactionMap)).isEqualTo(0);
     }
 
     /*
