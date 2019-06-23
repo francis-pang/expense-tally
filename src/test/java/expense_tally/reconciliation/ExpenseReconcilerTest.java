@@ -70,19 +70,6 @@ class ExpenseReconcilerTest {
         return csvTransaction;
     }
 
-    //TODO: Generalise a builder class to build ExpenseManagerTransaction. This can be used for all test classes
-    private ExpenseManagerTransaction constructExpenseManagerTransaction(
-        double amount, ExpenseCategory expenseCategory, ExpenseSubCategory expenseSubCategory,
-        PaymentMethod paymentMethod, String description, String expensedTime, double referenceAmount) {
-        ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
-        expenseManagerTransaction.setAmount(amount);
-        expenseManagerTransaction.setCategory(expenseCategory);
-        expenseManagerTransaction.setSubcategory(expenseSubCategory);
-        expenseManagerTransaction.setPaymentMethod(paymentMethod);
-        expenseManagerTransaction.setDescription(description);
-        expenseManagerTransaction.setExpensedTime(Instant.parse(expensedTime));
-        expenseManagerTransaction.setReferenceAmount(referenceAmount);
-        return expenseManagerTransaction;
     }
 
     /*
@@ -109,14 +96,8 @@ class ExpenseReconcilerTest {
         ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
         expenseManagerMapKey.setAmount(0.70);
         List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
-        expenseManagerTransactionList.add(constructExpenseManagerTransaction(
-            0.70,
-            ExpenseCategory.FOOD,
-            ExpenseSubCategory.FOOD_COURT_AND_FAST_FOOD,
-            PaymentMethod.ELECTRONIC_TRANSFER,
-            "test description",
-"2009-04-24T10:15:30.00Z",
-            0.00));
+        expenseManagerTransactionList.add(new ExpenseManagerTransactionBuilder(0.7, PaymentMethod.ELECTRONIC_TRANSFER
+            , 0.0).build());
         expenseManagerMap.put(expenseManagerMapKey, expenseManagerTransactionList);
 
         assertThat(ExpenseReconciler.reconcileBankData(csvTransactionList, expenseManagerMap)).isEqualTo(1);
@@ -146,14 +127,10 @@ class ExpenseReconcilerTest {
         ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
         expenseManagerMapKey.setAmount(0.80);
         List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
-        expenseManagerTransactionList.add(constructExpenseManagerTransaction(
-            0.80,
-            ExpenseCategory.FOOD,
-            ExpenseSubCategory.FOOD_COURT_AND_FAST_FOOD,
-            PaymentMethod.DEBIT_CARD,
-            "test description",
-            "2019-04-24T10:15:30.00Z",
-            0.00));
+        ExpenseManagerTransactionBuilder expenseManagerTransactionBuilder = new ExpenseManagerTransactionBuilder(0.8, PaymentMethod.ELECTRONIC_TRANSFER
+            , 0.0);
+        expenseManagerTransactionBuilder.setExpensedTime("2019-04-24T10:15:30.00Z");
+        expenseManagerTransactionList.add(expenseManagerTransactionBuilder.build());
         expenseManagerMap.put(expenseManagerMapKey, expenseManagerTransactionList);
         assertThat(ExpenseReconciler.reconcileBankData(csvTransactionList, expenseManagerMap)).isEqualTo(0);
     }
