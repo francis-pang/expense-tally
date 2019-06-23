@@ -2,14 +2,11 @@ package expense_tally.reconciliation;
 
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.TransactionType;
-import expense_tally.expense_manager.model.ExpenseCategory;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.ExpenseSubCategory;
 import expense_tally.expense_manager.model.PaymentMethod;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +26,7 @@ class ExpenseReconcilerTest {
      * credit amount - negative, 0, positive
      * Reference - ?? (There are some extra logic)
      * Transaction ref1/2/3 - What is the special holder for each of the ref?
-     *
+     * <p>
      * ExpenseManagerTransaction:
      * Size - 0, 1, many
      * amount - negative, 0, positive
@@ -39,7 +36,7 @@ class ExpenseReconcilerTest {
      * Description - empty, non-empty
      * Expensed Time- past/ future?
      * reference amount - tally?
-     *
+     * <p>
      * Cross Link case:
      * 1) Matching everything except for Payment Method
      * 2a) Match everything except for transaction date (out of acceptable range)
@@ -57,9 +54,9 @@ class ExpenseReconcilerTest {
         CsvTransaction csvTransaction = new CsvTransaction();
         String[] transactionDataStringArray = transactionDate.split("-");
         csvTransaction.setTransactionDate(LocalDate.of(
-            Integer.parseInt(transactionDataStringArray[2]),
-            Integer.parseInt(transactionDataStringArray[1]),
-            Integer.parseInt(transactionDataStringArray[0])));
+                Integer.parseInt(transactionDataStringArray[2]),
+                Integer.parseInt(transactionDataStringArray[1]),
+                Integer.parseInt(transactionDataStringArray[0])));
         csvTransaction.setReference(reference);
         csvTransaction.setDebitAmount(debitAmount);
         csvTransaction.setCreditAmount(creditAmount);
@@ -83,21 +80,21 @@ class ExpenseReconcilerTest {
     void reconcileBankData_singleNonMatchingCreditCsvTransaction() {
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
         csvTransactionList.add(constructCsvTransaction(
-            "24-4-2019",
-             "MST",
-            0.80,
-            0.0,
-            "KOUFU PTE LTD          SI NG 23APR,5548-2741-0014-1067",
-            "",
-            "",
-            TransactionType.MASTERCARD));
+                "24-4-2019",
+                "MST",
+                0.80,
+                0.0,
+                "KOUFU PTE LTD          SI NG 23APR,5548-2741-0014-1067",
+                "",
+                "",
+                TransactionType.MASTERCARD));
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMap = new HashMap<>();
         ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
         expenseManagerMapKey.setAmount(0.70);
         List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
         expenseManagerTransactionList.add(new ExpenseManagerTransactionBuilder(0.7, PaymentMethod.ELECTRONIC_TRANSFER
-            , 0.0).build());
+                , 0.0).build());
         expenseManagerMap.put(expenseManagerMapKey, expenseManagerTransactionList);
 
         assertThat(ExpenseReconciler.reconcileBankData(csvTransactionList, expenseManagerMap)).isEqualTo(1);
@@ -114,21 +111,21 @@ class ExpenseReconcilerTest {
     void reconcileBankData_singleMastchingTransaction() {
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
         csvTransactionList.add(constructCsvTransaction(
-            "24-4-2019",
-            "MST",
-            0.80,
-            0.0,
-            "KOUFU PTE LTD          SI NG 23APR,5548-2741-0014-1067",
-            "",
-            "",
-            TransactionType.MASTERCARD));
+                "24-4-2019",
+                "MST",
+                0.80,
+                0.0,
+                "KOUFU PTE LTD          SI NG 23APR,5548-2741-0014-1067",
+                "",
+                "",
+                TransactionType.MASTERCARD));
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMap = new HashMap<>();
         ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
         expenseManagerMapKey.setAmount(0.80);
         List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
         ExpenseManagerTransactionBuilder expenseManagerTransactionBuilder = new ExpenseManagerTransactionBuilder(0.8, PaymentMethod.ELECTRONIC_TRANSFER
-            , 0.0);
+                , 0.0);
         expenseManagerTransactionBuilder.setExpensedTime("2019-04-24T10:15:30.00Z");
         expenseManagerTransactionList.add(expenseManagerTransactionBuilder.build());
         expenseManagerMap.put(expenseManagerMapKey, expenseManagerTransactionList);
