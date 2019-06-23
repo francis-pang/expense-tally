@@ -28,6 +28,21 @@ public class ExpenseReconciler {
     public static int reconcileBankData(List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey,
             List<ExpenseManagerTransaction>> expenseTransactionMap) {
         final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
+        final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
+        final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
+
+        /**
+         * Taking context from <a href="https://stackoverflow.com/a/15210142/1522867">stack overflow answer</a>, the
+         * correct way <q cite="https://stackoverflow.com/a/15210142/1522867"> In this case it's perfectly ok to throw
+         * an unchecked exception like an IllegalArgumentException, which should not be caught</q>
+         */
+        if (csvTransactions == null) {
+            throw new IllegalArgumentException(NULL_CSV_TRANSACTION_EXCEPTION_MSG);
+        }
+
+        if (expenseTransactionMap == null) {
+            throw new IllegalArgumentException(NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG);
+        }
 
         int numberOfNoMatchTransaction = 0;
         for (CsvTransaction csvTransaction : csvTransactions) {

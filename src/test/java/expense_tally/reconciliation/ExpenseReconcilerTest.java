@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ExpenseReconcilerTest {
 
@@ -72,7 +73,7 @@ class ExpenseReconcilerTest {
      * 0 Expense Manager
      * 1 CSV Transaction
      *
-     * Output: No matching records
+     * Output: No matching records, and 1 mis-matching record
      */
     @Test
     void reconcileBankData_noExpenseManager() {
@@ -87,15 +88,64 @@ class ExpenseReconcilerTest {
      * Test Input:
      * 1 Expense Manager
      * 0 CSV Transaction
+     *
+     * Output: No matching records
      */
     @Test
     void reconcileBankData_noCsvTransaction() {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap = new HashMap<>();
         ExpenseManagerTransactionBuilder builder = new ExpenseManagerTransactionBuilder();
         ExpenseManagerTransaction expenseManagerTransaction = builder.build();
+        List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
+        expenseManagerTransactionList.add(expenseManagerTransaction);
         ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expenseManagerTransaction.getPaymentMethod());
         expenseManagerMapKey.setAmount(expenseManagerTransaction.getAmount());
+        testExpenseTransactionMap.put(expenseManagerMapKey, expenseManagerTransactionList);
         assertThat(ExpenseReconciler.reconcileBankData(new ArrayList<>(), testExpenseTransactionMap)).isEqualTo(0);
+    }
+
+    /**
+     * Test Input
+     * null expense manager
+     * 1 CSV Transaction
+     *
+     * Output: Exception thrown
+     */
+    @Test
+    void reconcileBankData_nullExpenseManager() {
+        List<CsvTransaction> testCsvTransactions = new ArrayList<>();
+        testCsvTransactions.add(constructCsvTransaction("24-6-2019", "", 1, 0, "", "", "",
+                TransactionType.BILL_PAYMENT));
+        assertThatThrownBy(() -> {
+            ExpenseReconciler.reconcileBankData(testCsvTransactions, null);
+        })
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Null reference is not an accepted expenseTransactionMap value.");
+    }
+
+    /**
+     * Test Input
+     * null expense manager
+     * 1 CSV Transaction
+     *
+     * Output: Exception thrown
+     */
+    @Test
+    void reconcileBankData_nullCsvTransaction() {
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap = new HashMap<>();
+        ExpenseManagerTransactionBuilder builder = new ExpenseManagerTransactionBuilder();
+        ExpenseManagerTransaction expenseManagerTransaction = builder.build();
+        List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
+        expenseManagerTransactionList.add(expenseManagerTransaction);
+        ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expenseManagerTransaction.getPaymentMethod());
+        expenseManagerMapKey.setAmount(expenseManagerTransaction.getAmount());
+        testExpenseTransactionMap.put(expenseManagerMapKey, expenseManagerTransactionList);
+
+        assertThatThrownBy(() -> {
+            ExpenseReconciler.reconcileBankData(null, testExpenseTransactionMap);
+        })
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Null reference is not an accepted csvTransactions value.");
     }
 
     /*
