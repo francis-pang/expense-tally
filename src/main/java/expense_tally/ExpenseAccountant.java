@@ -92,11 +92,11 @@ public class ExpenseAccountant {
     }
   }
 
-  public void reconcileData(List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
+  public void reconcileData(List<CsvTransaction> csvTransactions, Map <ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
     ExpenseReconciler.reconcileBankData(csvTransactions, expenseTransactionMap);
   }
 
-  private List<CsvTransaction> getCsvTransactionsFrom(String filename) throws IOException {
+  private List<CsvTransaction> getCsvTransactionsFrom (String filename) throws IOException {
     CsvParser transactionCsvParser = new CsvParser();
     return transactionCsvParser.parseCsvFile(csvFilename);
   }

@@ -8,7 +8,7 @@ import java.util.StringJoiner;
  * {@link ExpenseManagerTransaction}.
  */
 //TODO: This class can be generalised so that the key can be reused
-public class ExpenseManagerMapKey {
+public class ExpenseManagerMapKey implements Comparable {
     private PaymentMethod paymentMethod;
     private Double amount;
 
@@ -68,5 +68,19 @@ public class ExpenseManagerMapKey {
                 .add("paymentMethod=" + paymentMethod)
                 .add("amount=" + amount)
                 .toString();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (this == o) return 0;
+        if (!(o instanceof ExpenseManagerMapKey)) {
+            return -1;
+        }
+        ExpenseManagerMapKey that = (ExpenseManagerMapKey) o;
+        if (paymentMethod.equals(that.paymentMethod)) {
+            return Double.compare(amount, that.amount);
+        } else {
+            return paymentMethod.compareTo(that.paymentMethod);
+        }
     }
 }
