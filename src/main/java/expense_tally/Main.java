@@ -19,8 +19,8 @@ public class Main {
         final int DATABASE_ERR_CODE = 3;
 
         //TODO: For now, we ignore any parameters after 2nd parameters, next time we can handle them.
-        ExpenseAccountant expenseAccountant = new ExpenseAccountant(args);
         try {
+            ExpenseAccountant expenseAccountant = new ExpenseAccountant(args);
             expenseAccountant.reconcileData();
         } catch (IOException ioException) {
             LOGGER.error("Error reading CSV file", ioException);
