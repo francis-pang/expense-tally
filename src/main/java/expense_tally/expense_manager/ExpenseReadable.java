@@ -23,6 +23,7 @@ public interface ExpenseReadable {
      * {@link expense_tally.expense_manager.model.ExpenseManagerMapKey}
      *
      * @return a map of {@code ExpenseTransaction} from the data source
+     * @throws SQLException when there is problem reading from the database
      */
     public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getExpenseTransactionMap() throws SQLException;
 
@@ -30,6 +31,7 @@ public interface ExpenseReadable {
      * Read the expense transaction from the data source and get return the expense transaction as a {@code List}
      *
      * @return a list of {@code ExpenseTransaction} from the data source
+     * @throws SQLException when there is problem reading from the database
      */
     public List<ExpenseReport> getExpenseTransactions() throws SQLException;
 }
