@@ -18,9 +18,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git://github.com/boyshawn/expense-tally.git</connection>
-        <developerConnection>scm:git:git://github.com/boyshawn/expense-tally.git</developerConnection>
-        <tag>1.2</tag>
+        <connection>scm:git:git@github.com:boyshawn/expense-tally.git</connection>
+        <developerConnection>scm:git:git@github.com:boyshawn/expense-tally.git</developerConnection>
+        <tag>expense-tally-1.1</tag>
     </scm>
 
     <dependencies>
