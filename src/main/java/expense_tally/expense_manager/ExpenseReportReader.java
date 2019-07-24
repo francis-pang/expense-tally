@@ -26,6 +26,7 @@ public class ExpenseReportReader implements ExpenseReadable {
      * The default constructor file path of the database file
      *
      * @param databaseConnectable the database source of the expense report retrieval
+     * @throws SQLException when there is problem reading from the database
      */
     public ExpenseReportReader(DatabaseConnectable databaseConnectable) throws SQLException {
         this.databaseConnectable = databaseConnectable;

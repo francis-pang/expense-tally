@@ -24,6 +24,7 @@ public class ExpenseReconciler {
      *
      * @param csvTransactions       list of transactions in the CSV file
      * @param expenseTransactionMap a collection of the database record in the Expense Manager
+     * @return the number of transaction that is not found in the CSV
      */
     public static int reconcileBankData(List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey,
             List<ExpenseManagerTransaction>> expenseTransactionMap) {
