@@ -30,3 +30,7 @@ hs_err_pid*
 target/
 build/
 out/
+
+# Maven release build file
+pom.xml.releaseBackup
+release.properties
