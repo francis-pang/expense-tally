@@ -6,8 +6,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class Application {
-  private static final Logger LOGGER = LogManager.getLogger(Application.class);
+/**
+ * This class acts as the Dependency Injection container. It create all the dependencies and inject into the rest of
+ * the class
+ */
+public class Main {
+  private static final Logger LOGGER = LogManager.getLogger(Main.class);
 
   public static void main(String[] args) {
     final int INSUFFICIENT_PARAMETERS_ERR_CODE = 1;
@@ -15,16 +19,9 @@ public class Application {
     final int DATABASE_ERR_CODE = 3;
 
     //TODO: For now, we ignore any parameters after 2nd parameters, next time we can handle them.
-    Driver driver = new Driver();
+    ExpenseAccountant expenseAccountant = new ExpenseAccountant(args);
     try {
-      driver.readArgs(args);
-    } catch (IllegalArgumentException ex) {
-      LOGGER.error("Error processing argument", ex);
-      System.exit(INSUFFICIENT_PARAMETERS_ERR_CODE);
-    }
-
-    try {
-      driver.reconcileData();
+      expenseAccountant.reconcileData();
     } catch (IOException ioException) {
       LOGGER.error("Error reading CSV file",ioException);
       System.exit(CSV_FILE_PARSING_ERR_CODE);

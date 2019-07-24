@@ -16,20 +16,22 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class Driver {
-  private static final Logger LOGGER = LogManager.getLogger(Driver.class);
+/**
+ * This class do the job to spot any discrepancy between the source of truth and the manual recorded financial
+ * records.
+ * <p>The word Accountant is used as that is the job of the accountant in the real finance department.</p>
+ * <p>This marks the start of the whole program.</p>
+ */
+public class ExpenseAccountant {
+  private static final Logger LOGGER = LogManager.getLogger(ExpenseAccountant.class);
   private static String csvFilename;
   private static String databaseFilename;
 
-  public Driver() {
-  }
-
-  public void readArgs(String[] args) throws IllegalArgumentException {
+  public ExpenseAccountant(String[] args) throws IllegalArgumentException{
     final String DATABASE_PARAMETER = "database-filepath";
     final String CSV_PARAMETER = "csv-filepath";
     final String PARAMETER_PREFIX = "--";
@@ -83,23 +85,37 @@ public class Driver {
   }
 
   public void reconcileData() throws IOException, SQLException {
-    List<CsvTransaction> csvTransactions = new ArrayList<>();
-    CsvParser transactionCsvParser = new CsvParser();
-    csvTransactions = transactionCsvParser.parseCsvFile(csvFilename);
+    List<CsvTransaction> bankTransactions = getCsvTransactionsFrom(csvFilename);
 
-    DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFilename);
-    ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
     try {
-      List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
-      reconcileData(csvTransactions, ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports));
+      Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> manuallyRecordedTransactionMap =
+          getExpenseManagerTransactionsByKeyFrom(databaseFilename);
+      reconcileData(bankTransactions, manuallyRecordedTransactionMap);
     } catch (SQLException ex) {
       LOGGER.error("Problem accessing the database. Database file location=" + databaseFilename, ex);
       throw ex;
     }
-
   }
 
   public void reconcileData(List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
     ExpenseReconciler.reconcileBankData(csvTransactions, expenseTransactionMap);
+  }
+
+  private List<CsvTransaction> getCsvTransactionsFrom(String filename) throws IOException {
+    CsvParser transactionCsvParser = new CsvParser();
+    return transactionCsvParser.parseCsvFile(csvFilename);
+  }
+
+  private Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>>
+    getExpenseManagerTransactionsByKeyFrom(String databaseFilename) throws SQLException {
+    /*
+     * Instead of using the Main as an Inversion of Control container, it will be better to create and initialise the
+     *  service whenever you need them. Unless this is a long running process, each Service life cycle is short. They
+     *  are one time use, and can be garbage collected after the information is extracted.
+     */
+    DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFilename);
+    ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
+    List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
+    return ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
   }
 }
