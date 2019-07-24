@@ -2,11 +2,7 @@ package expense_tally;
 
 import expense_tally.csv_parser.CsvParser;
 import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.expense_manager.DatabaseConnectable;
-import expense_tally.expense_manager.ExpenseReadable;
-import expense_tally.expense_manager.ExpenseReportReader;
-import expense_tally.expense_manager.ExpenseTransactionMapper;
-import expense_tally.expense_manager.SqlLiteConnection;
+import expense_tally.expense_manager.*;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.ExpenseReport;
@@ -31,7 +27,7 @@ public class ExpenseAccountant {
   private static String csvFilename;
   private static String databaseFilename;
 
-  public ExpenseAccountant(String[] args) throws IllegalArgumentException{
+  public ExpenseAccountant(String[] args) throws IllegalArgumentException, SQLException {
     final String DATABASE_PARAMETER = "database-filepath";
     final String CSV_PARAMETER = "csv-filepath";
     final String PARAMETER_PREFIX = "--";
@@ -86,7 +82,6 @@ public class ExpenseAccountant {
 
   public void reconcileData() throws IOException, SQLException {
     List<CsvTransaction> bankTransactions = getCsvTransactionsFrom(csvFilename);
-
     try {
       Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> manuallyRecordedTransactionMap =
           getExpenseManagerTransactionsByKeyFrom(databaseFilename);
@@ -97,17 +92,17 @@ public class ExpenseAccountant {
     }
   }
 
-  public void reconcileData(List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
+  public void reconcileData(List<CsvTransaction> csvTransactions, Map <ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
     ExpenseReconciler.reconcileBankData(csvTransactions, expenseTransactionMap);
   }
 
-  private List<CsvTransaction> getCsvTransactionsFrom(String filename) throws IOException {
+  private List<CsvTransaction> getCsvTransactionsFrom (String filename) throws IOException {
     CsvParser transactionCsvParser = new CsvParser();
     return transactionCsvParser.parseCsvFile(csvFilename);
   }
 
-  private Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>>
-    getExpenseManagerTransactionsByKeyFrom(String databaseFilename) throws SQLException {
+  private Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getExpenseManagerTransactionsByKeyFrom(
+      String databaseFilename) throws SQLException {
     /*
      * Instead of using the Main as an Inversion of Control container, it will be better to create and initialise the
      *  service whenever you need them. Unless this is a long running process, each Service life cycle is short. They
