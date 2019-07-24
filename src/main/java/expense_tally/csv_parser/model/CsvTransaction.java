@@ -29,12 +29,14 @@ public class CsvTransaction {
      * we can use static factory methods pattern.
      * TODO: Convert to static factory methods
      */
+
     /**
      * Create a new CSV transaction with all the given parameters.
+     *
      * @param transactionDate the transaction date
-     * @param reference the abbreviation of the type of transaction
-     * @param debitAmount amount of money deducted from the bank account
-     * @param creditAmount amount of money credited into the bank account
+     * @param reference       the abbreviation of the type of transaction
+     * @param debitAmount     amount of money deducted from the bank account
+     * @param creditAmount    amount of money credited into the bank account
      * @param transactionRef1 transaction reference line 1, used to store additional label or information of the
      *                        transaction
      * @param transactionRef2 transaction reference line 2, used to store additional label or information of the
@@ -66,6 +68,7 @@ public class CsvTransaction {
 
     /**
      * Returns transaction date of this CSV transaction
+     *
      * @return transaction date when the transaction is reconciled/ marked as completed by the bank
      */
     public LocalDate getTransactionDate() {
@@ -77,6 +80,7 @@ public class CsvTransaction {
      * <p>The transaction date refers to the date when the bank regards the transaction as completed/ recorded. This
      * date will always be later than the actual transaction date when the purchase is made. There is no indication
      * of time stamp as well.</p>
+     *
      * @param transactionDate transaction date
      */
     public void setTransactionDate(LocalDate transactionDate) {
@@ -87,6 +91,7 @@ public class CsvTransaction {
      * Returns the <i>reference</i> of this transaction.
      * <p>Reference represents the shorthand for the type of transaction. The list of transaction type seen is
      * declared in {@link TransactionType}.</p>
+     *
      * @return reference of this transaction
      */
     public String getReference() {
@@ -95,6 +100,7 @@ public class CsvTransaction {
 
     /**
      * Sets the refernce of this transaction
+     *
      * @param reference of this transaction
      */
     public void setReference(String reference) {
@@ -103,6 +109,7 @@ public class CsvTransaction {
 
     /**
      * Returns the amount of money deducted from the bank account
+     *
      * @return the amount of money deducted from the bank account
      */
     public double getDebitAmount() {
@@ -111,6 +118,7 @@ public class CsvTransaction {
 
     /**
      * Set the amount of money deducted from the bank account
+     *
      * @param debitAmount amount of money deducted from the bank account
      */
     public void setDebitAmount(double debitAmount) {
@@ -119,6 +127,7 @@ public class CsvTransaction {
 
     /**
      * Returns the amount of money credited into the bank account
+     *
      * @return the amount of money credited into the bank account
      */
     public double getCreditAmount() {
@@ -127,6 +136,7 @@ public class CsvTransaction {
 
     /**
      * Sets the amount of money credited into the bank account
+     *
      * @param creditAmount amount of money credited into the bank account
      */
     public void setCreditAmount(double creditAmount) {
@@ -137,6 +147,7 @@ public class CsvTransaction {
      * Returns the transaction reference line 1 of this transaction.
      * <p>Transaction reference line 1 contains the transaction date for
      * {@link MasterCard} transactions.</p>
+     *
      * @return the transaction reference line 1 of this transaction.
      */
     public String getTransactionRef1() {
@@ -147,6 +158,7 @@ public class CsvTransaction {
      * Set the transaction reference line 1 of this transaction.
      * <p>Transaction reference line 1 contains the transaction date for
      * {@link MasterCard} transactions.</p>
+     *
      * @param transactionRef1 transaction reference line 1
      */
     public void setTransactionRef1(String transactionRef1) {
@@ -158,6 +170,7 @@ public class CsvTransaction {
      * <p>Transaction reference line 2 refers to the card number for
      * {@link MasterCard} transactions. It represents the handwritten description
      * in PayNow transaction.</p>
+     *
      * @return the transaction reference line 2 of this transaction
      */
     public String getTransactionRef2() {
@@ -168,6 +181,7 @@ public class CsvTransaction {
      * Sets the transaction reference line 2 of this transaction
      * <p>{@link MasterCard} transactions. It represents the handwritten description
      * in PayNow transaction.</p>
+     *
      * @param transactionRef2 transaction reference line 2 of this transaction
      */
     public void setTransactionRef2(String transactionRef2) {
@@ -176,6 +190,7 @@ public class CsvTransaction {
 
     /**
      * Returns the transaction reference line 3 of this transaction
+     *
      * @return the transaction reference line 3 of this transaction
      */
     public String getTransactionRef3() {
@@ -184,6 +199,7 @@ public class CsvTransaction {
 
     /**
      * Set the transaction reference line 3 of this transaction
+     *
      * @param transactionRef3 transaction reference line 3
      */
     public void setTransactionRef3(String transactionRef3) {
@@ -192,6 +208,7 @@ public class CsvTransaction {
 
     /**
      * Returns the type of transaction
+     *
      * @return the type of transaction
      */
     public TransactionType getType() {
@@ -200,6 +217,7 @@ public class CsvTransaction {
 
     /**
      * Set the type of transaction specified by <i>type</i>
+     *
      * @param type type of transaction
      * @see TransactionType
      */

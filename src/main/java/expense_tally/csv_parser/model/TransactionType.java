@@ -7,7 +7,7 @@ import java.util.StringJoiner;
  * <p>Normally, the value of the transaction type is the abbreviation for the actual description</p>
  */
 public enum TransactionType {
-    MASTERCARD ("MST"),
+    MASTERCARD("MST"),
     NETS("NETS"),
     POINT_OF_SALE("POS"),
     GIRO("IBG"),
@@ -28,6 +28,7 @@ public enum TransactionType {
 
     /**
      * A constructor taking the <i>value</i> of the transaction type
+     *
      * @param value representation of the transaction type
      */
     TransactionType(String value) {
@@ -36,6 +37,7 @@ public enum TransactionType {
 
     /**
      * Returns the value of the transaction type
+     *
      * @return the value of the transaction type
      */
     public String value() {
@@ -44,11 +46,12 @@ public enum TransactionType {
 
     /**
      * Returns the {@link TransactionType} given its string form
+     *
      * @param transactionTypeStr trsnaction type in string form
      * @return the type of transaction given its string form, null if not found
      */
     public static TransactionType resolve(String transactionTypeStr) {
-        for (TransactionType transactionType: values()) {
+        for (TransactionType transactionType : values()) {
             if (transactionType.value.equals(transactionTypeStr)) {
                 return transactionType;
             }

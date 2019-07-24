@@ -14,6 +14,7 @@ public class ExpenseManagerMapKey {
 
     /**
      * Construct a ExpenseManagerMapKey object with the given payment method <i>paymentMethod</i>.
+     *
      * @param paymentMethod payment method of the transaction
      */
     public ExpenseManagerMapKey(PaymentMethod paymentMethod) {
@@ -22,6 +23,7 @@ public class ExpenseManagerMapKey {
 
     /**
      * Returns the payment method of this key
+     *
      * @return the payment method of this key
      */
     public PaymentMethod getPaymentMethod() {
@@ -30,6 +32,7 @@ public class ExpenseManagerMapKey {
 
     /**
      * Returns the transaction amount of this key
+     *
      * @return the transaction amount of this key
      */
     public Double getAmount() {
@@ -38,6 +41,7 @@ public class ExpenseManagerMapKey {
 
     /**
      * Sets the transaction amount to be part of the key content for this map
+     *
      * @param amount the transaction amount
      */
     public void setAmount(Double amount) {
