@@ -20,7 +20,6 @@
     <scm>
         <connection>scm:git:git://github.com/boyshawn/expense-tally.git</connection>
         <developerConnection>scm:git:git://github.com/boyshawn/expense-tally.git</developerConnection>
-
         <tag>1.2</tag>
     </scm>
 
