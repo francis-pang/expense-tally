@@ -1,11 +1,6 @@
 package expense_tally.expense_manager;
 
-import expense_tally.expense_manager.model.ExpenseCategory;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.ExpenseReport;
-import expense_tally.expense_manager.model.ExpenseSubCategory;
-import expense_tally.expense_manager.model.PaymentMethod;
+import expense_tally.expense_manager.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,12 +31,13 @@ public final class ExpenseTransactionMapper {
 
     /**
      * Return a {@link Map} of {@link ExpenseManagerTransaction} mapped from a list of {@link ExpenseReport}.
+     *
      * @param expenseReports the list of expense reports
      * @return a {@link Map} with transaction amount as key, and the list of expense transactions as value.
      */
     public static Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> mapExpenseReportsToMap(List<ExpenseReport> expenseReports) {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap<>();
-        for(ExpenseReport expenseReport : expenseReports) {
+        for (ExpenseReport expenseReport : expenseReports) {
             ExpenseManagerTransaction expenseManagerTransaction = mapAExpenseReport(expenseReport);
             Double transactionAmount = (expenseManagerTransaction.getReferenceAmount() > 0)
                     ? expenseManagerTransaction.getReferenceAmount()
@@ -62,12 +58,13 @@ public final class ExpenseTransactionMapper {
 
     /**
      * Return a list of {@link ExpenseManagerTransaction} mapped from a list of {@link ExpenseReport}.
+     *
      * @param expenseReports the list of expense reports
      * @return a list of {@link ExpenseManagerTransaction}
      */
     public static List<ExpenseManagerTransaction> mapExpenseReportsToList(List<ExpenseReport> expenseReports) {
         List<ExpenseManagerTransaction> expenseManagerTransactions = new ArrayList<>();
-        for(ExpenseReport expenseReport : expenseReports) {
+        for (ExpenseReport expenseReport : expenseReports) {
             expenseManagerTransactions.add(mapAExpenseReport(expenseReport));
         }
         return expenseManagerTransactions;
@@ -75,6 +72,7 @@ public final class ExpenseTransactionMapper {
 
     /**
      * Return a {@link ExpenseManagerTransaction} mapped from a {@link ExpenseReport}
+     *
      * @param expenseReport the {@link ExpenseReport} to be mapped
      * @return the mapped {@link ExpenseManagerTransaction}
      */

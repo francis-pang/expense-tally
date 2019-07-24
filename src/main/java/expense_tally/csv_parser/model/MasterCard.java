@@ -19,6 +19,7 @@ public class MasterCard extends CsvTransaction {
 
     /**
      * Returns the card number of this MasterCard© card
+     *
      * @return the card number of this MasterCard© card
      */
     public String getCardNumber() {
@@ -27,6 +28,7 @@ public class MasterCard extends CsvTransaction {
 
     /**
      * Sets the card number of this MasterCard© card
+     *
      * @param cardNumber card number of this MasterCard© card
      */
     public void setCardNumber(String cardNumber) {
@@ -56,8 +58,9 @@ public class MasterCard extends CsvTransaction {
      * <p>A MasterCard© transaction date is not the transaction date given by the CSV file. The CSV file records the
      * value date of the transaction in <i>bankTransactionDate</i>, while the actual transaction date is stored in
      * reference line 1 <i>reference1</i> of the transaction.</p>
+     *
      * @param bankTransactionDate value date of the transaction
-     * @param reference1 reference line 1
+     * @param reference1          reference line 1
      * @return the transaction date
      */
     public static LocalDate extractTransactionDate(LocalDate bankTransactionDate, String reference1) {
@@ -77,6 +80,7 @@ public class MasterCard extends CsvTransaction {
     /**
      * Returns the last word of <i>string</i>
      * The last word is defined as the string after the last whitespace.
+     *
      * @param string string containing the last word
      * @return the last word of <i>string</i>
      */
@@ -86,6 +90,7 @@ public class MasterCard extends CsvTransaction {
 
     /**
      * Return a converted title case version of <i>string</i>
+     *
      * @param string string to be converted
      * @return converted title case of <i>string</i>
      */

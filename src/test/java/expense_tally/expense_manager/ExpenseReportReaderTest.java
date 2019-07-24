@@ -20,95 +20,95 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseReportReaderTest {
-  @Mock
-  private DatabaseConnectable mockDatabaseConnectable;
+    @Mock
+    private DatabaseConnectable mockDatabaseConnectable;
 
-  @Mock
-  private Connection mockConnection;
+    @Mock
+    private Connection mockConnection;
 
-  @Mock
-  private Statement mockStatement;
+    @Mock
+    private Statement mockStatement;
 
-  @Mock
-  ResultSet mockResultSet;
+    @Mock
+    ResultSet mockResultSet;
 
-  /**
-   * A simple happy case where a single transaction database table is being read and parsed correctly
-   */
-  @Test
-  void getExpenseTransactions_retrieve1Record() throws SQLException {
-    ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
-    when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    when(mockConnection.createStatement()).thenReturn(mockStatement);
-    when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
-
-    /*
-     * Following the practice of writing good test from https://github
-     * .com/mockito/mockito/wiki/How-to-write-good-tests, this mock follows the principles of "Avoid coding a
-     * tautology". We explicitly write the value so that we do not duplicate the logic between the tests and the code.
+    /**
+     * A simple happy case where a single transaction database table is being read and parsed correctly
      */
-    when(mockResultSet.next()).thenReturn(true).thenReturn(false);
-    when(mockResultSet.getInt("_id")).thenReturn(1);
-    when(mockResultSet.getString("account")).thenReturn("2016");
-    when(mockResultSet.getString("amount")).thenReturn("20");
-    when(mockResultSet.getString("category")).thenReturn("Entertainment");
-    when(mockResultSet.getString("subcategory")).thenReturn("Alcohol/ Restaurant");
-    when(mockResultSet.getString("payment_method")).thenReturn("Cash");
-    when(mockResultSet.getString("description")).thenReturn("Lunch. Mala Hui cui Guan. Shared with Sal," +
-        " Lisa, Rick.");
-    when(mockResultSet.getLong("expensed")).thenReturn(Long.valueOf("1459489440000"));
-    when(mockResultSet.getLong("modified")).thenReturn(Long.valueOf("1459816738453"));
-    when(mockResultSet.getString("reference_number")).thenReturn("");
-    when(mockResultSet.getString("status")).thenReturn("Cleared");
-    when(mockResultSet.getString("property")).thenReturn("");
-    when(mockResultSet.getString("property2")).thenReturn("2016-04-01-13-44-00-573.jpg");
-    when(mockResultSet.getString("property3")).thenReturn("");
-    when(mockResultSet.getString("property4")).thenReturn("");
-    when(mockResultSet.getString("property5")).thenReturn("");
-    when(mockResultSet.getString("tax")).thenReturn("");
-    when(mockResultSet.getString("expense_tag")).thenReturn("");
+    @Test
+    void getExpenseTransactions_retrieve1Record() throws SQLException {
+        ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
+        when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
+        when(mockConnection.createStatement()).thenReturn(mockStatement);
+        when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
 
-    List<ExpenseReport> actualExpenseReportList = testExpenseReadable.getExpenseTransactions();
+        /*
+         * Following the practice of writing good test from https://github
+         * .com/mockito/mockito/wiki/How-to-write-good-tests, this mock follows the principles of "Avoid coding a
+         * tautology". We explicitly write the value so that we do not duplicate the logic between the tests and the code.
+         */
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
+        when(mockResultSet.getInt("_id")).thenReturn(1);
+        when(mockResultSet.getString("account")).thenReturn("2016");
+        when(mockResultSet.getString("amount")).thenReturn("20");
+        when(mockResultSet.getString("category")).thenReturn("Entertainment");
+        when(mockResultSet.getString("subcategory")).thenReturn("Alcohol/ Restaurant");
+        when(mockResultSet.getString("payment_method")).thenReturn("Cash");
+        when(mockResultSet.getString("description")).thenReturn("Lunch. Mala Hui cui Guan. Shared with Sal," +
+                " Lisa, Rick.");
+        when(mockResultSet.getLong("expensed")).thenReturn(Long.valueOf("1459489440000"));
+        when(mockResultSet.getLong("modified")).thenReturn(Long.valueOf("1459816738453"));
+        when(mockResultSet.getString("reference_number")).thenReturn("");
+        when(mockResultSet.getString("status")).thenReturn("Cleared");
+        when(mockResultSet.getString("property")).thenReturn("");
+        when(mockResultSet.getString("property2")).thenReturn("2016-04-01-13-44-00-573.jpg");
+        when(mockResultSet.getString("property3")).thenReturn("");
+        when(mockResultSet.getString("property4")).thenReturn("");
+        when(mockResultSet.getString("property5")).thenReturn("");
+        when(mockResultSet.getString("tax")).thenReturn("");
+        when(mockResultSet.getString("expense_tag")).thenReturn("");
 
-    SoftAssertions softAssertions = new SoftAssertions();
-    softAssertions.assertThat(actualExpenseReportList).hasSize(1);
-    softAssertions.assertThat(actualExpenseReportList).element(0).extracting("amount").containsExactly("20");
-    softAssertions.assertThat(actualExpenseReportList).element(0).extracting("category").containsExactly("Entertainment");
-    softAssertions.assertThat(actualExpenseReportList).element(0).extracting("subcategory").containsExactly("Alcohol/ Restaurant");
-    softAssertions.assertThat(actualExpenseReportList).element(0).extracting("paymentMethod").containsExactly("Cash");
-    softAssertions.assertThat(actualExpenseReportList).element(0).extracting("description").containsExactly("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
-    softAssertions.assertThat(actualExpenseReportList).element(0).extracting("expensedTime").containsExactly(Long.valueOf("1459489440000"));
-    softAssertions.assertThat(actualExpenseReportList).element(0).extracting("referenceNumber").containsExactly("");
-    softAssertions.assertAll();
-  }
+        List<ExpenseReport> actualExpenseReportList = testExpenseReadable.getExpenseTransactions();
 
-  @Test
-  void getExpenseTransactions_noRecord() throws SQLException {
-    DatabaseConnectable mockDatabaseConnectable = Mockito.spy(DatabaseConnectable.class);
-    ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(actualExpenseReportList).hasSize(1);
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("amount").containsExactly("20");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("category").containsExactly("Entertainment");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("subcategory").containsExactly("Alcohol/ Restaurant");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("paymentMethod").containsExactly("Cash");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("description").containsExactly("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("expensedTime").containsExactly(Long.valueOf("1459489440000"));
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("referenceNumber").containsExactly("");
+        softAssertions.assertAll();
+    }
 
-    when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    when(mockConnection.createStatement()).thenReturn(mockStatement);
+    @Test
+    void getExpenseTransactions_noRecord() throws SQLException {
+        DatabaseConnectable mockDatabaseConnectable = Mockito.spy(DatabaseConnectable.class);
+        ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
 
-    when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
-    when(mockResultSet.next()).thenReturn(false);
+        when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
+        when(mockConnection.createStatement()).thenReturn(mockStatement);
 
-    assertThat(testExpenseReadable.getExpenseTransactions()).hasSize(0);
-  }
+        when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
 
-  @Test
-  void getExpenseTransactions_SqlError() {
-    DatabaseConnectable mockDatabaseConnectable = Mockito.spy(DatabaseConnectable.class);
+        assertThat(testExpenseReadable.getExpenseTransactions()).hasSize(0);
+    }
 
-    assertThatThrownBy(() -> {
-      ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
-      when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("Test SQL error"));
-      testExpenseReadable.getExpenseTransactions();
-    }).isInstanceOf(SQLException.class);
-  }
+    @Test
+    void getExpenseTransactions_SqlError() {
+        DatabaseConnectable mockDatabaseConnectable = Mockito.spy(DatabaseConnectable.class);
 
-  /**
-   * Test for multiple records of different payment method and different amount
-   * TODO: Check if this can be tested, because Mockito can't do mocking effectively
-   */
+        assertThatThrownBy(() -> {
+            ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
+            when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("Test SQL error"));
+            testExpenseReadable.getExpenseTransactions();
+        }).isInstanceOf(SQLException.class);
+    }
+
+    /**
+     * Test for multiple records of different payment method and different amount
+     * TODO: Check if this can be tested, because Mockito can't do mocking effectively
+     */
 }

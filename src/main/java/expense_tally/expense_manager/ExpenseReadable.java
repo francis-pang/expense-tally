@@ -17,17 +17,19 @@ import java.util.Map;
  * @see expense_tally.expense_manager.model.ExpenseManagerTransaction
  */
 public interface ExpenseReadable {
-  /**
-   * Read the expense transaction from a data source and return the expense transactions retrieved based on a
-   * pre-defined group key.
-   * {@link expense_tally.expense_manager.model.ExpenseManagerMapKey}
-   * @return a map of {@code ExpenseTransaction} from the data source
-   */
-  public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getExpenseTransactionMap() throws SQLException;
+    /**
+     * Read the expense transaction from a data source and return the expense transactions retrieved based on a
+     * pre-defined group key.
+     * {@link expense_tally.expense_manager.model.ExpenseManagerMapKey}
+     *
+     * @return a map of {@code ExpenseTransaction} from the data source
+     */
+    public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getExpenseTransactionMap() throws SQLException;
 
-  /**
-   * Read the expense transaction from the data source and get return the expense transaction as a {@code List}
-   * @return a list of {@code ExpenseTransaction} from the data source
-   */
-  public List<ExpenseReport> getExpenseTransactions() throws SQLException;
+    /**
+     * Read the expense transaction from the data source and get return the expense transaction as a {@code List}
+     *
+     * @return a list of {@code ExpenseTransaction} from the data source
+     */
+    public List<ExpenseReport> getExpenseTransactions() throws SQLException;
 }

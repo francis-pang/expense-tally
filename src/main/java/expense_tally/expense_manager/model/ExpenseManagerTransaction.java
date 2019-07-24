@@ -78,12 +78,12 @@ public class ExpenseManagerTransaction {
         if (!(o instanceof ExpenseManagerTransaction)) return false;
         ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
         return amount.equals(that.amount) &&
-            category == that.category &&
-            subcategory == that.subcategory &&
-            paymentMethod == that.paymentMethod &&
-            description.equals(that.description) &&
-            expensedTime.equals(that.expensedTime) &&
-            referenceAmount.equals(that.referenceAmount);
+                category == that.category &&
+                subcategory == that.subcategory &&
+                paymentMethod == that.paymentMethod &&
+                description.equals(that.description) &&
+                expensedTime.equals(that.expensedTime) &&
+                referenceAmount.equals(that.referenceAmount);
     }
 
     @Override
@@ -94,13 +94,13 @@ public class ExpenseManagerTransaction {
     @Override
     public String toString() {
         return new StringJoiner(", ", ExpenseManagerTransaction.class.getSimpleName() + "[", "]")
-            .add("amount=" + amount)
-            .add("category=" + category)
-            .add("subcategory=" + subcategory)
-            .add("paymentMethod=" + paymentMethod)
-            .add("description='" + description + "'")
-            .add("expensedTime=" + expensedTime)
-            .add("referenceAmount=" + referenceAmount)
-            .toString();
+                .add("amount=" + amount)
+                .add("category=" + category)
+                .add("subcategory=" + subcategory)
+                .add("paymentMethod=" + paymentMethod)
+                .add("description='" + description + "'")
+                .add("expensedTime=" + expensedTime)
+                .add("referenceAmount=" + referenceAmount)
+                .toString();
     }
 }

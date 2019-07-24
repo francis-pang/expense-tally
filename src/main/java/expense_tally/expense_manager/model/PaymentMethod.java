@@ -16,6 +16,7 @@ public enum PaymentMethod {
 
     /**
      * Construct a payment method with the <i>value</i>
+     *
      * @param value string representing the payment method
      */
     PaymentMethod(String value) {
@@ -24,6 +25,7 @@ public enum PaymentMethod {
 
     /**
      * Returns the value of this payment method
+     *
      * @return the value of this payment method
      */
     public String value() {
@@ -32,6 +34,7 @@ public enum PaymentMethod {
 
     /**
      * Returns the payment method represented by this <i>value</i>
+     *
      * @param value content of the payment method
      * @return the payment method represented by this <i>value</i>
      */
