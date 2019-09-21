@@ -32,26 +32,6 @@ public class ExpenseReportReader implements ExpenseReadable {
         this.databaseConnectable = databaseConnectable;
     }
 
-    /**
-     * Returns all the mappings between the content of the customised key and the list of
-     * {@link ExpenseManagerTransaction}.
-     *
-     * @return all the mapping between the content of the customised key and the list of
-     * {@link ExpenseManagerTransaction}.
-     * <p>The file path <i>databaseFile</i> can be relative to the classpath or a absolute path.</p>
-     * @throws SQLException when there is an error accessing the database
-     * @see ExpenseManagerMapKey
-     */
-    @Override
-    public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getExpenseTransactionMap() throws SQLException {
-        return ExpenseTransactionMapper.mapExpenseReportsToMap(getExpenseTransactions());
-    }
-
-    /**
-     * Read the expense transaction from the data source and get return the expense transaction as a {@code List}
-     *
-     * @return a list of {@code ExpenseTransaction} from the data source
-     */
     @Override
     public List<ExpenseReport> getExpenseTransactions() throws SQLException {
         return importDataFromDatabase();
