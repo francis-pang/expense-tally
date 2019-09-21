@@ -7,7 +7,12 @@ import expense_tally.expense_manager.model.PaymentMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -56,34 +61,19 @@ public class ExpenseReconciler {
                 continue;
             }
             ExpenseManagerMapKey expenseManagerMapKey;
-            switch (csvTransaction.getType()) {
-                case MASTERCARD:
-                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
-                    break;
-                case NETS:
-                case POINT_OF_SALE:
-                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.NETS);
-                    break;
-                case PAY_NOW:
-                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
-                    break;
-                case FUNDS_TRANSFER_I:
-                case FUNDS_TRANSFER_A:
-                case FAST_PAYMENT:
-                case FAST_COLLECTION:
-                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
-                    break;
-                case BILL_PAYMENT:
-                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.I_BANKING);
-                    break;
-                case GIRO:
-                case GIRO_COLLECTION:
-                    expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.GIRO);
-                    break;
-                default:
-                    LOGGER.warn("Found an unknown transaction type: " + csvTransaction.getType());
-                    continue;
+            expenseManagerMapKey = switch(csvTransaction.getType()) {
+                case MASTERCARD -> new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
+                case NETS, POINT_OF_SALE -> new ExpenseManagerMapKey(PaymentMethod.NETS);
+                case PAY_NOW -> new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
+                case FUNDS_TRANSFER_I, FUNDS_TRANSFER_A, FAST_PAYMENT, FAST_COLLECTION -> new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
+                case BILL_PAYMENT -> new ExpenseManagerMapKey(PaymentMethod.I_BANKING);
+                case GIRO, GIRO_COLLECTION -> new ExpenseManagerMapKey(PaymentMethod.GIRO);
+                default -> null;
+                };
+            if (expenseManagerMapKey == null) {
+                LOGGER.warn("Found an unknown transaction type: " + csvTransaction.getType());
             }
+
             expenseManagerMapKey.setAmount(csvTransaction.getDebitAmount());
             List<ExpenseManagerTransaction> expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
             if (expenseManagerTransactionList == null) {
