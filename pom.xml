@@ -7,8 +7,8 @@
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <javaVersion>12</javaVersion>
-        <javaCompilerVersion>1.12</javaCompilerVersion>
+        <javaVersion>13</javaVersion>
+        <javaCompilerVersion>1.13</javaCompilerVersion>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>boyshawn_expense-tally</sonar.projectKey>
         <sonar.login>f3e43ff4f0692fcd97fc41da1a7f890c79a86b5b</sonar.login>
