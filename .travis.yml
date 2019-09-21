@@ -23,19 +23,18 @@ stages:
 
 jobs:
   include:
-    - stage: test
-      name: "Unit Tests"
-      script: mvn test
-# Need not do this because this is already done as part of the SonarCloud addon
-#    - stage: verify
-#      name: "Generate Jacoco code coverage, and commit to SonarCloud"
-#      script: sonar-scanner
+#    - stage: test
+#      name: "Unit Tests"
+#      script: mvn test
     - stage: release
       name: "Only for master: Prepare devlieries for release"
       script:
         - git checkout $TRAVIS_BRANCH
-        - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.4 -Dmaven.javadoc.skip=true
-        - mvn --batch-mode release:update-versions -DdevelopmentVersion=5.5
+        - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.6
+        - mvn --batch-mode release:update-versions -DdevelopmentVersion=5.7-SNAPSHOT
+        - git add .
+        - git commit --message="up version"
+        - git push origin $TRAVIS_BRANCH
 # Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there
 # is need to deploy
 #    - stage: install
