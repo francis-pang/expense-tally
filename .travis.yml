@@ -11,18 +11,21 @@ addons:
 stages:
   -test
   -verify
-  -install
-  -deploy
-  -postDeploy
+  -release
 
 jobs:
   include:
     - stage: test
       name: "Unit Tests"
-      script: mvn clean test
+      script: mvn test
     - stage: verify
       name: "Generate Jacoco code coverage, and commit to SonarCloud"
       script: sonar-scanner
+    - stage: release
+      name: "Only for master: Prepare devlieries for release"
+      script:
+        - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.2
+        - mvn release:update-versions -DdevelopmentVersion=5.3
     - stage: install
       name: "Install the package into the local repository"
       script: mvn install
