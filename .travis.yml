@@ -19,7 +19,11 @@ addons:
 
 stages:
 #  -test
+  # Only run for short-lived (non master) branch commit
+#  if: type = push AND branch != master
   -release
+  # require the branch name to be master (note for PRs this is the base branch name)
+  if: branch = "feature/ci-version"
 
 jobs:
   include:
