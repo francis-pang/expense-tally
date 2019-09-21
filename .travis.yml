@@ -10,7 +10,6 @@ addons:
 
 stages:
   -test
-  -verify
   -release
 
 jobs:
@@ -18,12 +17,10 @@ jobs:
     - stage: test
       name: "Unit Tests"
       script: mvn test
-    - stage: verify
-      name: "Generate Jacoco code coverage, and commit to SonarCloud"
-      script:
-        - mvn org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar
-          # Inspecting code with the SonarQube Scanner
-        - sonar-scanner
+# Need not do this because this is already done as part of the SonarCloud addon
+#    - stage: verify
+#      name: "Generate Jacoco code coverage, and commit to SonarCloud"
+#      script: sonar-scanner
     - stage: release
       name: "Only for master: Prepare devlieries for release"
       script:
