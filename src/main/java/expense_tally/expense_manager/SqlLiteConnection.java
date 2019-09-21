@@ -20,15 +20,17 @@ public class SqlLiteConnection implements DatabaseConnectable {
 
     /**
      * Construct a SqlLiteConnection with the file path to the database file
+     *
      * @param databaseFile file path of the database file
      */
     public SqlLiteConnection(String databaseFile) {
-      final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
-      this.databaseFile = SQLITE_JDBC_PREFIX + databaseFile;
+        final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
+        this.databaseFile = SQLITE_JDBC_PREFIX + databaseFile;
     }
 
     /**
      * Returns the connection to the database
+     *
      * @return the connection to the database
      * @throws SQLException when there is an error accessing the database
      */

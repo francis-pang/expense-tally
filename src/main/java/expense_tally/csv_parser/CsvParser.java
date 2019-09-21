@@ -100,11 +100,11 @@ public class CsvParser implements CsvParsable {
         csvTransaction.setReference(csvElements[REFERENCE_POSITION]);
         csvTransaction.setTransactionDate(LocalDate.parse(csvElements[TRANSACTION_DATE_POSITION], csvTransactionDateFormatter));
         csvTransaction.setDebitAmount((csvElements[DEBIT_AMOUNT_POSITION].isBlank())
-            ? 0.00
-            : Double.parseDouble(csvElements[DEBIT_AMOUNT_POSITION]));
+                ? 0.00
+                : Double.parseDouble(csvElements[DEBIT_AMOUNT_POSITION]));
         csvTransaction.setCreditAmount((csvElements[CREDIT_AMOUNT_POSITION].isBlank())
-            ? 0.00
-            : Double.parseDouble(csvElements[CREDIT_AMOUNT_POSITION]));
+                ? 0.00
+                : Double.parseDouble(csvElements[CREDIT_AMOUNT_POSITION]));
         if (csvElements.length >= 5) {
             csvTransaction.setTransactionRef1(csvElements[TRANSACTION_REF_1_POSITION]);
         } else {
@@ -133,13 +133,13 @@ public class CsvParser implements CsvParsable {
                     ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
                 } else {
                     CsvParser.LOGGER.trace("This MasterCard transaction doesn't record the card number.\n"
-                        + csvTransaction.toString());
+                            + csvTransaction.toString());
                 }
                 //FIXME: Error handling when there is no transaction date to be parsed
                 csvTransaction.setTransactionDate(
-                    MasterCard.extractTransactionDate(
-                        csvTransaction.getTransactionDate(),
-                        csvTransaction.getTransactionRef1()));
+                        MasterCard.extractTransactionDate(
+                                csvTransaction.getTransactionDate(),
+                                csvTransaction.getTransactionRef1()));
                 break;
             case FAST_PAYMENT:
                 if (TransactionType.PAY_NOW.value().equals(csvTransaction.getTransactionRef1())) {
