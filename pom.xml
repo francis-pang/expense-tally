@@ -3,7 +3,7 @@
     <groupId>expense-tally</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>jar</packaging>
-    <version>5.6-SNAPSHOT</version>
+    <version>6-SNAPSHOT</version>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -19,7 +19,6 @@
     <scm>
         <connection>scm:git:git@github.com:boyshawn/expense-tally.git</connection>
         <developerConnection>scm:git:git@github.com:boyshawn/expense-tally.git</developerConnection>
-        <tag>expense-tally-1.1</tag>
     </scm>
 
     <dependencies>
@@ -253,6 +252,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
                 <configuration>
                     <source>8</source>
                 </configuration>
@@ -261,6 +261,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
                 <executions>
                     <execution>
                         <id>default-deploy</id>
