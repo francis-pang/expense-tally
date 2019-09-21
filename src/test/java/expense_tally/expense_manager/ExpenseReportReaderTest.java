@@ -72,13 +72,13 @@ class ExpenseReportReaderTest {
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(actualExpenseReportList).hasSize(1);
-        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("amount").containsExactly("20");
-        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("category").containsExactly("Entertainment");
-        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("subcategory").containsExactly("Alcohol/ Restaurant");
-        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("paymentMethod").containsExactly("Cash");
-        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("description").containsExactly("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
-        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("expensedTime").containsExactly(Long.valueOf("1459489440000"));
-        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("referenceNumber").containsExactly("");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("amount").isEqualTo("20");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("category").isEqualTo("Entertainment");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("subcategory").isEqualTo("Alcohol/ Restaurant");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("paymentMethod").isEqualTo("Cash");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("description").isEqualTo("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("expensedTime").isEqualTo(Long.valueOf("1459489440000"));
+        softAssertions.assertThat(actualExpenseReportList).element(0).extracting("referenceNumber").isEqualTo("");
         softAssertions.assertAll();
     }
 
