@@ -34,8 +34,8 @@ jobs:
       name: "Only for master: Prepare devlieries for release"
       script:
         - git checkout $TRAVIS_BRANCH
-        - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.3 -Dmaven.javadoc.skip=true
-        - mvn --batch-mode release:update-versions -DdevelopmentVersion=5.4
+        - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.4 -Dmaven.javadoc.skip=true
+        - mvn --batch-mode release:update-versions -DdevelopmentVersion=5.5
 # Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there
 # is need to deploy
 #    - stage: install
