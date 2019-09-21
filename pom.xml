@@ -111,6 +111,8 @@
                     <source>${javaCompilerVersion}</source>
                     <target>${javaCompilerVersion}</target>
                     <compilerArgument>-Xlint:all</compilerArgument>
+                    <!-- Enable preview feature from JDK 12 & 13 -->
+                    <compilerArgs>--enable-preview</compilerArgs>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
@@ -154,6 +156,7 @@
                     <excludes>
                         <exclude>some test to exclude here</exclude>
                     </excludes>
+                    <argLine>--enable-preview</argLine>
                 </configuration>
             </plugin>
             <!-- Used for executing integration test -->
