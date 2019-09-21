@@ -11,3 +11,6 @@ script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install
   # Inspecting code with the SonarQube Scanner
   - sonar-scanner
+  - if: branch = feature/ci-version
+    - mvn --batch-mode release:prepare
+    - mvn --batch-mode release:perform
