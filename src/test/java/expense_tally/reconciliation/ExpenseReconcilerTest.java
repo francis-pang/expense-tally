@@ -57,7 +57,7 @@ class ExpenseReconcilerTest {
     void reconcileBankData_noExpenseManager() {
         List<CsvTransaction> testCsvTransactions = new ArrayList<>();
         testCsvTransactions.add(
-            new CsvTransactionTestBuilder("24-6-2019")
+            new CsvTransactionTestBuilder()
                 .debitAmount(1.0)
                 .transactionType(TransactionType.BILL_PAYMENT)
                 .build()
@@ -88,7 +88,7 @@ class ExpenseReconcilerTest {
     @Test
     void reconcileBankData_nullExpenseManager() {
         List<CsvTransaction> testCsvTransactions = new ArrayList<>();
-        testCsvTransactions.add(new CsvTransactionTestBuilder("24-6-2019")
+        testCsvTransactions.add(new CsvTransactionTestBuilder()
             .debitAmount(1.0)
             .transactionType(TransactionType.BILL_PAYMENT)
             .build()
@@ -128,7 +128,7 @@ class ExpenseReconcilerTest {
     @Test
     void reconcileBankData_singleNonMatchingCreditCsvTransaction() {
         List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder("24-4-2019")
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
             .reference("MST")
             .transactionType(TransactionType.MASTERCARD)
             .build()
@@ -151,14 +151,13 @@ class ExpenseReconcilerTest {
     @Test
     void reconcileBankData_singleMastchingTransaction() {
         List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder("24-4-2019")
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
             .reference("MST")
             .transactionType(TransactionType.MASTERCARD)
             .build()
         );
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
             new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .expensedTime("2019-04-24T10:15:30.00Z")
                 .build();
         assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
     }
@@ -172,14 +171,18 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_singleNonMatchingTransaction() {
-        List<CsvTransaction> csvTransactionList = new ArrayList<>();
-        csvTransactionList.add(new CsvTransactionTestBuilder("24-4-2019")
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
             .reference("MST")
             .transactionType(TransactionType.MASTERCARD)
             .build()
         );
 
-
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(1)
+                .amount(0.5)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
     }
 
     /*
@@ -191,7 +194,29 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_multipleNonMatchingCsvTransaction() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .reference("MST")
+            .transactionType(TransactionType.MASTERCARD)
+            .build()
+        );
 
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .transactionType(TransactionType.PAY_NOW)
+            .build()
+        );
+
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .debitAmount(5.0)
+            .transactionType(TransactionType.PAY_NOW)
+            .build()
+        );
+
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(3)
+                .addCustomisedTransaction(5.0, PaymentMethod.ELECTRONIC_TRANSFER, 2009, 4, 24)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
     }
 
     /*
@@ -203,7 +228,17 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_multipleMatchingTransactionSameDay() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .reference("MST")
+            .transactionType(TransactionType.MASTERCARD)
+            .build()
+        );
 
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(3)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
     }
 
     /*
@@ -215,6 +250,15 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_singleMatchingTransactionDifferentDay() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .transactionDate(2015,4,24)
+            .build()
+        );
 
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(3)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
     }
 }

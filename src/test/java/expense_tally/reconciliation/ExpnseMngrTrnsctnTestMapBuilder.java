@@ -3,6 +3,8 @@ package expense_tally.reconciliation;
 import expense_tally.expense_manager.model.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 public class ExpnseMngrTrnsctnTestMapBuilder {
@@ -14,6 +16,7 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
     private String description = "";
     private Instant expensedTime = Instant.parse("2009-04-24T10:15:30.00Z");
     private int numberOfTransaction;
+    private List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
 
     public ExpnseMngrTrnsctnTestMapBuilder(int numberOfTransaction) {
         this.numberOfTransaction = numberOfTransaction;
@@ -22,7 +25,7 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
     public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> build() {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMapKeyListMap = new HashMap<>();
         ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(paymentMethod, amount);
-        List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
+        addCustomisedTransations(expenseManagerMapKeyListMap, expenseManagerTransactionList);
         for (int index = 0; index < numberOfTransaction; index++) {
             ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
             expenseManagerTransaction.setAmount(amount);
@@ -36,6 +39,17 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
         }
         expenseManagerMapKeyListMap.put(expenseManagerMapKey, expenseManagerTransactionList);
         return expenseManagerMapKeyListMap;
+    }
+
+    private void addCustomisedTransations(Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMapKeyListMap,
+                                          List<ExpenseManagerTransaction> expenseManagerTransactionList) {
+        for (ExpenseManagerTransaction expenseManagerTransaction: expenseManagerTransactionList) {
+            ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expenseManagerTransaction.getPaymentMethod(), expenseManagerTransaction.getAmount());
+
+            List<ExpenseManagerTransaction> containingExpenseManagerTransactionList = expenseManagerMapKeyListMap.getOrDefault(expenseManagerMapKey, new ArrayList<>());
+            containingExpenseManagerTransactionList.add(expenseManagerTransaction);
+            expenseManagerMapKeyListMap.put(expenseManagerMapKey, containingExpenseManagerTransactionList);
+        }
     }
 
     public ExpnseMngrTrnsctnTestMapBuilder amount(double amount) {
@@ -70,6 +84,23 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
 
     public ExpnseMngrTrnsctnTestMapBuilder expensedTime(String expensedTime) {
         this.expensedTime = Instant.parse(expensedTime);
+        return this;
+    }
+
+    public ExpnseMngrTrnsctnTestMapBuilder addCustomisedTransaction(Double amount,
+                                                                    PaymentMethod paymentMethod,
+                                                                    int expensedYear,
+                                                                    int expensedMonth,
+                                                                    int expensedDay) {
+        final int HOURS = 10;
+        final int MINUTES = 15;
+        final int SECONDS = 30;
+        Instant expensedTime = LocalDateTime.of(expensedYear, expensedMonth, expensedDay, HOURS, MINUTES, SECONDS).toInstant(ZoneOffset.UTC);
+        ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
+        expenseManagerTransaction.setAmount(amount);
+        expenseManagerTransaction.setPaymentMethod(paymentMethod);
+        expenseManagerTransaction.setExpensedTime(expensedTime);
+        expenseManagerTransactionList.add(expenseManagerTransaction);
         return this;
     }
 }

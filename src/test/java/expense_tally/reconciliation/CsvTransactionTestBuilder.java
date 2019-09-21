@@ -6,22 +6,21 @@ import expense_tally.csv_parser.model.TransactionType;
 import java.time.LocalDate;
 
 public class CsvTransactionTestBuilder {
-  private LocalDate transactionDate;
+  private LocalDate transactionDate = LocalDate.of(2009, 4, 24);
   private String reference = "";
 
   private double debitAmount = 0.8;
   private double creditAmount = 0;
-  private String transactionRef1 = "KOUFU PTE LTD SI NG 23APR,5548-2741-0014-1067";
+  private String transactionRef1 = "KOUFU PTE LTD SI NG 24APR,5548-2741-0014-1067";
   private String transactionRef2 = "";
   private String transactionRef3 = "";
-  private TransactionType type = null;
+  private TransactionType type = TransactionType.MASTERCARD;
 
-  public CsvTransactionTestBuilder(final String transactionDate) {
-    String[] transactionDataStringArray = transactionDate.split("-");
-    this.transactionDate = LocalDate.of(
-        Integer.parseInt(transactionDataStringArray[2]),
-        Integer.parseInt(transactionDataStringArray[1]),
-        Integer.parseInt(transactionDataStringArray[0]));
+  public CsvTransactionTestBuilder() {}
+
+  public CsvTransactionTestBuilder transactionDate(final int year, int month, int day) {
+    this.transactionDate = LocalDate.of(year, month, day);
+    return this;
   }
 
   public CsvTransactionTestBuilder reference(String reference) {
