@@ -3,7 +3,7 @@
     <groupId>expense-tally</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>jar</packaging>
-    <version>5-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -248,6 +248,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- This will fix the issue of The code being documented uses modules but the packages defined in https://docs.oracle.com/javase/13/docs/api/ are in the unnamed module. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                </configuration>
             </plugin>
         </plugins>
     </build>
