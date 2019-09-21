@@ -12,15 +12,13 @@ script:
 stages:
   -test
   -verify
-  -install
-  -deploy
-  -postDeploy
+  -release
 
 jobs:
   include:
     - stage: test
       name: "Unit Tests"
-      script: mvn clean test
+      script: mvn test
     - stage: verify
       name: "Generate Jacoco code coverage, and commit to SonarCloud"
       script: mvn org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar
