@@ -5,9 +5,12 @@ jdk:
 
 before_install:
   - eval "$(ssh-agent -s)"
+  - chmod 600 ./deploy_key
+  - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - openssl aes-256-cbc -K $encrypted_0e40c5863533_key -iv $encrypted_0e40c5863533_iv
     -in deploy_key.enc -out ./deploy_key -d
   - ssh-add ./deploy_key
+  - ssh -i ./deploy_key boyshawn@github.com pwd
 
 addons:
   sonarcloud:
