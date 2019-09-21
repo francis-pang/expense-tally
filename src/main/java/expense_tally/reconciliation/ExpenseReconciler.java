@@ -21,6 +21,9 @@ import java.util.Map;
  */
 public class ExpenseReconciler {
     private static final Logger LOGGER = LogManager.getLogger(ExpenseReconciler.class);
+    private static final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
+    private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
+    private static final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
 
     /**
      * Reconcile the data in the CSV file against the database record in the Expense Manager database
@@ -31,12 +34,10 @@ public class ExpenseReconciler {
      * @param expenseTransactionMap a collection of the database record in the Expense Manager
      * @return the number of transaction that is not found in the CSV
      */
-    public static int reconcileBankData(List<CsvTransaction> csvTransactions, Map<ExpenseManagerMapKey,
-            List<ExpenseManagerTransaction>> expenseTransactionMap) {
-        final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
-        final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
-        final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
-
+    public static int reconcileBankData(
+        final List<CsvTransaction> csvTransactions,
+        final Map<ExpenseManagerMapKey,
+        List<ExpenseManagerTransaction>> expenseTransactionMap) {
         /**
          * Taking context from <a href="https://stackoverflow.com/a/15210142/1522867">stack overflow answer</a>, the
          * correct way <q cite="https://stackoverflow.com/a/15210142/1522867"> In this case it's perfectly ok to throw
