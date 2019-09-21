@@ -3,7 +3,7 @@
     <groupId>expense-tally</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>jar</packaging>
-    <version>7-SNAPSHOT</version>
+    <version>7</version>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -19,7 +19,7 @@
     <scm>
         <connection>scm:git:git@github.com:boyshawn/expense-tally.git</connection>
         <developerConnection>scm:git:git@github.com:boyshawn/expense-tally.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>expense-tally-7</tag>
   </scm>
 
     <dependencies>
