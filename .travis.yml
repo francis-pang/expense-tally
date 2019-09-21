@@ -27,6 +27,7 @@ jobs:
     - stage: release
       name: "Only for master: Prepare devlieries for release"
       script:
+        - git checkout $TRAVIS_BRANCH
         - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.2
         - mvn release:update-versions -DdevelopmentVersion=5.3
 # Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there 
