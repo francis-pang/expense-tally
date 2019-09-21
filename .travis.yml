@@ -26,12 +26,14 @@ jobs:
       script:
         - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.2
         - mvn release:update-versions -DdevelopmentVersion=5.3
-    - stage: install
-      name: "Install the package into the local repository"
-      script: mvn install
-    - stage: deploy
-      name: "Release to deployment, maven release"
-      script: mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.1
-    - stage: postDeploy
-      name: "Perform update development of maven release"
-      cript: mvn release:update-versions -DdevelopmentVersion=5.2
+# Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there 
+# is need to deploy
+#    - stage: install
+#      name: "Install the package into the local repository"
+#      script: mvn install
+#    - stage: deploy
+#      name: "Release to deployment, maven release"
+#      script: mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.1
+#    - stage: postDeploy
+#      name: "Perform update development of maven release"
+#      cript: mvn release:update-versions -DdevelopmentVersion=5.2
