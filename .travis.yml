@@ -31,7 +31,7 @@ jobs:
     - stage: release
       name: "Only for master: Prepare devlieries for release"
       # require the branch name to be master (note for PRs this is the base branch name)
-      if: (type = push) AND (branch = master)
+      if: (type = push) AND (branch = master) AND (commit_message =~ /^(?!\[maven-release-plugin\] prepare).+/)
       script:
         - git checkout $TRAVIS_BRANCH
         - mvn --batch-mode release:prepare
