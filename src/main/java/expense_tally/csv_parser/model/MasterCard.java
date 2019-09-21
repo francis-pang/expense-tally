@@ -18,6 +18,15 @@ public class MasterCard extends CsvTransaction {
     private String cardNumber;
 
     /**
+     * Returns the card number of this MasterCard© card
+     *
+     * @return the card number of this MasterCard© card
+     */
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    /**
      * Sets the card number of this MasterCard© card
      *
      * @param cardNumber card number of this MasterCard© card

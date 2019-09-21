@@ -29,8 +29,16 @@ public class ExpenseReport {
     public ExpenseReport() {
     }
 
+    public int getId() {
+        return id;
+    }
+
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getAccount() {
+        return account;
     }
 
     public void setAccount(String account) {
@@ -85,6 +93,10 @@ public class ExpenseReport {
         this.expensedTime = expensedTime;
     }
 
+    public long getModificationTime() {
+        return modificationTime;
+    }
+
     public void setModificationTime(long modificationTime) {
         this.modificationTime = modificationTime;
     }
@@ -97,32 +109,64 @@ public class ExpenseReport {
         this.referenceNumber = referenceNumber;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getProperty1() {
+        return property1;
     }
 
     public void setProperty1(String property1) {
         this.property1 = property1;
     }
 
+    public String getProperty2() {
+        return property2;
+    }
+
     public void setProperty2(String property2) {
         this.property2 = property2;
+    }
+
+    public String getProperty3() {
+        return property3;
     }
 
     public void setProperty3(String property3) {
         this.property3 = property3;
     }
 
+    public String getProperty4() {
+        return property4;
+    }
+
     public void setProperty4(String property4) {
         this.property4 = property4;
+    }
+
+    public String getProperty5() {
+        return property5;
     }
 
     public void setProperty5(String property5) {
         this.property5 = property5;
     }
 
+    public String getTax() {
+        return tax;
+    }
+
     public void setTax(String tax) {
         this.tax = tax;
+    }
+
+    public String getExpenseTag() {
+        return expenseTag;
     }
 
     public void setExpenseTag(String expenseTag) {
@@ -157,5 +201,29 @@ public class ExpenseReport {
     @Override
     public int hashCode() {
         return Objects.hash(id, account, amount, category, subcategory, paymentMethod, description, expensedTime, modificationTime, referenceNumber, status, property1, property2, property3, property4, property5, tax, expenseTag);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ExpenseReport.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("account='" + account + "'")
+                .add("amount='" + amount + "'")
+                .add("category='" + category + "'")
+                .add("subcategory='" + subcategory + "'")
+                .add("paymentMethod='" + paymentMethod + "'")
+                .add("description='" + description + "'")
+                .add("expensedTime=" + expensedTime)
+                .add("modificationTime=" + modificationTime)
+                .add("referenceNumber='" + referenceNumber + "'")
+                .add("status='" + status + "'")
+                .add("property1='" + property1 + "'")
+                .add("property2='" + property2 + "'")
+                .add("property3='" + property3 + "'")
+                .add("property4='" + property4 + "'")
+                .add("property5='" + property5 + "'")
+                .add("tax='" + tax + "'")
+                .add("expenseTag='" + expenseTag + "'")
+                .toString();
     }
 }

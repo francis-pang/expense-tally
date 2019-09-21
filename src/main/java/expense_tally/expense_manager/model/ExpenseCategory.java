@@ -27,6 +27,15 @@ public enum ExpenseCategory {
     }
 
     /**
+     * Returns the value of the transaction type
+     *
+     * @return the value of the transaction type
+     */
+    public String value() {
+        return this.value;
+    }
+
+    /**
      * Returns the {@link ExpenseCategory} given its string form
      *
      * @param expenseCategoryStr expense category in string form
