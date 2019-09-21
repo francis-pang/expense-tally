@@ -17,8 +17,9 @@ public class ExpenseManagerMapKey implements Comparable {
      *
      * @param paymentMethod payment method of the transaction
      */
-    public ExpenseManagerMapKey(PaymentMethod paymentMethod) {
+    public ExpenseManagerMapKey(PaymentMethod paymentMethod, Double amount) {
         this.paymentMethod = paymentMethod;
+        this.amount = amount;
     }
 
     /**

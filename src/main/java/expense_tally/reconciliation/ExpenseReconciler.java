@@ -1,6 +1,7 @@
 package expense_tally.reconciliation;
 
 import expense_tally.csv_parser.model.CsvTransaction;
+import expense_tally.csv_parser.model.TransactionType;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.PaymentMethod;
@@ -57,25 +58,12 @@ public class ExpenseReconciler {
                 LOGGER.trace("This is not a debit transaction");
                 continue;
             }
-            if (csvTransaction.getType() == null) {
-                LOGGER.warn("No valid type. Need to investigate this case. " + csvTransaction.toString());
+            PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getType());
+            if (expensePaymentMethod == null) {
+                LOGGER.warn("Found an unknown transaction type: " + csvTransaction.toString());
                 continue;
             }
-            ExpenseManagerMapKey expenseManagerMapKey;
-            expenseManagerMapKey = switch(csvTransaction.getType()) {
-                case MASTERCARD -> new ExpenseManagerMapKey(PaymentMethod.DEBIT_CARD);
-                case NETS, POINT_OF_SALE -> new ExpenseManagerMapKey(PaymentMethod.NETS);
-                case PAY_NOW -> new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
-                case FUNDS_TRANSFER_I, FUNDS_TRANSFER_A, FAST_PAYMENT, FAST_COLLECTION -> new ExpenseManagerMapKey(PaymentMethod.ELECTRONIC_TRANSFER);
-                case BILL_PAYMENT -> new ExpenseManagerMapKey(PaymentMethod.I_BANKING);
-                case GIRO, GIRO_COLLECTION -> new ExpenseManagerMapKey(PaymentMethod.GIRO);
-                default -> null;
-                };
-            if (expenseManagerMapKey == null) {
-                LOGGER.warn("Found an unknown transaction type: " + csvTransaction.getType());
-            }
-
-            expenseManagerMapKey.setAmount(csvTransaction.getDebitAmount());
+            ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expensePaymentMethod, csvTransaction.getDebitAmount());
             List<ExpenseManagerTransaction> expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
             if (expenseManagerTransactionList == null) {
                 LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
@@ -116,5 +104,25 @@ public class ExpenseReconciler {
      */
     private static ZonedDateTime endOfDay(LocalDate date) {
         return LocalDateTime.of(date, LocalTime.MAX).atZone(ZoneId.of("Asia/Singapore"));
+    }
+
+    /**
+     * Returns the equivalence mapping transaction type in the Expense Manager when given the <i>transactionType</i>
+     * @param transactionType Transaction type retrieve from CSV file
+     * @return the equivalence mapping transaction type in the Expense Manager when given the <i>transactionType</i>
+     */
+    private static PaymentMethod mapPaymentMethodFrom(TransactionType transactionType) {
+        if (transactionType == null) {
+            return null;
+        }
+        return switch(transactionType) {
+            case MASTERCARD -> PaymentMethod.DEBIT_CARD;
+            case NETS, POINT_OF_SALE -> PaymentMethod.NETS;
+            case PAY_NOW -> PaymentMethod.ELECTRONIC_TRANSFER;
+            case FUNDS_TRANSFER_I, FUNDS_TRANSFER_A, FAST_PAYMENT, FAST_COLLECTION -> PaymentMethod.ELECTRONIC_TRANSFER;
+            case BILL_PAYMENT -> PaymentMethod.I_BANKING;
+            case GIRO, GIRO_COLLECTION -> PaymentMethod.GIRO;
+            default -> null;
+        };
     }
 }
