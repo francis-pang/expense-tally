@@ -261,4 +261,94 @@ class ExpenseReconcilerTest {
                 .build();
         assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
     }
+
+    /**
+     * Test that there is no matching transaction, but cannot be detected because the transaction type is different
+     */
+    @Test
+    void reconcileBankData_testNullTransactionType() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .transactionType(null)
+            .build()
+        );
+
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(1)
+                .amount(0.5)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+    }
+
+    /**
+     * Test that no debit amount inside csv, but cannot be detected
+     */
+    @Test
+    void reconcileBankData_testZeroDebitAmountInCsv() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .debitAmount(0.0)
+            .build()
+        );
+
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(1)
+                .amount(0.5)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+    }
+
+    /**
+     * Test that NETS payment method inside csv, but cannot be detected
+     */
+    @Test
+    void reconcileBankData_testNetsInCsv_Matching() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .transactionType(TransactionType.POINT_OF_SALE)
+            .build()
+        );
+
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(1)
+                .paymentMethod(PaymentMethod.NETS)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+    }
+
+    /**
+     * Test that mismatch because of payment methods
+     */
+    @Test
+    void reconcileBankData_testGiroInCsv_NonMatching() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .transactionType(TransactionType.GIRO)
+            .build()
+        );
+
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(1)
+                .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
+    }
+
+    /**
+     * Test that mismatch because of a CREDIT payment methods, this will never happen. If happen, there is something wrong
+     */
+    @Test
+    void reconcileBankData_testInterestInCsv_NonMatching() {
+        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
+        testCsvTransactionList.add(new CsvTransactionTestBuilder()
+            .transactionType(TransactionType.INTEREST_EARNED)
+            .build()
+        );
+
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
+            new ExpnseMngrTrnsctnTestMapBuilder(1)
+                .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
+                .build();
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+    }
 }

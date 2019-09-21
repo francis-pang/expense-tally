@@ -83,8 +83,7 @@ public class ExpenseReconciler {
         return switch(transactionType) {
             case MASTERCARD -> PaymentMethod.DEBIT_CARD;
             case NETS, POINT_OF_SALE -> PaymentMethod.NETS;
-            case PAY_NOW -> PaymentMethod.ELECTRONIC_TRANSFER;
-            case FUNDS_TRANSFER_I, FUNDS_TRANSFER_A, FAST_PAYMENT, FAST_COLLECTION -> PaymentMethod.ELECTRONIC_TRANSFER;
+            case PAY_NOW, FUNDS_TRANSFER_I, FUNDS_TRANSFER_A, FAST_PAYMENT, FAST_COLLECTION -> PaymentMethod.ELECTRONIC_TRANSFER;
             case BILL_PAYMENT -> PaymentMethod.I_BANKING;
             case GIRO, GIRO_COLLECTION -> PaymentMethod.GIRO;
             default -> null;
