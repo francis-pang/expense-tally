@@ -34,7 +34,8 @@ jobs:
       if: branch = "feature/ci-version"
       script:
         - git checkout $TRAVIS_BRANCH
-        - mvn --batch-mode release:prepare -Dresume=false release:perform
+        - mvn --batch-mode release:prepare
+        - mvn --batch-mode release:perform
 # Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there
 # is need to deploy
 #    - stage: install
