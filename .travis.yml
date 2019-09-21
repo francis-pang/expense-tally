@@ -4,6 +4,7 @@ jdk:
   - openjdk13
 
 before_install:
+  - eval "$(ssh-agent -s)"
   - openssl aes-256-cbc -K $encrypted_0e40c5863533_key -iv $encrypted_0e40c5863533_iv
     -in deploy_key.enc -out ./deploy_key -d
   - ssh-add ./deploy_key
