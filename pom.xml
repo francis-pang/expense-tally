@@ -3,7 +3,7 @@
     <groupId>expense-tally</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>jar</packaging>
-    <version>3-SNAPSHOT</version>
+    <version>4-SNAPSHOT</version>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
