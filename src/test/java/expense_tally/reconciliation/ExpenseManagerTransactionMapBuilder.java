@@ -34,8 +34,8 @@ public class ExpenseManagerTransactionMapBuilder {
         List<ExpenseManagerTransaction> expenseManagerTransactions = new ArrayList<>();
         expenseManagerTransactions.add(expenseManagerTransaction);
 
-        ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expenseManagerTransaction.getPaymentMethod());
-        expenseManagerMapKey.setAmount(expenseManagerTransaction.getAmount());
+        ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(
+            expenseManagerTransaction.getPaymentMethod(), expenseManagerTransaction.getAmount());
 
         expenseTransactionMap.put(expenseManagerMapKey, expenseManagerTransactions);
     }
