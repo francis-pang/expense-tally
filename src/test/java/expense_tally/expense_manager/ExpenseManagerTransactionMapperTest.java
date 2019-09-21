@@ -4,7 +4,9 @@ import expense_tally.expense_manager.model.*;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.JUnitJupiterSoftAssertions;
 import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Instant;
@@ -14,11 +16,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 
+@ExtendWith(SoftAssertionsExtension.class)
 class ExpenseManagerTransactionMapperTest {
-    //FIXME: Check why not working
-    @RegisterExtension
-    private final JUnitJupiterSoftAssertions softAssertions = new JUnitJupiterSoftAssertions();
-
     private ExpenseReport constructExpenseReport(
             int id, String account, double amount, String category, String subcategory, String paymentMethod,
             String description, String expensedTime, String modificationTime, double referenceAmount, String status,
@@ -103,7 +102,7 @@ class ExpenseManagerTransactionMapperTest {
      * Expected Output: A list containing of 1 expense transaction will be returned
      */
     @Test
-    void mapExpenseReportsToList_oneExpenseReport() {
+    void mapExpenseReportsToList_oneExpenseReport(SoftAssertions softly) {
         // Create test data
         List<ExpenseReport> testingExpenseReports = new ArrayList<>();
         testingExpenseReports.add(constructExpenseReport(
@@ -129,8 +128,6 @@ class ExpenseManagerTransactionMapperTest {
 
         List<ExpenseManagerTransaction> actualExpenseManagerTransactions =
                 ExpenseTransactionMapper.mapExpenseReportsToList(testingExpenseReports);
-
-        SoftAssertions softly = new SoftAssertions();
         softly.assertThat(actualExpenseManagerTransactions).hasSize(1);
         softly.assertThat(actualExpenseManagerTransactions)
                 .extracting("amount").contains(1.78, atIndex(0));
@@ -155,7 +152,7 @@ class ExpenseManagerTransactionMapperTest {
      * what we expect
      */
     @Test
-    void mapExpenseReportsToList_multiple() {
+    void mapExpenseReportsToList_multiple(SoftAssertions softly) {
         // Create test data
         List<ExpenseReport> testingExpenseReports = new ArrayList<>();
         testingExpenseReports.add(constructExpenseReport(
@@ -223,10 +220,7 @@ class ExpenseManagerTransactionMapperTest {
 
         List<ExpenseManagerTransaction> actualExpenseManagerTransactions =
                 ExpenseTransactionMapper.mapExpenseReportsToList(testingExpenseReports);
-
-        SoftAssertions softly = new SoftAssertions();
         softly.assertThat(actualExpenseManagerTransactions).hasSize(3);
-
         //TODO: can be refactored in this way: https://github.com/joel-costigliola/assertj-examples/blob/master/assertions-examples/src/test/java/org/assertj/examples/MapAssertionsExamples.java
         softly.assertThat(actualExpenseManagerTransactions)
                 .extracting("amount").contains(6.8, atIndex(0));
@@ -320,7 +314,7 @@ class ExpenseManagerTransactionMapperTest {
      * Expected Output: A map of one item will appear
      */
     @Test
-    void mapExpenseReportsToMap_oneExpenseReport() {
+    void mapExpenseReportsToMap_oneExpenseReport(SoftAssertions softly) {
         // Create test data
         List<ExpenseReport> testingExpenseReports = new ArrayList<>();
         testingExpenseReports.add(constructExpenseReport(
@@ -361,9 +355,6 @@ class ExpenseManagerTransactionMapperTest {
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMapKeyListMap =
                 ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
-
-        SoftAssertions softly = new SoftAssertions();
-
         softly.assertThat(actualExpenseManagerMapKeyListMap).isNotEmpty();
         softly.assertThat(actualExpenseManagerMapKeyListMap).hasSize(1);
         softly.assertThat(actualExpenseManagerMapKeyListMap).containsExactly(
@@ -377,7 +368,7 @@ class ExpenseManagerTransactionMapperTest {
      * Expected Output: A map of one item will appear, because it is combined
      */
     @Test
-    void mapExpenseReportsToMap_multipleExpenseReport() {
+    void mapExpenseReportsToMap_multipleExpenseReport(SoftAssertions softly) {
         // Create test data
         List<ExpenseReport> testingExpenseReports = new ArrayList<>();
         testingExpenseReports.add(constructExpenseReport(
@@ -514,9 +505,6 @@ class ExpenseManagerTransactionMapperTest {
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMapKeyListMap =
                 ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
-
-        SoftAssertions softly = new SoftAssertions();
-
         softly.assertThat(actualExpenseManagerMapKeyListMap).isNotEmpty();
         softly.assertThat(actualExpenseManagerMapKeyListMap).hasSize(2);
         softly.assertThat(actualExpenseManagerMapKeyListMap).containsOnly(
