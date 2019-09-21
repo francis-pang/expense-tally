@@ -9,9 +9,9 @@ public class CsvTransactionTestBuilder {
   private LocalDate transactionDate;
   private String reference = "";
 
-  private double debitAmount = 0;
+  private double debitAmount = 0.8;
   private double creditAmount = 0;
-  private String transactionRef1 = "";
+  private String transactionRef1 = "KOUFU PTE LTD SI NG 23APR,5548-2741-0014-1067";
   private String transactionRef2 = "";
   private String transactionRef3 = "";
   private TransactionType type = null;
