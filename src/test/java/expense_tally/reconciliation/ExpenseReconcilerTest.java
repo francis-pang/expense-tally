@@ -7,6 +7,7 @@ import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.PaymentMethod;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,27 @@ class ExpenseReconcilerTest {
      * 5)
      */
 
+    //TODO: Generalise a builder class to build CsvTransaction. This can be used for all test classes
+    private CsvTransaction constructCsvTransaction(String transactionDate, String reference, double debitAmount,
+                                                   double creditAmount, String transactionRef1,
+                                                   String transactionRef2, String transactionRef3,
+                                                   TransactionType transactionType) {
+        CsvTransaction csvTransaction = new CsvTransaction();
+        String[] transactionDataStringArray = transactionDate.split("-");
+        csvTransaction.setTransactionDate(LocalDate.of(
+                Integer.parseInt(transactionDataStringArray[2]),
+                Integer.parseInt(transactionDataStringArray[1]),
+                Integer.parseInt(transactionDataStringArray[0])));
+        csvTransaction.setReference(reference);
+        csvTransaction.setDebitAmount(debitAmount);
+        csvTransaction.setCreditAmount(creditAmount);
+        csvTransaction.setTransactionRef1(transactionRef1);
+        csvTransaction.setTransactionRef2(transactionRef2);
+        csvTransaction.setTransactionRef3(transactionRef3);
+        csvTransaction.setType(transactionType);
+        return csvTransaction;
+    }
+
     /*
      * Test Input:
      * 0 Expense Manager
@@ -56,14 +78,11 @@ class ExpenseReconcilerTest {
     @Test
     void reconcileBankData_noExpenseManager() {
         List<CsvTransaction> testCsvTransactions = new ArrayList<>();
-        testCsvTransactions.add(
-            new CsvTransactionTestBuilder()
-                .debitAmount(1.0)
-                .transactionType(TransactionType.BILL_PAYMENT)
-                .build()
-        );
+        testCsvTransactions.add(constructCsvTransaction("24-6-2019", "", 1, 0, "", "", "",
+                TransactionType.BILL_PAYMENT));
         assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactions, new HashMap<>())).isEqualTo(1);
     }
+
 
     /**
      * Test Input:
@@ -74,7 +93,7 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_noCsvTransaction() {
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap = new ExpnseMngrTrnsctnTestMapBuilder(0).build();
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap = new ExpenseManagerTransactionMapBuilder().build();
         assertThat(ExpenseReconciler.reconcileBankData(new ArrayList<>(), testExpenseTransactionMap)).isEqualTo(0);
     }
 
@@ -88,16 +107,13 @@ class ExpenseReconcilerTest {
     @Test
     void reconcileBankData_nullExpenseManager() {
         List<CsvTransaction> testCsvTransactions = new ArrayList<>();
-        testCsvTransactions.add(new CsvTransactionTestBuilder()
-            .debitAmount(1.0)
-            .transactionType(TransactionType.BILL_PAYMENT)
-            .build()
-        );
+        testCsvTransactions.add(constructCsvTransaction("24-6-2019", "", 1, 0, "", "", "",
+                TransactionType.BILL_PAYMENT));
         assertThatThrownBy(() -> {
             ExpenseReconciler.reconcileBankData(testCsvTransactions, null);
         })
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Null reference is not an accepted expenseTransactionMap value.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Null reference is not an accepted expenseTransactionMap value.");
     }
 
     /**
@@ -109,8 +125,7 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_nullCsvTransaction() {
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(0).build();
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap = new ExpenseManagerTransactionMapBuilder().build();
         assertThatThrownBy(() -> {
             ExpenseReconciler.reconcileBankData(null, testExpenseTransactionMap);
         })
@@ -127,18 +142,19 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_singleNonMatchingCreditCsvTransaction() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .reference("MST")
-            .transactionType(TransactionType.MASTERCARD)
-            .build()
-        );
+        List<CsvTransaction> csvTransactionList = new ArrayList<>();
+        csvTransactionList.add(constructCsvTransaction(
+                "24-4-2019",
+                "MST",
+                0.80,
+                0.0,
+                "KOUFU PTE LTD          SI NG 23APR,5548-2741-0014-1067",
+                "",
+                "",
+                TransactionType.MASTERCARD));
 
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .amount(0.0)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMap = new ExpenseManagerTransactionMapBuilder(0.80, PaymentMethod.DEBIT_CARD, 0.0).build();
+        assertThat(ExpenseReconciler.reconcileBankData(csvTransactionList, expenseManagerMap)).isEqualTo(1);
     }
 
     /*
@@ -150,16 +166,21 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_singleMastchingTransaction() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .reference("MST")
-            .transactionType(TransactionType.MASTERCARD)
-            .build()
-        );
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+        List<CsvTransaction> csvTransactionList = new ArrayList<>();
+        csvTransactionList.add(constructCsvTransaction(
+                "24-4-2019",
+                "MST",
+                0.80,
+                0.0,
+                "KOUFU PTE LTD          SI NG 23APR,5548-2741-0014-1067",
+                "",
+                "",
+                TransactionType.MASTERCARD));
+        ExpenseManagerTransactionMapBuilder expenseManagerTransactionMapBuilder =
+                new ExpenseManagerTransactionMapBuilder(0.80, PaymentMethod.DEBIT_CARD, 0.0);
+        expenseManagerTransactionMapBuilder.setExpensedTime("2019-04-24T10:15:30.00Z");
+        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMap = expenseManagerTransactionMapBuilder.build();
+        assertThat(ExpenseReconciler.reconcileBankData(csvTransactionList, expenseManagerMap)).isEqualTo(0);
     }
 
     /*
@@ -167,22 +188,11 @@ class ExpenseReconcilerTest {
      * - 1 Expense Manager transaction
      * - 1 CSV Transaction
      *
-     * Scenario: That that they do not match
+     * Scenario: That that they match
      */
     @Test
     void reconcileBankData_singleNonMatchingTransaction() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .reference("MST")
-            .transactionType(TransactionType.MASTERCARD)
-            .build()
-        );
 
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .amount(0.5)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
     }
 
     /*
@@ -194,29 +204,7 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_multipleNonMatchingCsvTransaction() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .reference("MST")
-            .transactionType(TransactionType.MASTERCARD)
-            .build()
-        );
 
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .transactionType(TransactionType.PAY_NOW)
-            .build()
-        );
-
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .debitAmount(5.0)
-            .transactionType(TransactionType.PAY_NOW)
-            .build()
-        );
-
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(3)
-                .addCustomisedTransaction(5.0, PaymentMethod.ELECTRONIC_TRANSFER, 2009, 4, 24)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
     }
 
     /*
@@ -228,17 +216,7 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_multipleMatchingTransactionSameDay() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .reference("MST")
-            .transactionType(TransactionType.MASTERCARD)
-            .build()
-        );
 
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(3)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
     }
 
     /*
@@ -250,105 +228,6 @@ class ExpenseReconcilerTest {
      */
     @Test
     void reconcileBankData_singleMatchingTransactionDifferentDay() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .transactionDate(2015,4,24)
-            .build()
-        );
 
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(3)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
-    }
-
-    /**
-     * Test that there is no matching transaction, but cannot be detected because the transaction type is different
-     */
-    @Test
-    void reconcileBankData_testNullTransactionType() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .transactionType(null)
-            .build()
-        );
-
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .amount(0.5)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
-    }
-
-    /**
-     * Test that no debit amount inside csv, but cannot be detected
-     */
-    @Test
-    void reconcileBankData_testZeroDebitAmountInCsv() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .debitAmount(0.0)
-            .build()
-        );
-
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .amount(0.5)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
-    }
-
-    /**
-     * Test that NETS payment method inside csv, but cannot be detected
-     */
-    @Test
-    void reconcileBankData_testNetsInCsv_Matching() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .transactionType(TransactionType.POINT_OF_SALE)
-            .build()
-        );
-
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .paymentMethod(PaymentMethod.NETS)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
-    }
-
-    /**
-     * Test that mismatch because of payment methods
-     */
-    @Test
-    void reconcileBankData_testGiroInCsv_NonMatching() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .transactionType(TransactionType.GIRO)
-            .build()
-        );
-
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
-    }
-
-    /**
-     * Test that mismatch because of a CREDIT payment methods, this will never happen. If happen, there is something wrong
-     */
-    @Test
-    void reconcileBankData_testInterestInCsv_NonMatching() {
-        List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
-        testCsvTransactionList.add(new CsvTransactionTestBuilder()
-            .transactionType(TransactionType.INTEREST_EARNED)
-            .build()
-        );
-
-        Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(1)
-                .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
-                .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
     }
 }

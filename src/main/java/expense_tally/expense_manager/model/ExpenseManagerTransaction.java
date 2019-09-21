@@ -90,4 +90,17 @@ public class ExpenseManagerTransaction {
     public int hashCode() {
         return Objects.hash(amount, category, subcategory, paymentMethod, description, expensedTime, referenceAmount);
     }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ExpenseManagerTransaction.class.getSimpleName() + "[", "]")
+                .add("amount=" + amount)
+                .add("category=" + category)
+                .add("subcategory=" + subcategory)
+                .add("paymentMethod=" + paymentMethod)
+                .add("description='" + description + "'")
+                .add("expensedTime=" + expensedTime)
+                .add("referenceAmount=" + referenceAmount)
+                .toString();
+    }
 }

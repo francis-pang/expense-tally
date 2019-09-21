@@ -17,8 +17,34 @@ public class ExpenseManagerMapKey implements Comparable {
      *
      * @param paymentMethod payment method of the transaction
      */
-    public ExpenseManagerMapKey(PaymentMethod paymentMethod, Double amount) {
+    public ExpenseManagerMapKey(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    /**
+     * Returns the payment method of this key
+     *
+     * @return the payment method of this key
+     */
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    /**
+     * Returns the transaction amount of this key
+     *
+     * @return the transaction amount of this key
+     */
+    public Double getAmount() {
+        return amount;
+    }
+
+    /**
+     * Sets the transaction amount to be part of the key content for this map
+     *
+     * @param amount the transaction amount
+     */
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
@@ -34,6 +60,14 @@ public class ExpenseManagerMapKey implements Comparable {
     @Override
     public int hashCode() {
         return Objects.hash(paymentMethod, amount);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ExpenseManagerMapKey.class.getSimpleName() + "[", "]")
+                .add("paymentMethod=" + paymentMethod)
+                .add("amount=" + amount)
+                .toString();
     }
 
     @Override

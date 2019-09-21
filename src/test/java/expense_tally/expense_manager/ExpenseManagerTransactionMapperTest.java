@@ -350,7 +350,8 @@ class ExpenseManagerTransactionMapperTest {
                 0
         ));
 
-        ExpenseManagerMapKey expectedExpenseManagerMapKey = new ExpenseManagerMapKey(null, 1.78);
+        ExpenseManagerMapKey expectedExpenseManagerMapKey = new ExpenseManagerMapKey(null);
+        expectedExpenseManagerMapKey.setAmount(1.78);
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMapKeyListMap =
                 ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
@@ -475,7 +476,8 @@ class ExpenseManagerTransactionMapperTest {
                 0
         ));
 
-        ExpenseManagerMapKey expectedcashExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.CASH, 1.78);
+        ExpenseManagerMapKey expectedcashExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.CASH);
+        expectedcashExpenseManagerMapKey.setAmount(1.78);
 
         List<ExpenseManagerTransaction> expectedGrabPayExpenseManagerTransactionList = new ArrayList<>();
         expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
@@ -497,7 +499,9 @@ class ExpenseManagerTransactionMapperTest {
                 3.0
         ));
 
-        ExpenseManagerMapKey expectedGrabPayExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.GRAY_PAY, 3.0);
+        ExpenseManagerMapKey expectedGrabPayExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.GRAY_PAY);
+        expectedGrabPayExpenseManagerMapKey.setAmount(3.0);
+
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMapKeyListMap =
                 ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
