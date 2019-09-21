@@ -2,6 +2,11 @@ dist: bionic
 language: java
 jdk:
   - openjdk13
+
+before_install:
+- openssl aes-256-cbc -K $encrypted_0e40c5863533_key -iv $encrypted_0e40c5863533_iv
+  -in deploy_key.enc -out ./deploy_key -d
+
 addons:
   sonarcloud:
     organization: boyshawn-github
@@ -27,7 +32,7 @@ jobs:
         - git checkout $TRAVIS_BRANCH
         - mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.2
         - mvn release:update-versions -DdevelopmentVersion=5.3
-# Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there 
+# Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there
 # is need to deploy
 #    - stage: install
 #      name: "Install the package into the local repository"
