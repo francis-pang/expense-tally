@@ -42,8 +42,7 @@ public final class ExpenseTransactionMapper {
             Double transactionAmount = (expenseManagerTransaction.getReferenceAmount() > 0)
                     ? expenseManagerTransaction.getReferenceAmount()
                     : expenseManagerTransaction.getAmount();
-            ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.resolve(expenseReport.getPaymentMethod()));
-            expenseManagerMapKey.setAmount(transactionAmount);
+            ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.resolve(expenseReport.getPaymentMethod()), transactionAmount);
             List<ExpenseManagerTransaction> expenseManagerTransactionList;
             if (expenseTransactionMap.containsKey(expenseManagerMapKey)) {
                 expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
