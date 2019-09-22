@@ -3,6 +3,7 @@ package expense_tally.csv_parser;
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.MasterCard;
 import expense_tally.csv_parser.model.TransactionType;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,7 +14,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Parses a CSV file of bank transaction.
@@ -50,27 +50,31 @@ public class CsvParser implements CsvParsable {
     public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
         List<CsvTransaction> csvTransactionList = new ArrayList<>();
 
-        // Ignore until start with Transaction Date
-        BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filePath));
-        String line;
-        do {
-            line = csvBufferedReader.readLine();
-        } while (line != null && !line.startsWith(CSV_HEADER_LINE));
 
-        // Skip empty lines, then use getter to retrieve information
-        line = csvBufferedReader.readLine();
-        int counter = 0;
-        while (line != null) {
-            if (line.length() == 0) {
+        try (BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            // Ignore until start with Transaction Date
+            do {
                 line = csvBufferedReader.readLine();
-                continue;
-            }
-            CsvTransaction csvTransaction = parseSingleTransaction(line);
-            if (csvTransaction != null) {
-                csvTransactionList.add(parseSingleTransaction(line));
-            }
+            } while (line != null && !line.startsWith(CSV_HEADER_LINE));
 
+            // Skip empty lines, then use getter to retrieve information
             line = csvBufferedReader.readLine();
+            while (line != null) {
+                if (line.length() == 0) {
+                    line = csvBufferedReader.readLine();
+                    continue;
+                }
+                CsvTransaction csvTransaction = parseSingleTransaction(line);
+                if (csvTransaction != null) {
+                    csvTransactionList.add(parseSingleTransaction(line));
+                }
+
+                line = csvBufferedReader.readLine();
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Cannot read from CSV input file " + filePath);
+            throw LOGGER.throwing(Level.ERROR, ex);
         }
         return csvTransactionList;
     }
