@@ -4,7 +4,7 @@
     <groupId>expense-tally</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>jar</packaging>
-    <version>10-SNAPSHOT</version>
+    <version>11-SNAPSHOT</version>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
