@@ -24,15 +24,6 @@ public enum PaymentMethod {
     }
 
     /**
-     * Returns the value of this payment method
-     *
-     * @return the value of this payment method
-     */
-    public String value() {
-        return this.value;
-    }
-
-    /**
      * Returns the payment method represented by this <i>value</i>
      *
      * @param value content of the payment method
