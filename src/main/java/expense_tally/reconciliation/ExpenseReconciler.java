@@ -80,14 +80,28 @@ public class ExpenseReconciler {
         if (transactionType == null) {
             return null;
         }
-        return switch(transactionType) {
-            case MASTERCARD -> PaymentMethod.DEBIT_CARD;
-            case NETS, POINT_OF_SALE -> PaymentMethod.NETS;
-            case PAY_NOW, FUNDS_TRANSFER_I, FUNDS_TRANSFER_A, FAST_PAYMENT, FAST_COLLECTION -> PaymentMethod.ELECTRONIC_TRANSFER;
-            case BILL_PAYMENT -> PaymentMethod.I_BANKING;
-            case GIRO, GIRO_COLLECTION -> PaymentMethod.GIRO;
-            default -> null;
-        };
+        switch (transactionType) {
+            case MASTERCARD:
+                return PaymentMethod.DEBIT_CARD;
+            case NETS:
+            case POINT_OF_SALE:
+                return PaymentMethod.NETS;
+            case PAY_NOW:
+            case FUNDS_TRANSFER_I:
+            case FUNDS_TRANSFER_A:
+            case FAST_PAYMENT:
+            case FAST_COLLECTION:
+                return PaymentMethod.ELECTRONIC_TRANSFER;
+            case BILL_PAYMENT:
+                return PaymentMethod.I_BANKING;
+            case GIRO:
+            case GIRO_COLLECTION:
+                return PaymentMethod.GIRO;
+            default:
+                LOGGER.warn("Unable to resolve transaction type " + transactionType + " to a payment method.");
+                return null;
+
+        }
     }
 
     private static int calculateNumberOfMatchingTransactions(final LocalDate csvTransactionDate,
@@ -120,20 +134,17 @@ public class ExpenseReconciler {
             LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
             return false;
         }
-        return switch (calculateNumberOfMatchingTransactions(csvTransaction.getTransactionDate(),
+        switch (calculateNumberOfMatchingTransactions(csvTransaction.getTransactionDate(),
             expenseManagerTransactionList)) {
-            case 0 -> {
+            case 0:
                 LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
-                yield false;
-            }
-            case 1 -> {
+                return false;
+            case 1:
                 LOGGER.trace("Found a matching transaction");
-                yield true;
-            }
-            default -> {
+                return true;
+            default:
                 LOGGER.info("Found more than 1 matching transaction for this: " + csvTransaction.toString());
-                yield true;
-            }
-        };
+                return true;
+        }
     }
 }
