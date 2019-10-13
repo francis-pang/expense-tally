@@ -33,6 +33,7 @@ jobs:
     - stage: quality
       name: "Static code analysis"
       script:
+        - git fetch --unshallow --no-tags origin +refs/heads/master:refs/remotes/origin/master
         - mvn sonar:sonar
     - stage: release
       name: "Only for master: Prepare devlieries for release"
