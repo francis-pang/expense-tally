@@ -73,7 +73,7 @@ public class CsvParser implements CsvParsable {
                 line = csvBufferedReader.readLine();
             }
         } catch (IOException ex) {
-            LOGGER.error("Cannot read from CSV input file " + filePath);
+            LOGGER.error("Cannot read from CSV input file {}", filePath);
             throw LOGGER.throwing(Level.ERROR, ex);
         }
         return csvTransactionList;
@@ -126,18 +126,18 @@ public class CsvParser implements CsvParsable {
         }
         csvTransaction.setType(TransactionType.resolve(csvTransaction.getReference()));
         if (csvTransaction.getType() == null) {
-            CsvParser.LOGGER.info("Found a new transaction type: " + csvTransaction.getReference() + "; " + csvLine);
+            LOGGER.info("Found a new transaction type: {}; {}", csvTransaction.getReference(), csvLine);
             return csvTransaction;
         }
         switch (csvTransaction.getType()) {
             case MASTERCARD:
                 csvTransaction = new MasterCard(csvTransaction);
-                CsvParser.LOGGER.debug("Detect a PaymentCard transaction: " + csvTransaction.toString());
+                LOGGER.debug("Detect a PaymentCard transaction: {}", csvTransaction);
                 if (!csvTransaction.getTransactionRef2().isBlank()) {
                     ((MasterCard) csvTransaction).setCardNumber(csvElements[TRANSACTION_REF_2_POSITION]);
                 } else {
-                    CsvParser.LOGGER.trace("This MasterCard transaction doesn't record the card number.\n"
-                            + csvTransaction.toString());
+                    LOGGER.trace("This MasterCard transaction doesn't record the card number. {}",
+                        csvTransaction);
                 }
                 //FIXME: Error handling when there is no transaction date to be parsed
                 csvTransaction.setTransactionDate(
