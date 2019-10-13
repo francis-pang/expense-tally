@@ -1,8 +1,9 @@
 package expense_tally.expense_manager;
 
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.ExpenseReport;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * {@code ExpenseReportReader} provide the user ways to retrieve the
@@ -20,6 +20,8 @@ import java.util.Map;
  * @see expense_tally.expense_manager.model.ExpenseReport
  */
 public class ExpenseReportReader implements ExpenseReadable {
+    private static final Logger LOGGER = LogManager.getLogger(ExpenseReportReader.class);
+
     private DatabaseConnectable databaseConnectable;
 
     /**
@@ -45,35 +47,46 @@ public class ExpenseReportReader implements ExpenseReadable {
      */
     private List<ExpenseReport> importDataFromDatabase() throws SQLException {
         // Connect to expense_tally.persistence
-        List<ExpenseReport> expenseReports = new ArrayList<>();
-        // Read all records into objects
-        Connection databaseConnection = databaseConnectable.connect();
-        Statement retrieveAllStatement = databaseConnection.createStatement();
-        ResultSet retrieveAllResultSet = retrieveAllStatement.executeQuery("SELECT * FROM expense_report");
-        while (retrieveAllResultSet.next()) {
-            ExpenseReport expenseReport = new ExpenseReport();
-            expenseReport.setId(retrieveAllResultSet.getInt(Column.ID));
-            expenseReport.setAccount(retrieveAllResultSet.getString(Column.ACCOUNT));
-            expenseReport.setAmount(retrieveAllResultSet.getString(Column.AMOUNT));
-            expenseReport.setCategory(retrieveAllResultSet.getString(Column.CATEGORY));
-            expenseReport.setSubcategory(retrieveAllResultSet.getString(Column.SUBCATEGORY));
-            expenseReport.setPaymentMethod(retrieveAllResultSet.getString(Column.PAYMENT_METHOD));
-            expenseReport.setDescription(retrieveAllResultSet.getString(Column.DESCRIPTION));
-            expenseReport.setExpensedTime(retrieveAllResultSet.getLong(Column.EXPENSED_TIME));
-            expenseReport.setModificationTime(retrieveAllResultSet.getLong(Column.MODIFICATION_TIME));
-            expenseReport.setReferenceNumber(retrieveAllResultSet.getString(Column.REFERENCE_NUMBER));
-            expenseReport.setStatus(retrieveAllResultSet.getString(Column.STATUS));
-            expenseReport.setProperty1(retrieveAllResultSet.getString(Column.PROPERTY_1));
-            expenseReport.setProperty2(retrieveAllResultSet.getString(Column.PROPERTY_2));
-            expenseReport.setProperty3(retrieveAllResultSet.getString(Column.PROPERTY_3));
-            expenseReport.setProperty4(retrieveAllResultSet.getString(Column.PROPERTY_4));
-            expenseReport.setProperty5(retrieveAllResultSet.getString(Column.PROPERTY_5));
-            expenseReport.setTax(retrieveAllResultSet.getString(Column.TAX));
-            expenseReport.setExpenseTag(retrieveAllResultSet.getString(Column.EXPENSE_TAG));
-            expenseReports.add(expenseReport);
+        try (Connection databaseConnection = databaseConnectable.connect()) {
+            return importDataFromConnection(databaseConnection);
+        } catch (SQLException ex) {
+            LOGGER.error("Cannot read from database");
+            throw LOGGER.throwing(Level.ERROR, ex);
         }
-        retrieveAllResultSet.close();
-        databaseConnection.close();
+    }
+
+    private List<ExpenseReport> importDataFromConnection(Connection databaseConnection) throws SQLException {
+        try (Statement retrieveAllStatement = databaseConnection.createStatement()){
+            return importDataFromStatement(retrieveAllStatement);
+        }
+    }
+
+    private List<ExpenseReport> importDataFromStatement(Statement retrieveAllStatement) throws SQLException {
+        List<ExpenseReport> expenseReports = new ArrayList<>();
+        try (ResultSet retrieveAllResultSet = retrieveAllStatement.executeQuery("SELECT * FROM expense_report")){
+            while (retrieveAllResultSet.next()) {
+                ExpenseReport expenseReport = new ExpenseReport();
+                expenseReport.setId(retrieveAllResultSet.getInt(Column.ID));
+                expenseReport.setAccount(retrieveAllResultSet.getString(Column.ACCOUNT));
+                expenseReport.setAmount(retrieveAllResultSet.getString(Column.AMOUNT));
+                expenseReport.setCategory(retrieveAllResultSet.getString(Column.CATEGORY));
+                expenseReport.setSubcategory(retrieveAllResultSet.getString(Column.SUBCATEGORY));
+                expenseReport.setPaymentMethod(retrieveAllResultSet.getString(Column.PAYMENT_METHOD));
+                expenseReport.setDescription(retrieveAllResultSet.getString(Column.DESCRIPTION));
+                expenseReport.setExpensedTime(retrieveAllResultSet.getLong(Column.EXPENSED_TIME));
+                expenseReport.setModificationTime(retrieveAllResultSet.getLong(Column.MODIFICATION_TIME));
+                expenseReport.setReferenceNumber(retrieveAllResultSet.getString(Column.REFERENCE_NUMBER));
+                expenseReport.setStatus(retrieveAllResultSet.getString(Column.STATUS));
+                expenseReport.setProperty1(retrieveAllResultSet.getString(Column.PROPERTY_1));
+                expenseReport.setProperty2(retrieveAllResultSet.getString(Column.PROPERTY_2));
+                expenseReport.setProperty3(retrieveAllResultSet.getString(Column.PROPERTY_3));
+                expenseReport.setProperty4(retrieveAllResultSet.getString(Column.PROPERTY_4));
+                expenseReport.setProperty5(retrieveAllResultSet.getString(Column.PROPERTY_5));
+                expenseReport.setTax(retrieveAllResultSet.getString(Column.TAX));
+                expenseReport.setExpenseTag(retrieveAllResultSet.getString(Column.EXPENSE_TAG));
+                expenseReports.add(expenseReport);
+            }
+        }
         return expenseReports;
     }
 
@@ -96,6 +109,5 @@ public class ExpenseReportReader implements ExpenseReadable {
         public static final String PROPERTY_5 = "property5";
         public static final String TAX = "tax";
         public static final String EXPENSE_TAG = "expense_tag";
-
     }
 }
