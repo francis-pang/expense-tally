@@ -33,9 +33,10 @@ jobs:
     - stage: quality
       name: "Static code analysis"
       script:
-        - sonar-scanner
+        - git fetch --unshallow --no-tags origin +refs/heads/master:refs/remotes/origin/master
+        - mvn sonar:sonar
     - stage: release
-      name: "Only for master: Prepare devlieries for release"
+      name: "Only for master: Prepare deliveries for release"
       # require the branch name to be master (note for PRs this is the base branch name)
       if: (type = push) AND (branch = master) AND (commit_message =~ /^(?!\[maven-release-plugin\] prepare).+/) AND tag IS blank
       script:
