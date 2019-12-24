@@ -1,5 +1,8 @@
 package expense_tally.csv_parser.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +17,7 @@ import java.util.StringJoiner;
  * @see CsvTransaction
  */
 public class MasterCard extends CsvTransaction {
+    private static final Logger LOGGER = LogManager.getLogger(MasterCard.class);
     //TODO: Change to custom format
     private String cardNumber;
 
@@ -57,7 +61,13 @@ public class MasterCard extends CsvTransaction {
     public static LocalDate extractTransactionDate(LocalDate bankTransactionDate, String reference1) {
         final String RAW_DATE_FORMAT = "yyyyddMMM";
         int yearOfTransaction = bankTransactionDate.getYear();
-        String monthOfTransactionString = convertToTitleCase(extractLastWord(reference1).substring(2, 5));
+        if (reference1.isBlank()) {
+            LOGGER.warn("reference1 is empty");
+            return bankTransactionDate;
+        }
+        String lastWord = extractLastWord(reference1);
+        String month = lastWord.substring(2 , 5);
+        String monthOfTransactionString = convertToTitleCase(month);
         if ("Dec".equals(monthOfTransactionString) && bankTransactionDate.getMonth() == Month.JANUARY) {
             yearOfTransaction--;
         }
