@@ -1,10 +1,12 @@
 package expense_tally.csv_parser.model;
 
+import expense_tally.csv_parser.exception.InvalidReferenceDateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -18,6 +20,10 @@ import java.util.StringJoiner;
  */
 public class MasterCard extends CsvTransaction {
     private static final Logger LOGGER = LogManager.getLogger(MasterCard.class);
+    private static final String RAW_DATE_FORMAT = "yyyyddMMM";
+    private static final char SPACE_CHARACTER = ' ';
+    private static final DateTimeFormatter REFERENCE_1_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMM");
+    private static final String INVALID_REFERENCE_DATE_EXCEPTION_ERR_MSG = "Referenced date is not well formatted.";
     //TODO: Change to custom format
     private String cardNumber;
 
@@ -58,47 +64,64 @@ public class MasterCard extends CsvTransaction {
      * @param reference1          reference line 1
      * @return the transaction date
      */
-    public static LocalDate extractTransactionDate(LocalDate bankTransactionDate, String reference1) {
-        final String RAW_DATE_FORMAT = "yyyyddMMM";
+    public static LocalDate extractTransactionDate(final LocalDate bankTransactionDate, final String reference1)
+        throws InvalidReferenceDateException {
         int yearOfTransaction = bankTransactionDate.getYear();
         if (reference1.isBlank()) {
             LOGGER.warn("reference1 is empty");
             return bankTransactionDate;
         }
+        // Inside the CSV file, it is known that the date of transaction (without the year) is recorded at end of the
+        // field reference1. The date of transaction is stored in ddMMM format. An example is 20DDEC, which mean 20th
+        // December.
         String lastWord = extractLastWord(reference1);
-        String month = lastWord.substring(2 , 5);
-        String monthOfTransactionString = convertToTitleCase(month);
-        if ("Dec".equals(monthOfTransactionString) && bankTransactionDate.getMonth() == Month.JANUARY) {
+        MonthDay transactionMonthDay = toMonthDayFromPartialDate(lastWord);
+        Month transactionMonth = transactionMonthDay.getMonth();
+        Month bankTransactionMonth = bankTransactionDate.getMonth();
+        if (Month.DECEMBER.equals(transactionMonth) &&
+            Month.JANUARY.equals(bankTransactionMonth)) {
             yearOfTransaction--;
         }
-        String transactionDateString = yearOfTransaction + // Year
-                extractLastWord(reference1).substring(0, 2) +  //Day
-                monthOfTransactionString; //Month
-        DateTimeFormatter transactionDateFormatter = DateTimeFormatter.ofPattern(RAW_DATE_FORMAT);
-        return LocalDate.parse(transactionDateString, transactionDateFormatter);
+        return LocalDate.of(yearOfTransaction, transactionMonthDay.getMonthValue(), transactionMonthDay.getDayOfMonth());
+    }
+
+    private static MonthDay toMonthDayFromPartialDate(final String date) throws InvalidReferenceDateException {
+        // Since we know that the date is stored in ddMMM format, we will extract it.
+        if (date == null || date.length() != 5) {
+            throw new InvalidReferenceDateException(INVALID_REFERENCE_DATE_EXCEPTION_ERR_MSG);
+        }
+        String titleCaseDate = convertDateToTitleCase(date);
+        return MonthDay.parse(titleCaseDate, REFERENCE_1_DATE_FORMAT);
+    }
+
+    /**
+     * Returns a formatted date which the month is titled case
+     * @param date date in DDMMM formate
+     * @return a formatted date which the month is titled case
+     */
+    private static String convertDateToTitleCase(String date) {
+        String titleCaseDate = date.toLowerCase();
+        char firstLetterOfMonth = titleCaseDate.charAt(2);
+        char firstLetterOfMonthUpperCase = Character.toUpperCase(firstLetterOfMonth);
+        // This method works because we know that the first 3 letters abbreviation of each month is distinct among
+        // themselves, so we can replace by all occurances of that letter.
+        return titleCaseDate.replace(firstLetterOfMonth, firstLetterOfMonthUpperCase);
     }
 
     /**
      * Returns the last word of <i>string</i>
-     * The last word is defined as the string after the last whitespace.
+     * <p>The last word is defined as the string after the last whitespace.</p>
      *
      * @param string string containing the last word
      * @return the last word of <i>string</i>
      */
-    private static String extractLastWord(String string) {
-        return string.substring(string.lastIndexOf(' ') + 1);
-    }
-
-    /**
-     * Return a converted title case version of <i>string</i>
-     *
-     * @param string string to be converted
-     * @return converted title case of <i>string</i>
-     */
-    //TODO: Look for a pre-defined library of this functionality so that there is no need to maintain this
-    // functionality.
-    private static String convertToTitleCase(String string) {
-        return string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
+    private static String extractLastWord(final String string) {
+        String trimmedString = string.trim();
+        int positionOfLastSpace = trimmedString.lastIndexOf(SPACE_CHARACTER);
+        if (positionOfLastSpace == -1) {
+            return "";
+        }
+        return trimmedString.substring(positionOfLastSpace + 1);
     }
 
     @Override

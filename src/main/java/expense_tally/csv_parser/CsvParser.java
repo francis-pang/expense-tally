@@ -1,5 +1,6 @@
 package expense_tally.csv_parser;
 
+import expense_tally.csv_parser.exception.InvalidReferenceDateException;
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.MasterCard;
 import expense_tally.csv_parser.model.TransactionType;
@@ -140,10 +141,12 @@ public class CsvParser implements CsvParsable {
                         csvTransaction);
                 }
                 //FIXME: Error handling when there is no transaction date to be parsed
-                csvTransaction.setTransactionDate(
-                        MasterCard.extractTransactionDate(
-                                csvTransaction.getTransactionDate(),
-                                csvTransaction.getTransactionRef1()));
+                try {
+                    csvTransaction.setTransactionDate(getMasterCardTransactionDate(csvTransaction));
+                } catch (InvalidReferenceDateException | RuntimeException e) {
+                    LOGGER.warn("Cannot retrieve transaction date from MasterCard transaction. Setting to bank transaction date.", e);
+                    csvTransaction.setTransactionDate(csvTransaction.getTransactionDate());
+                }
                 break;
             case FAST_PAYMENT:
                 if (TransactionType.PAY_NOW.value().equals(csvTransaction.getTransactionRef1())) {
@@ -164,5 +167,11 @@ public class CsvParser implements CsvParsable {
                 // Do nothing
         }
         return csvTransaction;
+    }
+
+    private LocalDate getMasterCardTransactionDate(CsvTransaction csvTransaction) throws InvalidReferenceDateException {
+        LocalDate transactionDate = csvTransaction.getTransactionDate();
+        String transactionRef1 = csvTransaction.getTransactionRef1();
+        return MasterCard.extractTransactionDate(transactionDate, transactionRef1);
     }
 }
