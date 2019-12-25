@@ -3,6 +3,7 @@ package expense_tally;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +16,7 @@ import java.net.URL;
  */
 public class Main extends Application {
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
+    private static final String TITLE = "Expense Tally";
     private static final String FXML_RELATIVE_PATH = "/ui/ui.fxml";
 
 //    public static void main(String[] args) {
@@ -42,8 +44,9 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
         URL xmlUrl = getClass().getResource(FXML_RELATIVE_PATH);
         loader.setLocation(xmlUrl);
-        Scene root = loader.load();
-
+        VBox vBox = loader.load();
+        Scene root = new Scene(vBox);
+        primaryStage.setTitle(TITLE);
         primaryStage.setScene(root);
         primaryStage.show();
     }
