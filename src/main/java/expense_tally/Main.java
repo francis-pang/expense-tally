@@ -15,6 +15,7 @@ import java.net.URL;
  */
 public class Main extends Application {
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
+    private static final String FXML_RELATIVE_PATH = "/ui/ui.fxml";
 
 //    public static void main(String[] args) {
 //        final int INSUFFICIENT_PARAMETERS_ERR_CODE = 1;
@@ -39,7 +40,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        URL xmlUrl = getClass().getResource("/ui/ui.fxml");
+        URL xmlUrl = getClass().getResource(FXML_RELATIVE_PATH);
         loader.setLocation(xmlUrl);
         Scene root = loader.load();
 
