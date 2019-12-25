@@ -11,15 +11,13 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox prefHeight="400.0" prefWidth="640.0" spacing="10.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="expense_tally.ui.MainController" >
-    <children>
-        <MenuBar VBox.vgrow="NEVER">
+<BorderPane fx:id="baseBorderPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="expense_tally.ui.MainController">
+    <top>
+        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
@@ -58,66 +56,87 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <Label text="Expense Tally">
-            <font>
-                <Font size="20.0" />
-            </font>
-            <VBox.margin>
-                <Insets left="10.0" />
-            </VBox.margin>
-        </Label>
-        <GridPane>
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+    </top>
+    <center>
+        <BorderPane>
+            <top>
+                <VBox spacing="10.0" BorderPane.alignment="CENTER">
                     <children>
-                        <TextField fx:id="csvFilePathTextField" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="CSV file path" />
-                        <Button fx:id="csvFilePathButton" mnemonicParsing="false" onAction="#handleCsvFilePathButtonAction" text="Open..." />
+                        <Label fx:id="titleLabel" text="Expense Tally">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets left="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <BorderPane>
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                            <center>
+                                <VBox fx:id="userFormVBox" BorderPane.alignment="CENTER">
+                                    <children>
+                                        <HBox spacing="5.0">
+                                            <children>
+                                                <TextField fx:id="csvFilePathTextField" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="CSV file path" />
+                                                <Button fx:id="csvFilePathButton" mnemonicParsing="false" onAction="#handleCsvFilePathButtonAction" text="Open..." />
+                                            </children>
+                                        </HBox>
+                                        <HBox spacing="5.0">
+                                            <children>
+                                                <TextField fx:id="databaseFilePathTextField" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="Database file path" />
+                                                <Button fx:id="databaseFilePathButton" mnemonicParsing="false" onAction="#handleDatabaseFilePathButton" text="Open..." />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                           <BorderPane.margin>
+                              <Insets right="10.0" />
+                           </BorderPane.margin>
+                                </VBox>
+                            </center>
+                            <right>
+                                <Button mnemonicParsing="false" text="Process" BorderPane.alignment="BOTTOM_RIGHT">
+                                    <opaqueInsets>
+                                        <Insets />
+                                    </opaqueInsets>
+                                </Button>
+                            </right>
+                        </BorderPane>
                     </children>
-                    <GridPane.margin>
-                        <Insets left="10.0" />
-                    </GridPane.margin>
-                </HBox>
-                <HBox layoutX="20.0" layoutY="40.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="1">
-                    <children>
-                        <TextField fx:id="databaseFilePathTextField" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="Database file path" />
-                        <Button fx:id="databaseFilePathButton" mnemonicParsing="false" onAction="#handleDatabaseFilePathButton" text="Open..." />
-                    </children>
-                    <GridPane.margin>
-                        <Insets left="10.0" />
-                    </GridPane.margin>
-                </HBox>
-            </children>
-        </GridPane>
-        <TableView prefHeight="200.0" prefWidth="200.0">
-            <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
-            </columns>
-            <VBox.margin>
-                <Insets left="10.0" right="10.0" />
-            </VBox.margin>
-        </TableView>
-        <ButtonBar prefHeight="40.0" prefWidth="200.0">
-            <buttons>
-                <Button mnemonicParsing="false" text="Apply Changes">
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                </Button>
-            </buttons>
-            <VBox.margin>
-                <Insets right="10.0" />
-            </VBox.margin>
-            <opaqueInsets>
-                <Insets />
-            </opaqueInsets>
-        </ButtonBar>
-    </children>
-</VBox>
+                </VBox>
+            </top>
+            <center>
+                <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                    <columns>
+                        <TableColumn prefWidth="75.0" text="C1" />
+                        <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+               <BorderPane.margin>
+                  <Insets top="20.0" />
+               </BorderPane.margin>
+                </TableView>
+            </center>
+         <bottom>
+              <ButtonBar fx:id="transactionTableButtonBar" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <buttons>
+                      <Button fx:id="transactionTableButton" mnemonicParsing="false" text="Apply Changes">
+                          <opaqueInsets>
+                              <Insets />
+                          </opaqueInsets>
+                      </Button>
+                  </buttons>
+                  <opaqueInsets>
+                      <Insets />
+                  </opaqueInsets>
+              </ButtonBar>
+         </bottom>
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+         </BorderPane.margin>
+        </BorderPane>
+    </center>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</BorderPane>
