@@ -5,6 +5,7 @@ import expense_tally.csv_parser.model.TransactionType;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.PaymentMethod;
+import expense_tally.reconciliation.model.DiscrepantTransaction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public class ExpenseReconciler {
      * @param expenseTransactionMap a collection of the database record in the Expense Manager
      * @return the number of transaction that is not found in the CSV
      */
-    public static int reconcileBankData(
+    public static List<DiscrepantTransaction> reconcileBankData(
         final List<CsvTransaction> csvTransactions,
         final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
         /**
@@ -51,14 +53,16 @@ public class ExpenseReconciler {
             throw new IllegalArgumentException(NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG);
         }
 
-        int numberOfNoMatchTransaction = 0;
+        List<DiscrepantTransaction> discrepantTransactions = new ArrayList<>();
         for (CsvTransaction csvTransaction : csvTransactions) {
             if (!csvRecordHasMatchingTransaction(csvTransaction, expenseTransactionMap)) {
-                numberOfNoMatchTransaction++;
+                DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+                discrepantTransactions.add(discrepantTransaction);
             }
         }
-        LOGGER.info("Found " + numberOfNoMatchTransaction + " non-matching transactions.");
-        return numberOfNoMatchTransaction;
+        final int discrepantTransactionSize = discrepantTransactions.size();
+        LOGGER.info("Found " + discrepantTransactionSize + " non-matching transactions.");
+        return discrepantTransactions;
     }
 
     /**

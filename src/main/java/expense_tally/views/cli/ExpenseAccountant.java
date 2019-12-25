@@ -1,8 +1,12 @@
-package expense_tally;
+package expense_tally.views.cli;
 
 import expense_tally.csv_parser.CsvParser;
 import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.expense_manager.*;
+import expense_tally.expense_manager.DatabaseConnectable;
+import expense_tally.expense_manager.ExpenseReadable;
+import expense_tally.expense_manager.ExpenseReportReader;
+import expense_tally.expense_manager.ExpenseTransactionMapper;
+import expense_tally.expense_manager.SqlLiteConnection;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.ExpenseReport;
@@ -104,7 +108,7 @@ public class ExpenseAccountant {
   private Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> getExpenseManagerTransactionsByKeyFrom(
       String databaseFilename) throws SQLException {
     /*
-     * Instead of using the Main as an Inversion of Control container, it will be better to create and initialise the
+     * Instead of using the caller as an Inversion of Control container, it will be better to create and initialise the
      *  service whenever you need them. Unless this is a long running process, each Service life cycle is short. They
      *  are one time use, and can be garbage collected after the information is extracted.
      */
