@@ -10,3 +10,7 @@ This application will aim to reconcilate the past transaction history against my
 
 **Note**
 * The javadocs in this project are inspired by the guidelines in [Liferay Portal Advanced Javadoc Guidelines](https://github.com/liferay/liferay-portal/blob/master/readme/ADVANCED_JAVADOC_GUIDELINES.markdown).
+* The package naming convention adopts the [Stack Exchange answer](https://softwareengineering.stackexchange.com/a/75929/88556):
+> Use **plural for packages with homogeneous contents** and **singular for packages with heterogeneous contents**.
+>
+> For example, a package named `com.myproject.task` does not mean that each contained class is an instance of a `task`. There might be a `TaskHandler`, a `TaskFactory` and etc. However, a package named `com.myproject.tasks` would contain different types that are all tasks: `TakeOutGarbageTask`, `DoTheDishesTask` and etc.
