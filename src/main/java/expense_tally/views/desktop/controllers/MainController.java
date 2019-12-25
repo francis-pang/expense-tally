@@ -12,6 +12,10 @@ import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.ExpenseReport;
 import expense_tally.reconciliation.ExpenseReconciler;
+import expense_tally.reconciliation.model.DiscrepantTransaction;
+import expense_tally.views.desktop.model.Transaction;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -33,7 +37,7 @@ public class MainController {
   private TextField csvFilePathTextField;
 
   @FXML
-  private TableView transactionTableView;
+  private TableView<Transaction> transactionTableView;
 
   @FXML
   protected void handleCsvFilePathTextFieldAction(MouseEvent event) {
@@ -87,8 +91,13 @@ public class MainController {
         ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
 
     // Reconcile both data source
-    ExpenseReconciler.reconcileBankData(csvTransactions, expenseManagerMap);
+    List<DiscrepantTransaction> discrepantTransactions =
+        ExpenseReconciler.reconcileBankData(csvTransactions, expenseManagerMap);
+
+    ObservableList<DiscrepantTransaction> discrepantTransactionObservableList =
+        FXCollections.observableArrayList(discrepantTransactions);
 
     // Convert to table view
+    transactionTableView = new TableView(discrepantTransactionObservableList);
   }
 }
