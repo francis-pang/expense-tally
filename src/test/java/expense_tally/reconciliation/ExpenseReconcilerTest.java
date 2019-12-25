@@ -5,8 +5,10 @@ import expense_tally.csv_parser.model.TransactionType;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.PaymentMethod;
+import expense_tally.reconciliation.model.DiscrepantTransaction;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 
 class ExpenseReconcilerTest {
 
@@ -62,7 +65,12 @@ class ExpenseReconcilerTest {
                 .transactionType(TransactionType.BILL_PAYMENT)
                 .build()
         );
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactions, new HashMap<>())).isEqualTo(1);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactions, new HashMap<>()))
+            .isNotNull()
+            .hasSize(1)
+            .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
+            .contains(tuple(1.0, "KOUFU PTE LTD SI NG 24APR,5548-2741-0014-1067", LocalDate.of(2009, 4, 24), TransactionType.BILL_PAYMENT));
     }
 
     /**
@@ -75,7 +83,9 @@ class ExpenseReconcilerTest {
     @Test
     void reconcileBankData_noCsvTransaction() {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap = new ExpnseMngrTrnsctnTestMapBuilder(0).build();
-        assertThat(ExpenseReconciler.reconcileBankData(new ArrayList<>(), testExpenseTransactionMap)).isEqualTo(0);
+        assertThat(ExpenseReconciler.reconcileBankData(new ArrayList<>(), testExpenseTransactionMap))
+            .isNotNull()
+            .hasSize(0);
     }
 
     /**
@@ -111,9 +121,7 @@ class ExpenseReconcilerTest {
     void reconcileBankData_nullCsvTransaction() {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseTransactionMap =
             new ExpnseMngrTrnsctnTestMapBuilder(0).build();
-        assertThatThrownBy(() -> {
-            ExpenseReconciler.reconcileBankData(null, testExpenseTransactionMap);
-        })
+        assertThatThrownBy(() -> ExpenseReconciler.reconcileBankData(null, testExpenseTransactionMap))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Null reference is not an accepted csvTransactions value.");
     }
@@ -138,7 +146,12 @@ class ExpenseReconcilerTest {
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .amount(0.0)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(1)
+            .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
+            .contains(tuple(0.8, "KOUFU PTE LTD SI NG 24APR,5548-2741-0014-1067", LocalDate.of(2009, 4, 24), TransactionType.MASTERCARD));
     }
 
     /*
@@ -149,7 +162,7 @@ class ExpenseReconcilerTest {
      * Scenario: That that they match
      */
     @Test
-    void reconcileBankData_singleMastchingTransaction() {
+    void reconcileBankData_singleMatchingTransaction() {
         List<CsvTransaction> testCsvTransactionList = new ArrayList<>();
         testCsvTransactionList.add(new CsvTransactionTestBuilder()
             .reference("MST")
@@ -159,7 +172,10 @@ class ExpenseReconcilerTest {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(0);
     }
 
     /*
@@ -182,7 +198,19 @@ class ExpenseReconcilerTest {
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .amount(0.5)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(1)
+            .extracting(
+                DiscrepantTransaction::getAmount,
+                DiscrepantTransaction::getDescription,
+                DiscrepantTransaction::getTime,
+                DiscrepantTransaction::getType
+            )
+            .contains(
+                tuple(0.8, "KOUFU PTE LTD SI NG 24APR,5548-2741-0014-1067", LocalDate.of(2009, 4, 24), TransactionType.MASTERCARD)
+            );
     }
 
     /*
@@ -213,10 +241,15 @@ class ExpenseReconcilerTest {
         );
 
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
-            new ExpnseMngrTrnsctnTestMapBuilder(3)
+            new ExpnseMngrTrnsctnTestMapBuilder(6)
                 .addCustomisedTransaction(5.0, PaymentMethod.ELECTRONIC_TRANSFER, 2009, 4, 24)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(1)
+            .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
+            .contains(tuple(0.8, "KOUFU PTE LTD SI NG 24APR,5548-2741-0014-1067", LocalDate.of(2009, 4, 24), TransactionType.PAY_NOW));
     }
 
     /*
@@ -238,7 +271,9 @@ class ExpenseReconcilerTest {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
             new ExpnseMngrTrnsctnTestMapBuilder(3)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(0);
     }
 
     /*
@@ -259,7 +294,12 @@ class ExpenseReconcilerTest {
         Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> testExpenseManagerMap =
             new ExpnseMngrTrnsctnTestMapBuilder(3)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(1)
+            .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
+            .contains(tuple(0.8, "KOUFU PTE LTD SI NG 24APR,5548-2741-0014-1067", LocalDate.of(2015, 4, 24), TransactionType.MASTERCARD));
     }
 
     /**
@@ -277,7 +317,10 @@ class ExpenseReconcilerTest {
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .amount(0.5)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(0);
     }
 
     /**
@@ -295,7 +338,10 @@ class ExpenseReconcilerTest {
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .amount(0.5)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(0);
     }
 
     /**
@@ -313,7 +359,10 @@ class ExpenseReconcilerTest {
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .paymentMethod(PaymentMethod.NETS)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(0);
     }
 
     /**
@@ -331,7 +380,12 @@ class ExpenseReconcilerTest {
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(1);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(1)
+            .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
+            .contains(tuple(0.8, "KOUFU PTE LTD SI NG 24APR,5548-2741-0014-1067", LocalDate.of(2009, 4, 24), TransactionType.GIRO));
     }
 
     /**
@@ -349,6 +403,9 @@ class ExpenseReconcilerTest {
             new ExpnseMngrTrnsctnTestMapBuilder(1)
                 .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
                 .build();
-        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap)).isEqualTo(0);
+
+        assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, testExpenseManagerMap))
+            .isNotNull()
+            .hasSize(0);
     }
 }
