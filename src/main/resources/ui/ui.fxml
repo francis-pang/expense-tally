@@ -76,6 +76,9 @@
                             </VBox.margin>
                             <center>
                                 <VBox fx:id="userFormVBox" BorderPane.alignment="CENTER">
+                                    <BorderPane.margin>
+                                        <Insets right="10.0" />
+                                    </BorderPane.margin>
                                     <children>
                                         <HBox spacing="5.0">
                                             <children>
@@ -88,16 +91,10 @@
                                             </children>
                                         </HBox>
                                     </children>
-                           <BorderPane.margin>
-                              <Insets right="10.0" />
-                           </BorderPane.margin>
                                 </VBox>
                             </center>
                             <right>
-                                <Button mnemonicParsing="false" text="Process" BorderPane.alignment="BOTTOM_RIGHT">
-                                    <opaqueInsets>
-                                        <Insets />
-                                    </opaqueInsets>
+                                <Button fx:id="generateTransactionTableButton" onAction="#handleGenerateTransactionTableButtonAction" mnemonicParsing="false" text="Process" BorderPane.alignment="BOTTOM_RIGHT">
                                 </Button>
                             </right>
                         </BorderPane>
@@ -105,7 +102,7 @@
                 </VBox>
             </top>
             <center>
-                <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                <TableView fx:id="transactionTableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <columns>
                         <TableColumn prefWidth="75.0" text="C1" />
                         <TableColumn prefWidth="75.0" text="C2" />
