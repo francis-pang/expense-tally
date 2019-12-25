@@ -79,14 +79,12 @@
                                     <children>
                                         <HBox spacing="5.0">
                                             <children>
-                                                <TextField fx:id="csvFilePathTextField" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="CSV file path" />
-                                                <Button fx:id="csvFilePathButton" mnemonicParsing="false" onAction="#handleCsvFilePathButtonAction" text="Open..." />
+                                                <TextField fx:id="databaseFilePathTextField" onAction="#handleDatabaseFilePathTextFieldAction" onMouseClicked="#handleDatabaseFilePathTextFieldAction" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="Database file path" />
                                             </children>
                                         </HBox>
                                         <HBox spacing="5.0">
                                             <children>
-                                                <TextField fx:id="databaseFilePathTextField" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="Database file path" />
-                                                <Button fx:id="databaseFilePathButton" mnemonicParsing="false" onAction="#handleDatabaseFilePathButton" text="Open..." />
+                                                <TextField fx:id="csvFilePathTextField" onAction="#handleCsvFilePathTextFieldAction" onMouseClicked="#handleCsvFilePathTextFieldAction" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="CSV file path" />
                                             </children>
                                         </HBox>
                                     </children>
