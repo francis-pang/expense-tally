@@ -17,19 +17,25 @@ import expense_tally.views.desktop.model.Transaction;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
-public class MainController {
+public class MainController implements Initializable {
   @FXML
   private TextField databaseFilePathTextField;
 
@@ -38,6 +44,15 @@ public class MainController {
 
   @FXML
   private TableView<Transaction> transactionTableView;
+
+  @FXML TableColumn<Transaction, Boolean> tableAddRecordCheckBox;
+
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    tableAddRecordCheckBox.setCellValueFactory(cellData -> cellData.getValue().meantToBeAddedToDatabaseProperty());
+    tableAddRecordCheckBox.setCellFactory($ -> new CheckBoxTableCell<>());
+  }
 
   @FXML
   protected void handleCsvFilePathTextFieldAction(MouseEvent event) {
@@ -62,7 +77,7 @@ public class MainController {
     return selectedFile.getAbsolutePath();
   }
 
-  protected void handleGenerateTransactionTableButtonAction(MouseEvent mouseEvent) {
+  public void handleGenerateTransactionTableButtonAction(javafx.event.ActionEvent event) {
     // Validate text field content
     String databaseFilePath = databaseFilePathTextField.getText();
     String csvFilePath = csvFilePathTextField.getText();
@@ -94,10 +109,16 @@ public class MainController {
     List<DiscrepantTransaction> discrepantTransactions =
         ExpenseReconciler.reconcileBankData(csvTransactions, expenseManagerMap);
 
-    ObservableList<DiscrepantTransaction> discrepantTransactionObservableList =
-        FXCollections.observableArrayList(discrepantTransactions);
+    List<Transaction> tableViewTransactions = new ArrayList<>();
+    discrepantTransactions.forEach(discrepantTransaction -> {
+      Transaction transaction = Transaction.from(discrepantTransaction);
+      tableViewTransactions.add(transaction);
+    });
+
+    ObservableList<Transaction> transactionObservableList =
+        FXCollections.observableArrayList(tableViewTransactions);
 
     // Convert to table view
-    transactionTableView = new TableView(discrepantTransactionObservableList);
+    transactionTableView.setItems(transactionObservableList);
   }
 }
