@@ -270,7 +270,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>expense_tally.Main</mainClass>
+                            <mainClass>expense_tally.views.cli.CommandLineRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -342,7 +342,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.3</version>
                 <configuration>
-                    <mainClass>expense_tally.Main</mainClass>
+                    <mainClass>expense_tally.views.desktop.DesktopClient</mainClass>
                 </configuration>
             </plugin>
         </plugins>

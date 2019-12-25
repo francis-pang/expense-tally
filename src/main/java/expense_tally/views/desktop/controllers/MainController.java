@@ -1,4 +1,4 @@
-package expense_tally.ui;
+package expense_tally.views.desktop.controllers;
 
 import expense_tally.csv_parser.CsvParsable;
 import expense_tally.csv_parser.CsvParser;
