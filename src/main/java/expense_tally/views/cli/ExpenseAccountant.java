@@ -28,10 +28,10 @@ import java.util.Map;
  */
 public class ExpenseAccountant {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseAccountant.class);
-  private static String csvFilename;
-  private static String databaseFilename;
+  private String csvFilename;
+  private String databaseFilename;
 
-  public ExpenseAccountant(String[] args) throws IllegalArgumentException, SQLException {
+  public ExpenseAccountant(String[] args) throws IllegalArgumentException {
     final String DATABASE_PARAMETER = "database-filepath";
     final String CSV_PARAMETER = "csv-filepath";
     final String PARAMETER_PREFIX = "--";
