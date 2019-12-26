@@ -97,14 +97,12 @@ class ExpenseReportReaderTest {
     }
 
     @Test
-    void getExpenseTransactions_SqlError() {
+    void getExpenseTransactions_SqlError() throws SQLException {
         DatabaseConnectable mockDatabaseConnectable = Mockito.spy(DatabaseConnectable.class);
-
-        assertThatThrownBy(() -> {
-            ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
-            when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("Test SQL error"));
-            testExpenseReadable.getExpenseTransactions();
-        }).isInstanceOf(SQLException.class);
+        ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
+        when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("Test SQL error"));
+        assertThatThrownBy(() -> testExpenseReadable.getExpenseTransactions())
+            .isInstanceOf(SQLException.class);
     }
 
     /**
