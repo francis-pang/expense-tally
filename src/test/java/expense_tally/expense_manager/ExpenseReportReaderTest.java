@@ -4,8 +4,9 @@ import expense_tally.expense_manager.model.ExpenseReport;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
@@ -20,8 +21,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseReportReaderTest {
-    @Mock
-    private DatabaseConnectable mockDatabaseConnectable;
+    @Spy
+    private DatabaseConnectable spyDatabaseConnectable;
 
     @Mock
     private Connection mockConnection;
@@ -32,13 +33,15 @@ class ExpenseReportReaderTest {
     @Mock
     ResultSet mockResultSet;
 
+    @InjectMocks
+    private ExpenseReportReader expenseReportReader;
+
     /**
      * A simple happy case where a single transaction database table is being read and parsed correctly
      */
     @Test
     void getExpenseTransactions_retrieve1Record() throws SQLException {
-        ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
-        when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
+        when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
         when(mockConnection.createStatement()).thenReturn(mockStatement);
         when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
 
@@ -68,7 +71,7 @@ class ExpenseReportReaderTest {
         when(mockResultSet.getString("tax")).thenReturn("");
         when(mockResultSet.getString("expense_tag")).thenReturn("");
 
-        List<ExpenseReport> actualExpenseReportList = testExpenseReadable.getExpenseTransactions();
+        List<ExpenseReport> actualExpenseReportList = expenseReportReader.getExpenseTransactions();
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(actualExpenseReportList).hasSize(1);
@@ -84,25 +87,21 @@ class ExpenseReportReaderTest {
 
     @Test
     void getExpenseTransactions_noRecord() throws SQLException {
-        DatabaseConnectable mockDatabaseConnectable = Mockito.spy(DatabaseConnectable.class);
-        ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
-
-        when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
+        when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
         when(mockConnection.createStatement()).thenReturn(mockStatement);
 
         when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
-        assertThat(testExpenseReadable.getExpenseTransactions()).hasSize(0);
+        assertThat(expenseReportReader.getExpenseTransactions()).hasSize(0);
     }
 
     @Test
     void getExpenseTransactions_SqlError() throws SQLException {
-        DatabaseConnectable mockDatabaseConnectable = Mockito.spy(DatabaseConnectable.class);
-        ExpenseReadable testExpenseReadable = new ExpenseReportReader(mockDatabaseConnectable);
-        when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("Test SQL error"));
-        assertThatThrownBy(() -> testExpenseReadable.getExpenseTransactions())
-            .isInstanceOf(SQLException.class);
+        when(spyDatabaseConnectable.connect()).thenThrow(new SQLException("test SQLException"));
+        assertThatThrownBy(() -> expenseReportReader.getExpenseTransactions())
+            .isInstanceOf(SQLException.class)
+            .hasMessage("test SQLException");
     }
 
     /**
