@@ -1,14 +1,13 @@
 package expense_tally.expense_manager.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
  * Custom class to store the content of key for a map between the this key and the list of
  * {@link ExpenseManagerTransaction}.
  */
 //TODO: This class can be generalised so that the key can be reused
-public class ExpenseManagerMapKey implements Comparable {
+public class ExpenseManagerMapKey implements Comparable<ExpenseManagerMapKey> {
     private PaymentMethod paymentMethod;
     private Double amount;
 
@@ -37,12 +36,8 @@ public class ExpenseManagerMapKey implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        if (this == o) return 0;
-        if (!(o instanceof ExpenseManagerMapKey)) {
-            return -1;
-        }
-        ExpenseManagerMapKey that = (ExpenseManagerMapKey) o;
+    public int compareTo(ExpenseManagerMapKey that) {
+        if (this == that) return 0;
         if (paymentMethod.equals(that.paymentMethod)) {
             return Double.compare(amount, that.amount);
         } else {
