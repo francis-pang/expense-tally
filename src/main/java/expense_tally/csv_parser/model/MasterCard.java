@@ -24,6 +24,7 @@ public class MasterCard extends CsvTransaction {
     private static final DateTimeFormatter REFERENCE_1_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMM");
     private static final String INVALID_REFERENCE_DATE_EXCEPTION_ERR_MSG = "Referenced date is not well formatted.";
     private static final String INVALID_CARD_NUMBER_ERR_MSG = "MasterCard number is invalid.";
+    private static final String NOT_MASTER_CARD_ERR_MSG = "CsvTransaction is not of MasterCard type.";
 
     private String cardNumber;
 
@@ -32,7 +33,7 @@ public class MasterCard extends CsvTransaction {
      *
      * @param cardNumber card number of this MasterCard© card
      */
-    public void setCardNumber(String cardNumber) {
+    private void setCardNumber(String cardNumber) {
         if (!PaymentCardValidator.isPaymentCardValid(cardNumber, TransactionType.MASTERCARD)) {
             throw new IllegalArgumentException(INVALID_CARD_NUMBER_ERR_MSG);
         }
@@ -42,32 +43,29 @@ public class MasterCard extends CsvTransaction {
     /**
      * An empty constructor on the mastercard. The default cardNumber is a null String.
      */
-    public MasterCard() {
+    private MasterCard() {
         super();
     }
 
     public static MasterCard from(CsvTransaction csvTransaction) {
+        TransactionType transactionType = csvTransaction.getTransactionType();
+        if (!transactionType.equals(TransactionType.MASTERCARD)) {
+            LOGGER.warn("This is not a MasterCard transaction", csvTransaction);
+            throw new IllegalArgumentException(NOT_MASTER_CARD_ERR_MSG);
+        }
         MasterCard masterCard = new MasterCard();
         masterCard.debitAmount = csvTransaction.getDebitAmount();
         masterCard.creditAmount = csvTransaction.getCreditAmount();
         masterCard.transactionRef1 = csvTransaction.getTransactionRef1();
-
         masterCard.transactionRef3 = csvTransaction.getTransactionRef3();
         masterCard.transactionType = TransactionType.MASTERCARD;
-
-        LocalDate transactionDate = csvTransaction.getTransactionDate();
         String ref1 = csvTransaction.getTransactionRef1();
         masterCard.transactionRef1 = ref1;
-        try {
-            masterCard.transactionDate = (ref1 == null || ref1.isBlank())
-                ? transactionDate
-                : extractTransactionDate(transactionDate, ref1);
-        } catch (InvalidReferenceDateException | RuntimeException e) {
-            LOGGER.warn("Cannot retrieve transaction date from MasterCard transaction. Setting to bank transaction date.", e);
-            masterCard.transactionDate = transactionDate;
-        }
+        LocalDate transactionDate = csvTransaction.getTransactionDate();
+        masterCard.setTransactionDate(transactionDate, ref1);
         String ref2 = csvTransaction.getTransactionRef2();
         masterCard.transactionRef2 = ref2;
+        masterCard.setCardNumber(ref2);
         if (ref2 != null && !ref2.isBlank()) {
             masterCard.setCardNumber(ref2);
         } else {
@@ -75,6 +73,17 @@ public class MasterCard extends CsvTransaction {
                 csvTransaction);
         }
         return masterCard;
+    }
+
+    private void setTransactionDate(LocalDate transactionDate, String transactionRef1) {
+        try {
+            this.transactionDate = (transactionRef1 == null || transactionRef1.isBlank())
+                ? transactionDate
+                : extractTransactionDate(transactionDate, transactionRef1);
+        } catch (InvalidReferenceDateException | RuntimeException e) {
+            LOGGER.warn("Cannot retrieve transaction date from MasterCard transaction. Setting to bank transaction date.", e);
+            this.transactionDate = transactionDate;
+        }
     }
 
     /**
@@ -87,7 +96,7 @@ public class MasterCard extends CsvTransaction {
      * @param reference1          reference line 1
      * @return the transaction date
      */
-    public static LocalDate extractTransactionDate(final LocalDate bankTransactionDate, final String reference1)
+    private static LocalDate extractTransactionDate(final LocalDate bankTransactionDate, final String reference1)
         throws InvalidReferenceDateException {
         int yearOfTransaction = bankTransactionDate.getYear();
         if (reference1.isBlank()) {
