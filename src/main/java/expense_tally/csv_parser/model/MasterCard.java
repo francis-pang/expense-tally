@@ -20,7 +20,6 @@ import java.util.StringJoiner;
  */
 public class MasterCard extends CsvTransaction {
     private static final Logger LOGGER = LogManager.getLogger(MasterCard.class);
-    private static final String RAW_DATE_FORMAT = "yyyyddMMM";
     private static final char SPACE_CHARACTER = ' ';
     private static final DateTimeFormatter REFERENCE_1_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMM");
     private static final String INVALID_REFERENCE_DATE_EXCEPTION_ERR_MSG = "Referenced date is not well formatted.";
@@ -43,15 +42,17 @@ public class MasterCard extends CsvTransaction {
         super();
     }
 
-    public MasterCard(CsvTransaction csvTransaction) {
-        this.setReference(csvTransaction.getReference());
-        this.setTransactionDate(csvTransaction.getTransactionDate());
-        this.setDebitAmount(csvTransaction.getDebitAmount());
-        this.setCreditAmount(csvTransaction.getCreditAmount());
-        this.setTransactionRef1(csvTransaction.getTransactionRef1());
-        this.setTransactionRef2(csvTransaction.getTransactionRef2());
-        this.setTransactionRef3(csvTransaction.getTransactionRef3());
-        this.setType(TransactionType.MASTERCARD);
+    public static MasterCard from(CsvTransaction csvTransaction) {
+        MasterCard masterCard = new MasterCard();
+        masterCard.reference = csvTransaction.getReference();
+        masterCard.transactionDate = csvTransaction.getTransactionDate();
+        masterCard.debitAmount = csvTransaction.getDebitAmount();
+        masterCard.creditAmount = csvTransaction.getCreditAmount();
+        masterCard.transactionRef1 = csvTransaction.getTransactionRef1();
+        masterCard.transactionRef2 = csvTransaction.getTransactionRef2();
+        masterCard.transactionRef3 = csvTransaction.getTransactionRef3();
+        masterCard.type = TransactionType.MASTERCARD;
+        return masterCard;
     }
 
     /**

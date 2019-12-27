@@ -11,24 +11,17 @@ import java.util.StringJoiner;
  */
 public class CsvTransaction {
     //Attributes
-    private LocalDate transactionDate;
-    private String reference;
-    private double debitAmount;
-    private double creditAmount;
-    private String transactionRef1;
-    private String transactionRef2;
-    private String transactionRef3;
+    protected LocalDate transactionDate;
+    protected String reference;
+    protected double debitAmount;
+    protected double creditAmount;
+    protected String transactionRef1;
+    protected String transactionRef2;
+    protected String transactionRef3;
     /*
      * TODO: This attribute should be moved out. In a broader sense, the application should let the parser p
      */
-    private TransactionType type;
-
-    /*
-     * Having studied the builder design pattern, I find that the builder pattern is an overkill for constructing
-     * this simple object. Instead, I have just read an chapter off Effective Java (3rd edition) to understand that
-     * we can use static factory methods pattern.
-     * TODO: Convert to static factory methods
-     */
+    protected TransactionType type;
 
     /**
      * Create a new CSV transaction with all the given parameters.
