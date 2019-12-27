@@ -262,10 +262,12 @@ class CsvParserTest {
         .transactionRef3("test ref 3")
         .build();
 
+    MasterCard expectedMaster = MasterCard.from(expectedCsvTransaction);
+
     assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
-        .containsExactlyInAnyOrder(expectedCsvTransaction);
+        .containsExactlyInAnyOrder(expectedMaster);
   }
 }

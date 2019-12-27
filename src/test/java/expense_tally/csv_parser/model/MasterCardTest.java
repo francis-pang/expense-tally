@@ -146,9 +146,26 @@ class MasterCardTest {
     CsvTransaction testCsvTransaction = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
         .transactionRef1("TAPAS SI NG 20DEC")
         .build();
-    assertThatThrownBy(() -> MasterCard.from(testCsvTransaction))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("MasterCard number is invalid.");
+    assertThat(MasterCard.from(testCsvTransaction))
+        .isNotNull()
+        .extracting("cardNumber",
+            "transactionDate",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3",
+            "transactionType")
+        .contains(
+            null,
+            LocalDate.of(2019, 12, 20),
+            4.55,
+            0.00,
+            "TAPAS SI NG 20DEC",
+            "",
+            "",
+            TransactionType.MASTERCARD
+        );
   }
 
   @Test
@@ -173,7 +190,8 @@ class MasterCardTest {
         .transactionRef2("5632-4172-5981-4347")
         .build();
     assertThatThrownBy(() -> MasterCard.from(testCsvTransaction))
-        .isInstanceOf(NullPointerException.class);
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("CsvTransaction is not of MasterCard type.");
   }
 
   @Test
