@@ -16,7 +16,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static expense_tally.csv_parser.model.CsvPosition.*;
+import static expense_tally.csv_parser.model.CsvPosition.CREDIT_AMOUNT;
+import static expense_tally.csv_parser.model.CsvPosition.DEBIT_AMOUNT;
+import static expense_tally.csv_parser.model.CsvPosition.REFERENCE;
+import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_DATE;
+import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_REF_1;
+import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_REF_2;
+import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_REF_3;
 
 /**
  * Parses a CSV file of bank transaction.

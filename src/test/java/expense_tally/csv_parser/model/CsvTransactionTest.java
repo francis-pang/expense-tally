@@ -31,13 +31,13 @@ class CsvTransactionTest {
             "transactionRef3"
         )
         .contains(
-          transactionDate,
-          transactionType,
-          5.00,
-          0.00,
-          "",
-          "",
-          ""
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
         );
   }
 

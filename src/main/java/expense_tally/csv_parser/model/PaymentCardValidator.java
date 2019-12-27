@@ -14,7 +14,8 @@ public class PaymentCardValidator {
 
   /**
    * Validates if the payment card number is valid
-   * @param cardNumber payment card number
+   *
+   * @param cardNumber      payment card number
    * @param transactionType Transaaction type of payment
    * @return true if payment card number is valid, or else return false
    */

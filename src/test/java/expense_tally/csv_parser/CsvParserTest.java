@@ -27,8 +27,8 @@ class CsvParserTest {
   private static final String POSITIVE_TAG = "Positive";
 
   private static CsvParser csvParser;
-  private File csvFile;
   private static Path currentRelativePath;
+  private File csvFile;
   private FileWriter csvFileWriter;
 
   @BeforeAll
