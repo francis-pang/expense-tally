@@ -1,0 +1,439 @@
+package expense_tally.csv_parser.model;
+
+import expense_tally.csv_parser.exception.MonetaryAmountException;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+/**
+ * Even though it is common that there is no need to test the model class. I have decided to test this model class
+ * because there has been business logic built into this model class
+ */
+class CsvTransactionTest {
+  @Test
+  void builder_pastTransactionDate() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_nullTransactionDate() {
+    LocalDate transactionDate = null;
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+
+    assertThatThrownBy(() -> new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("transactionDate cannot be null.");
+  }
+
+  @Test
+  void builder_futureTransactionDate() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.now().plusDays(5);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_nullTransactionType() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = null;
+    double debitAmount = 5.00;
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            null,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_negativeDebit() {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = -5.00;
+
+    assertThatThrownBy(() -> new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Debit amount cannot be negative.");
+  }
+
+  @Test
+  void builder_positiveCredit() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 0;
+    double creditAmount = 4.50;
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount)
+        .build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            0.0,
+            4.50,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_negativeCredit() {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 0;
+    double creditAmount = -4.50;
+
+    assertThatThrownBy(() -> new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+        .creditAmount(creditAmount)
+        .build())
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Credit amount cannot be negative.");
+  }
+
+  @Test
+  void builder_ref1() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref1 = "test ref1";
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "test ref1",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_nullRef1() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref1 = null;
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_emptyRef1() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref1 = "";
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_ref2() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref2 = "test ref2";
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "test ref2",
+            ""
+        );
+  }
+
+  @Test
+  void builder_nullRef2() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref2 = null;
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_ref2OnlyWhiteSpace() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref2 = "      ";
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_ref3() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref3 = "test ref3";
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            "test ref3"
+        );
+  }
+
+  @Test
+  void builder_nullRef3() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref3 = null;
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_ref3OnlyWhiteSpace() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    String ref3 = "      ";
+
+    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
+        .isNotNull()
+        .extracting(
+            "transactionDate",
+            "transactionType",
+            "debitAmount",
+            "creditAmount",
+            "transactionRef1",
+            "transactionRef2",
+            "transactionRef3"
+        )
+        .contains(
+            transactionDate,
+            transactionType,
+            5.00,
+            0.00,
+            "",
+            "",
+            ""
+        );
+  }
+
+  @Test
+  void builder_positiveDebitAndCredit() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    double creditAmount = 4.50;
+
+    assertThatThrownBy(() ->
+        new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount).build())
+        .isInstanceOf(MonetaryAmountException.class)
+        .hasMessage("Debit and credit cannot be co-exist at same time.");
+  }
+}

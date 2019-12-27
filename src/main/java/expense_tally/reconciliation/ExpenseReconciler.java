@@ -23,132 +23,133 @@ import java.util.Map;
  * Reconciles the expenses between the Expense Manager application and the CSV file.
  */
 public class ExpenseReconciler {
-    private static final Logger LOGGER = LogManager.getLogger(ExpenseReconciler.class);
-    private static final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
-    private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
-    private static final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
+  private static final Logger LOGGER = LogManager.getLogger(ExpenseReconciler.class);
+  private static final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
+  private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
+  private static final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
 
+  /**
+   * Reconcile the data in the CSV file against the database record in the Expense Manager database
+   * <p>This is a one way matching exercise. The reconciler iterates through each record in the CSV files to match
+   * for at least a record in the database</p>
+   *
+   * @param csvTransactions       list of transactions in the CSV file
+   * @param expenseTransactionMap a collection of the database record in the Expense Manager
+   * @return the number of transaction that is not found in the CSV
+   */
+  public static List<DiscrepantTransaction> reconcileBankData(
+      final List<CsvTransaction> csvTransactions,
+      final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
     /**
-     * Reconcile the data in the CSV file against the database record in the Expense Manager database
-     * <p>This is a one way matching exercise. The reconciler iterates through each record in the CSV files to match
-     * for at least a record in the database</p>
-     *
-     * @param csvTransactions       list of transactions in the CSV file
-     * @param expenseTransactionMap a collection of the database record in the Expense Manager
-     * @return the number of transaction that is not found in the CSV
+     * Taking context from <a href="https://stackoverflow.com/a/15210142/1522867">stack overflow answer</a>, the
+     * correct way <q cite="https://stackoverflow.com/a/15210142/1522867"> In this case it's perfectly ok to throw
+     * an unchecked exception like an IllegalArgumentException, which should not be caught</q>
      */
-    public static List<DiscrepantTransaction> reconcileBankData(
-        final List<CsvTransaction> csvTransactions,
-        final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
-        /**
-         * Taking context from <a href="https://stackoverflow.com/a/15210142/1522867">stack overflow answer</a>, the
-         * correct way <q cite="https://stackoverflow.com/a/15210142/1522867"> In this case it's perfectly ok to throw
-         * an unchecked exception like an IllegalArgumentException, which should not be caught</q>
-         */
-        if (csvTransactions == null) {
-            throw new IllegalArgumentException(NULL_CSV_TRANSACTION_EXCEPTION_MSG);
-        }
-
-        if (expenseTransactionMap == null) {
-            throw new IllegalArgumentException(NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG);
-        }
-
-        List<DiscrepantTransaction> discrepantTransactions = new ArrayList<>();
-        for (CsvTransaction csvTransaction : csvTransactions) {
-            if (!csvRecordHasMatchingTransaction(csvTransaction, expenseTransactionMap)) {
-                DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
-                discrepantTransactions.add(discrepantTransaction);
-            }
-        }
-        final int discrepantTransactionSize = discrepantTransactions.size();
-        LOGGER.info("Found " + discrepantTransactionSize + " non-matching transactions.");
-        return discrepantTransactions;
+    if (csvTransactions == null) {
+      throw new IllegalArgumentException(NULL_CSV_TRANSACTION_EXCEPTION_MSG);
     }
 
-    /**
-     * Returns an instance of {@link java.time.ZonedDateTime} for a given <i>date</i>
-     *
-     * @param date representing date
-     * @return an instance of {@link java.time.ZonedDateTime} for a given <i>date</i>
-     */
-    private static ZonedDateTime endOfDay(LocalDate date) {
-        return LocalDateTime.of(date, LocalTime.MAX).atZone(ZoneId.of("Asia/Singapore"));
+    if (expenseTransactionMap == null) {
+      throw new IllegalArgumentException(NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG);
     }
 
-    /**
-     * Returns the equivalence mapping transaction type in the Expense Manager when given the <i>transactionType</i>
-     * @param transactionType Transaction type retrieve from CSV file
-     * @return the equivalence mapping transaction type in the Expense Manager when given the <i>transactionType</i>
-     */
-    private static PaymentMethod mapPaymentMethodFrom(TransactionType transactionType) {
-        if (transactionType == null) {
-            return null;
-        }
-        switch (transactionType) {
-            case MASTERCARD:
-                return PaymentMethod.DEBIT_CARD;
-            case NETS:
-            case POINT_OF_SALE:
-                return PaymentMethod.NETS;
-            case PAY_NOW:
-            case FUNDS_TRANSFER_I:
-            case FUNDS_TRANSFER_A:
-            case FAST_PAYMENT:
-            case FAST_COLLECTION:
-                return PaymentMethod.ELECTRONIC_TRANSFER;
-            case BILL_PAYMENT:
-                return PaymentMethod.I_BANKING;
-            case GIRO:
-            case GIRO_COLLECTION:
-                return PaymentMethod.GIRO;
-            default:
-                LOGGER.warn("Unable to resolve transaction type " + transactionType + " to a payment method.");
-                return null;
-
-        }
+    List<DiscrepantTransaction> discrepantTransactions = new ArrayList<>();
+    for (CsvTransaction csvTransaction : csvTransactions) {
+      if (!csvRecordHasMatchingTransaction(csvTransaction, expenseTransactionMap)) {
+        DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+        discrepantTransactions.add(discrepantTransaction);
+      }
     }
+    final int discrepantTransactionSize = discrepantTransactions.size();
+    LOGGER.info("Found " + discrepantTransactionSize + " non-matching transactions.");
+    return discrepantTransactions;
+  }
 
-    private static int calculateNumberOfMatchingTransactions(final LocalDate csvTransactionDate,
-                                                             final List<ExpenseManagerTransaction> expenseManagerTransactionList) {
-        int noOfMatchingTransaction = 0;
-        for (ExpenseManagerTransaction matchingExpenseManagerTransaction : expenseManagerTransactionList) {
-            Duration transactionTimeDifference = Duration.between(matchingExpenseManagerTransaction.getExpensedTime(),
-                endOfDay(csvTransactionDate));
-            if (transactionTimeDifference.toHours() >= 0 && transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
-                noOfMatchingTransaction++;
-            }
-        }
-        return noOfMatchingTransaction;
-    }
+  /**
+   * Returns an instance of {@link java.time.ZonedDateTime} for a given <i>date</i>
+   *
+   * @param date representing date
+   * @return an instance of {@link java.time.ZonedDateTime} for a given <i>date</i>
+   */
+  private static ZonedDateTime endOfDay(LocalDate date) {
+    return LocalDateTime.of(date, LocalTime.MAX).atZone(ZoneId.of("Asia/Singapore"));
+  }
 
-    private static boolean csvRecordHasMatchingTransaction(final CsvTransaction csvTransaction,
-                                                           final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
-        if (csvTransaction.getDebitAmount() == 0) {
-            LOGGER.trace("This is not a debit transaction");
-            return true;
-        }
-        PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getType());
-        if (expensePaymentMethod == null) {
-            LOGGER.warn("Found an unknown transaction type: " + csvTransaction.toString());
-            return true;
-        }
-        ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expensePaymentMethod, csvTransaction.getDebitAmount());
-        List<ExpenseManagerTransaction> expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
-        if (expenseManagerTransactionList == null) {
-            LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
-            return false;
-        }
-        switch (calculateNumberOfMatchingTransactions(csvTransaction.getTransactionDate(),
-            expenseManagerTransactionList)) {
-            case 0:
-                LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
-                return false;
-            case 1:
-                LOGGER.trace("Found a matching transaction");
-                return true;
-            default:
-                LOGGER.info("Found more than 1 matching transaction for this: " + csvTransaction.toString());
-                return true;
-        }
+  /**
+   * Returns the equivalence mapping transaction type in the Expense Manager when given the <i>transactionType</i>
+   *
+   * @param transactionType Transaction type retrieve from CSV file
+   * @return the equivalence mapping transaction type in the Expense Manager when given the <i>transactionType</i>
+   */
+  private static PaymentMethod mapPaymentMethodFrom(TransactionType transactionType) {
+    if (transactionType == null) {
+      return null;
     }
+    switch (transactionType) {
+      case MASTERCARD:
+        return PaymentMethod.DEBIT_CARD;
+      case NETS:
+      case POINT_OF_SALE:
+        return PaymentMethod.NETS;
+      case PAY_NOW:
+      case FUNDS_TRANSFER_I:
+      case FUNDS_TRANSFER_A:
+      case FAST_PAYMENT:
+      case FAST_COLLECTION:
+        return PaymentMethod.ELECTRONIC_TRANSFER;
+      case BILL_PAYMENT:
+        return PaymentMethod.I_BANKING;
+      case GIRO:
+      case GIRO_COLLECTION:
+        return PaymentMethod.GIRO;
+      default:
+        LOGGER.warn("Unable to resolve transaction type " + transactionType + " to a payment method.");
+        return null;
+
+    }
+  }
+
+  private static int calculateNumberOfMatchingTransactions(final LocalDate csvTransactionDate,
+                                                           final List<ExpenseManagerTransaction> expenseManagerTransactionList) {
+    int noOfMatchingTransaction = 0;
+    for (ExpenseManagerTransaction matchingExpenseManagerTransaction : expenseManagerTransactionList) {
+      Duration transactionTimeDifference = Duration.between(matchingExpenseManagerTransaction.getExpensedTime(),
+          endOfDay(csvTransactionDate));
+      if (transactionTimeDifference.toHours() >= 0 && transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
+        noOfMatchingTransaction++;
+      }
+    }
+    return noOfMatchingTransaction;
+  }
+
+  private static boolean csvRecordHasMatchingTransaction(final CsvTransaction csvTransaction,
+                                                         final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
+    if (csvTransaction.getDebitAmount() == 0) {
+      LOGGER.trace("This is not a debit transaction");
+      return true;
+    }
+    PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getTransactionType());
+    if (expensePaymentMethod == null) {
+      LOGGER.warn("Found an unknown transaction type: " + csvTransaction.toString());
+      return true;
+    }
+    ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expensePaymentMethod, csvTransaction.getDebitAmount());
+    List<ExpenseManagerTransaction> expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
+    if (expenseManagerTransactionList == null) {
+      LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
+      return false;
+    }
+    switch (calculateNumberOfMatchingTransactions(csvTransaction.getTransactionDate(),
+        expenseManagerTransactionList)) {
+      case 0:
+        LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
+        return false;
+      case 1:
+        LOGGER.trace("Found a matching transaction");
+        return true;
+      default:
+        LOGGER.info("Found more than 1 matching transaction for this: " + csvTransaction.toString());
+        return true;
+    }
+  }
 }

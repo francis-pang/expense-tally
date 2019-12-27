@@ -7,62 +7,68 @@ import java.util.StringJoiner;
  * <p>Normally, the value of the transaction type is the abbreviation for the actual description</p>
  */
 public enum TransactionType {
-    MASTERCARD("MST"),
-    NETS("NETS"),
-    POINT_OF_SALE("POS"),
-    GIRO("IBG"),
-    GIRO_COLLECTION("GRO"),
-    FAST_PAYMENT("ICT"),
-    FAST_COLLECTION("IDT"),
-    FUNDS_TRANSFER_I("ITR"),
-    FUNDS_TRANSFER_A("ATR"),
-    BILL_PAYMENT("BILL"),
-    PAY_NOW("PayNow Transfer"),
-    CASH_WITHDRAWAL("AWL"),
-    INTEREST_EARNED("INT"),
-    STANDING_INSTRUCTION("SI"),
-    SALARY("SAL"),
-    MAS_ELECTRONIC_PAYMENT_SYSTEM_RECEIPT("MER");
+  MASTERCARD("MST", true),
+  NETS("NETS", true),
+  POINT_OF_SALE("POS", true),
+  GIRO("IBG", true),
+  GIRO_COLLECTION("GRO", true),
+  FAST_PAYMENT("ICT", true),
+  FAST_COLLECTION("IDT", true),
+  FUNDS_TRANSFER_I("ITR", true),
+  FUNDS_TRANSFER_A("ATR", true),
+  BILL_PAYMENT("BILL", true),
+  PAY_NOW("PayNow Transfer", true),
+  CASH_WITHDRAWAL("AWL", false),
+  INTEREST_EARNED("INT", false),
+  STANDING_INSTRUCTION("SI", false),
+  SALARY("SAL", false),
+  MAS_ELECTRONIC_PAYMENT_SYSTEM_RECEIPT("MER", false);
 
-    private final String value;
+  private final String value;
+  private final boolean meantToBeProcessed;
 
-    /**
-     * A constructor taking the <i>value</i> of the transaction type
-     *
-     * @param value representation of the transaction type
-     */
-    TransactionType(String value) {
-        this.value = value;
+  /**
+   * A constructor taking the <i>value</i> of the transaction type
+   *
+   * @param value representation of the transaction type
+   */
+  TransactionType(String value, boolean meantToBeProcessed) {
+    this.value = value;
+    this.meantToBeProcessed = meantToBeProcessed;
+  }
+
+  /**
+   * Returns the {@link TransactionType} given its string form
+   *
+   * @param transactionTypeStr trsnaction type in string form
+   * @return the type of transaction given its string form, null if not found
+   */
+  public static TransactionType resolve(String transactionTypeStr) {
+    for (TransactionType transactionType : values()) {
+      if (transactionType.value.equals(transactionTypeStr)) {
+        return transactionType;
+      }
     }
+    return null;
+  }
 
-    /**
-     * Returns the value of the transaction type
-     *
-     * @return the value of the transaction type
-     */
-    public String value() {
-        return this.value;
-    }
+  /**
+   * Returns the value of the transaction type
+   *
+   * @return the value of the transaction type
+   */
+  public String value() {
+    return this.value;
+  }
 
-    /**
-     * Returns the {@link TransactionType} given its string form
-     *
-     * @param transactionTypeStr trsnaction type in string form
-     * @return the type of transaction given its string form, null if not found
-     */
-    public static TransactionType resolve(String transactionTypeStr) {
-        for (TransactionType transactionType : values()) {
-            if (transactionType.value.equals(transactionTypeStr)) {
-                return transactionType;
-            }
-        }
-        return null;
-    }
+  public boolean isMeantToBeProcessed() {
+    return meantToBeProcessed;
+  }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", TransactionType.class.getSimpleName() + "[", "]")
-                .add("value='" + value + "'")
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", TransactionType.class.getSimpleName() + "[", "]")
+        .add("value='" + value + "'")
+        .toString();
+  }
 }
