@@ -8,8 +8,7 @@ public enum CsvPosition {
   CREDIT_AMOUNT(3),
   TRANSACTION_REF_1(4),
   TRANSACTION_REF_2(5),
-  TRANSACTION_REF_3(6)
-  ;
+  TRANSACTION_REF_3(6);
 
   public final int position;
 

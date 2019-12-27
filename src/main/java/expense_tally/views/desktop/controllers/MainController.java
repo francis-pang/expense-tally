@@ -37,16 +37,13 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
   @FXML
+  TableColumn<Transaction, Boolean> tableAddRecordCheckBox;
+  @FXML
   private TextField databaseFilePathTextField;
-
   @FXML
   private TextField csvFilePathTextField;
-
   @FXML
   private TableView<Transaction> transactionTableView;
-
-  @FXML TableColumn<Transaction, Boolean> tableAddRecordCheckBox;
-
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {

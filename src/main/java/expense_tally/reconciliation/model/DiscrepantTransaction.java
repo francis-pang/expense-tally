@@ -19,24 +19,9 @@ public class DiscrepantTransaction {
   private String description;
   private TransactionType type;
 
-  public LocalDate getTime() {
-    return time;
-  }
-
-  public double getAmount() {
-    return amount;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public TransactionType getType() {
-    return type;
-  }
-
   /**
    * Construct an instance from a {@link expense_tally.csv_parser.model.CsvTransaction}
+   *
    * @param csvTransaction the CSV transaction with discrepancy
    * @return an instance constructed from {@link expense_tally.csv_parser.model.CsvTransaction}
    */
@@ -47,6 +32,27 @@ public class DiscrepantTransaction {
     transaction.time = csvTransaction.getTransactionDate();
     transaction.type = csvTransaction.getTransactionType();
     return transaction;
+  }
+
+  public LocalDate getTime() {
+    return time;
+  }
+
+  public double getAmount() {
+    return amount;
+  }
+
+  private void setAmount(CsvTransaction csvTransaction) {
+    if (csvTransaction.getDebitAmount() > 0) {
+      amount = csvTransaction.getDebitAmount();
+    } else {
+      LOGGER.info("Found a discrepant transaction with credit amount");
+      amount = csvTransaction.getCreditAmount();
+    }
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   private void setDescription(CsvTransaction csvTransaction) {
@@ -63,16 +69,11 @@ public class DiscrepantTransaction {
     description = stringJoiner.toString().trim();
   }
 
-  private String parseReference(String ref) {
-    return (ref == null || ref.isBlank()) ? "" : ref;
+  public TransactionType getType() {
+    return type;
   }
 
-  private void setAmount(CsvTransaction csvTransaction) {
-    if (csvTransaction.getDebitAmount() > 0) {
-      amount = csvTransaction.getDebitAmount();
-    } else {
-      LOGGER.info("Found a discrepant transaction with credit amount");
-      amount = csvTransaction.getCreditAmount();
-    }
+  private String parseReference(String ref) {
+    return (ref == null || ref.isBlank()) ? "" : ref;
   }
 }

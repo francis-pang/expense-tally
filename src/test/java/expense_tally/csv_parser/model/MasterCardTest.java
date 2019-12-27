@@ -1,6 +1,5 @@
 package expense_tally.csv_parser.model;
 
-import expense_tally.csv_parser.exception.InvalidReferenceDateException;
 import expense_tally.csv_parser.exception.MonetaryAmountException;
 import org.junit.jupiter.api.Test;
 
