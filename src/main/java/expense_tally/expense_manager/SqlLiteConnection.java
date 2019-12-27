@@ -12,6 +12,7 @@ import java.sql.SQLException;
  * database (definitions, tables, indices, and the data itself) is stored inside a single cross-platform file.</p>
  */
 public class SqlLiteConnection implements DatabaseConnectable {
+    private final static String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
     private String databaseFile;
 
     /**
@@ -20,7 +21,6 @@ public class SqlLiteConnection implements DatabaseConnectable {
      * @param databaseFile file path of the database file
      */
     public SqlLiteConnection(String databaseFile) {
-        final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
         this.databaseFile = SQLITE_JDBC_PREFIX + databaseFile;
     }
 
