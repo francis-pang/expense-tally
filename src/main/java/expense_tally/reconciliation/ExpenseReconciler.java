@@ -127,7 +127,7 @@ public class ExpenseReconciler {
             LOGGER.trace("This is not a debit transaction");
             return true;
         }
-        PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getType());
+        PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getTransactionType());
         if (expensePaymentMethod == null) {
             LOGGER.warn("Found an unknown transaction type: " + csvTransaction.toString());
             return true;
