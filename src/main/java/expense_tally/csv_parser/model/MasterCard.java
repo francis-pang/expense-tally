@@ -29,18 +29,6 @@ public class MasterCard extends CsvTransaction {
     private String cardNumber;
 
     /**
-     * Sets the card number of this MasterCard© card
-     *
-     * @param cardNumber card number of this MasterCard© card
-     */
-    private void setCardNumber(String cardNumber) {
-        if (!PaymentCardValidator.isPaymentCardValid(cardNumber, TransactionType.MASTERCARD)) {
-            throw new IllegalArgumentException(INVALID_CARD_NUMBER_ERR_MSG);
-        }
-        this.cardNumber = cardNumber;
-    }
-
-    /**
      * An empty constructor on the mastercard. The default cardNumber is a null String.
      */
     private MasterCard() {
@@ -49,7 +37,7 @@ public class MasterCard extends CsvTransaction {
 
     public static MasterCard from(CsvTransaction csvTransaction) {
         TransactionType transactionType = csvTransaction.getTransactionType();
-        if (!transactionType.equals(TransactionType.MASTERCARD)) {
+        if (transactionType == null ||!transactionType.equals(TransactionType.MASTERCARD)) {
             LOGGER.warn("This is not a MasterCard transaction", csvTransaction);
             throw new IllegalArgumentException(NOT_MASTER_CARD_ERR_MSG);
         }
@@ -65,25 +53,13 @@ public class MasterCard extends CsvTransaction {
         masterCard.setTransactionDate(transactionDate, ref1);
         String ref2 = csvTransaction.getTransactionRef2();
         masterCard.transactionRef2 = ref2;
-        masterCard.setCardNumber(ref2);
-        if (ref2 != null && !ref2.isBlank()) {
+        if (!ref2.isBlank()) {
             masterCard.setCardNumber(ref2);
         } else {
-            LOGGER.trace("This MasterCard transaction doesn't record the card number. {}",
-                csvTransaction);
+            LOGGER.debug("This MasterCard transaction doesn't record the card number. {}",
+                    csvTransaction);
         }
         return masterCard;
-    }
-
-    private void setTransactionDate(LocalDate transactionDate, String transactionRef1) {
-        try {
-            this.transactionDate = (transactionRef1 == null || transactionRef1.isBlank())
-                ? transactionDate
-                : extractTransactionDate(transactionDate, transactionRef1);
-        } catch (InvalidReferenceDateException | RuntimeException e) {
-            LOGGER.warn("Cannot retrieve transaction date from MasterCard transaction. Setting to bank transaction date.", e);
-            this.transactionDate = transactionDate;
-        }
     }
 
     /**
@@ -99,7 +75,7 @@ public class MasterCard extends CsvTransaction {
     private static LocalDate extractTransactionDate(final LocalDate bankTransactionDate, final String reference1)
         throws InvalidReferenceDateException {
         int yearOfTransaction = bankTransactionDate.getYear();
-        if (reference1.isBlank()) {
+        if (reference1.isBlank()) { //Reference1 will never be null by design
             LOGGER.warn("reference1 is empty");
             return bankTransactionDate;
         }
@@ -111,14 +87,19 @@ public class MasterCard extends CsvTransaction {
         Month transactionMonth = transactionMonthDay.getMonth();
         Month bankTransactionMonth = bankTransactionDate.getMonth();
         if (Month.DECEMBER.equals(transactionMonth) &&
-            Month.JANUARY.equals(bankTransactionMonth)) {
+                Month.JANUARY.equals(bankTransactionMonth)) {
             yearOfTransaction--;
         }
         return LocalDate.of(yearOfTransaction, transactionMonthDay.getMonthValue(), transactionMonthDay.getDayOfMonth());
     }
 
     private static MonthDay toMonthDayFromPartialDate(final String date) throws InvalidReferenceDateException {
-        // Since we know that the date is stored in ddMMM format, we will extract it.
+        /**
+         * There is a null check in the program flow. This is dead code, because there is only 1 caller at the time of
+         * writing, and the caller isn't going pass an null date. However, rather than removing the check for 100% code
+         * coverage, I choose to leave it here for defensive coding purpose. Refers to discussion on
+         * <a href="https://softwareengineering.stackexchange.com/a/373234">stack exchange</a> for more more details.
+         */
         if (date == null || date.length() != 5) {
             throw new InvalidReferenceDateException(INVALID_REFERENCE_DATE_EXCEPTION_ERR_MSG);
         }
@@ -128,6 +109,7 @@ public class MasterCard extends CsvTransaction {
 
     /**
      * Returns a formatted date which the month is titled case
+     *
      * @param date date in DDMMM formate
      * @return a formatted date which the month is titled case
      */
@@ -154,6 +136,27 @@ public class MasterCard extends CsvTransaction {
             return "";
         }
         return trimmedString.substring(positionOfLastSpace + 1);
+    }
+
+    /**
+     * Sets the card number of this MasterCard© card
+     *
+     * @param cardNumber card number of this MasterCard© card
+     */
+    private void setCardNumber(String cardNumber) {
+        if (!PaymentCardValidator.isPaymentCardValid(cardNumber, TransactionType.MASTERCARD)) {
+            throw new IllegalArgumentException(INVALID_CARD_NUMBER_ERR_MSG);
+        }
+        this.cardNumber = cardNumber;
+    }
+
+    private void setTransactionDate(LocalDate transactionDate, String transactionRef1) {
+        try {
+            this.transactionDate = extractTransactionDate(transactionDate, transactionRef1);
+        } catch (InvalidReferenceDateException | RuntimeException e) {
+            LOGGER.warn("Cannot retrieve transaction date from MasterCard transaction. Setting to bank transaction date.", e);
+            this.transactionDate = transactionDate;
+        }
     }
 
     @Override
