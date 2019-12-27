@@ -45,7 +45,7 @@ public class DiscrepantTransaction {
     transaction.setAmount(csvTransaction);
     transaction.setDescription(csvTransaction);
     transaction.time = csvTransaction.getTransactionDate();
-    transaction.type = csvTransaction.getType();
+    transaction.type = csvTransaction.getTransactionType();
     return transaction;
   }
 

@@ -7,32 +7,35 @@ import java.util.StringJoiner;
  * <p>Normally, the value of the transaction type is the abbreviation for the actual description</p>
  */
 public enum TransactionType {
-    MASTERCARD("MST"),
-    NETS("NETS"),
-    POINT_OF_SALE("POS"),
-    GIRO("IBG"),
-    GIRO_COLLECTION("GRO"),
-    FAST_PAYMENT("ICT"),
-    FAST_COLLECTION("IDT"),
-    FUNDS_TRANSFER_I("ITR"),
-    FUNDS_TRANSFER_A("ATR"),
-    BILL_PAYMENT("BILL"),
-    PAY_NOW("PayNow Transfer"),
-    CASH_WITHDRAWAL("AWL"),
-    INTEREST_EARNED("INT"),
-    STANDING_INSTRUCTION("SI"),
-    SALARY("SAL"),
-    MAS_ELECTRONIC_PAYMENT_SYSTEM_RECEIPT("MER");
+    MASTERCARD("MST", true),
+    NETS("NETS", true),
+    POINT_OF_SALE("POS", true),
+    GIRO("IBG", true),
+    GIRO_COLLECTION("GRO", true),
+    FAST_PAYMENT("ICT", true),
+    FAST_COLLECTION("IDT", true),
+    FUNDS_TRANSFER_I("ITR", true),
+    FUNDS_TRANSFER_A("ATR", true),
+    BILL_PAYMENT("BILL", true),
+    PAY_NOW("PayNow Transfer", true),
+    CASH_WITHDRAWAL("AWL", false),
+    INTEREST_EARNED("INT", false),
+    STANDING_INSTRUCTION("SI", false),
+    SALARY("SAL", false),
+    MAS_ELECTRONIC_PAYMENT_SYSTEM_RECEIPT("MER", false)
+    ;
 
     private final String value;
+    private final boolean meantToBeProcessed;
 
     /**
      * A constructor taking the <i>value</i> of the transaction type
      *
      * @param value representation of the transaction type
      */
-    TransactionType(String value) {
+    TransactionType(String value, boolean meantToBeProcessed) {
         this.value = value;
+        this.meantToBeProcessed = meantToBeProcessed;
     }
 
     /**
@@ -42,6 +45,10 @@ public enum TransactionType {
      */
     public String value() {
         return this.value;
+    }
+
+    public boolean isMeantToBeProcessed() {
+        return meantToBeProcessed;
     }
 
     /**
