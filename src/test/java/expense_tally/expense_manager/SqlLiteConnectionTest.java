@@ -16,6 +16,12 @@ class SqlLiteConnectionTest {
     private DatabaseConnectable spyDatabaseConnectable;
 
     @Test
+    void constructor() {
+        String testDatabaseConnection = "testSql";
+        spyDatabaseConnectable = new SqlLiteConnection(testDatabaseConnection);
+    }
+
+    @Test
     void connect_connectionSuccess() throws SQLException {
         Connection mockConnection = Mockito.mock(Connection.class);
         Mockito.when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
