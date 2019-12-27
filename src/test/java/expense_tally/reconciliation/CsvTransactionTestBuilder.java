@@ -16,7 +16,8 @@ public class CsvTransactionTestBuilder {
   private String transactionRef3 = "";
   private TransactionType type = TransactionType.MASTERCARD;
 
-  public CsvTransactionTestBuilder() {}
+  public CsvTransactionTestBuilder() {
+  }
 
   public CsvTransactionTestBuilder transactionDate(final int year, int month, int day) {
     this.transactionDate = LocalDate.of(year, month, day);
@@ -63,16 +64,16 @@ public class CsvTransactionTestBuilder {
   }
 
   private CsvTransaction csvTransaction(CsvTransactionTestBuilder builder) {
-    CsvTransaction csvTransaction =  new CsvTransaction(
-       builder.transactionDate,
-        builder.reference,
+    CsvTransaction csvTransaction = CsvTransaction.of(
+        builder.transactionDate,
+        builder.type,
         builder.debitAmount,
         builder.creditAmount,
         builder.transactionRef1,
         builder.transactionRef2,
         builder.transactionRef3
     );
-    csvTransaction.setType(builder.type);
+    csvTransaction.setTransactionType(builder.type);
     return csvTransaction;
   }
 }

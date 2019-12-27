@@ -12,6 +12,16 @@ public class Transaction {
   private SimpleStringProperty description;
   private SimpleStringProperty type;
 
+  public static Transaction from(DiscrepantTransaction discrepantTransaction) {
+    Transaction transaction = new Transaction();
+    transaction.time = new SimpleStringProperty(discrepantTransaction.getTime().toString());
+    transaction.amount = new SimpleDoubleProperty(discrepantTransaction.getAmount());
+    transaction.description = new SimpleStringProperty(discrepantTransaction.getDescription());
+    transaction.type = new SimpleStringProperty(discrepantTransaction.getType().toString());
+    transaction.meantToBeAddedToDatabase = new SimpleBooleanProperty(false);
+    return transaction;
+  }
+
   public boolean isMeantToBeAddedToDatabase() {
     return meantToBeAddedToDatabase.get();
   }
@@ -50,16 +60,6 @@ public class Transaction {
 
   public SimpleStringProperty typeProperty() {
     return type;
-  }
-
-  public static Transaction from(DiscrepantTransaction discrepantTransaction) {
-    Transaction transaction = new Transaction();
-    transaction.time = new SimpleStringProperty(discrepantTransaction.getTime().toString());
-    transaction.amount = new SimpleDoubleProperty(discrepantTransaction.getAmount());
-    transaction.description = new SimpleStringProperty(discrepantTransaction.getDescription());
-    transaction.type = new SimpleStringProperty(discrepantTransaction.getType().toString());
-    transaction.meantToBeAddedToDatabase = new SimpleBooleanProperty(false);
-    return transaction;
   }
 
 
