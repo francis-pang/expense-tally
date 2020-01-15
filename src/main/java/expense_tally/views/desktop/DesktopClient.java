@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 
+//ADD THIS IN THE VM option before running
+//--module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules=javafx.controls,javafx.fxml
 public class DesktopClient extends Application {
   private static final Logger LOGGER = LogManager.getLogger(DesktopClient.class);
   private static final String TITLE = "Expense Tally";
