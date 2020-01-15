@@ -112,12 +112,6 @@
             <artifactId>javafx-fxml</artifactId>
             <version>14-ea+6</version>
         </dependency>
-        <dependency>
-            <scope>compile</scope>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>14-ea+6</version>
-        </dependency>
     </dependencies>
 
     <build>
