@@ -270,4 +270,21 @@ class CsvParserTest {
         .usingRecursiveFieldByFieldElementComparator()
         .containsExactlyInAnyOrder(expectedMaster);
   }
+
+  /**
+   * This tests that the csv parser reads the invalid line with both positive debit and credit value, show an error in
+   * the log but it does not stop the program.
+   */
+  @Test
+  @Tag(POSITIVE_TAG)
+  void parseCsvFile_debitAndCreditHavePositionValue() throws IOException {
+    csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+    csvFileWriter.write("\n");
+    csvFileWriter.write("04 Oct 2018,MST, 10.16, 15.6,test ref 1 SI NG 10OCT,,test ref 3\n");
+    csvFileWriter.close();
+
+    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+        .isNotNull()
+        .hasSize(0);
+  }
 }

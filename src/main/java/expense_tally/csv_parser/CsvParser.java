@@ -104,7 +104,8 @@ public class CsvParser implements CsvParsable {
    *
    * @param csvLine a single line of csv with proper line ending, delimited by the comma character
    * @return a CsvTransaction based on the line of csv. The sequence (position of each of the elements) of the csv
-   * file is fixed. If it is of a transacton not meant for processing, null will be returned.
+   * file is fixed. If it is of a transaction not meant for processing, null will be returned.
+   * @throws MonetaryAmountException if both the debit and credit amount isn't fill up as non-zero value
    */
   private CsvTransaction parseSingleTransaction(String csvLine) throws MonetaryAmountException {
     String[] csvElements = csvLine.split(CSV_DELIMITER);
@@ -147,9 +148,7 @@ public class CsvParser implements CsvParsable {
         try {
           return MasterCard.from(csvTransaction);
         } catch (RuntimeException e) {
-          LOGGER.warn("Unable to convert csv transaction to MasterCard transaction - csvTransaction={}",
-              csvTransaction);
-          LOGGER.throwing(Level.WARN, e);
+          LOGGER.warn(() -> "Unable to convert csv transaction to MasterCard transaction: " + csvTransaction, e);
           return csvTransaction;
         }
       case FAST_PAYMENT:
