@@ -44,10 +44,10 @@ public class ExpenseReconciler {
   public static List<DiscrepantTransaction> reconcileBankData(
       final List<CsvTransaction> csvTransactions,
       final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
-    /**
-     * Taking context from <a href="https://stackoverflow.com/a/15210142/1522867">stack overflow answer</a>, the
-     * correct way <q cite="https://stackoverflow.com/a/15210142/1522867"> In this case it's perfectly ok to throw
-     * an unchecked exception like an IllegalArgumentException, which should not be caught</q>
+    /*
+     * Taking context from stack overflow answer(https://stackoverflow.com/a/15210142/1522867), the correct way
+     * (https://stackoverflow.com/a/15210142/1522867) in this case it's perfectly ok to throw
+     * an unchecked exception like an IllegalArgumentException, which should not be caught.
      */
     if (csvTransactions == null) {
       throw new IllegalArgumentException(NULL_CSV_TRANSACTION_EXCEPTION_MSG);
@@ -152,7 +152,7 @@ public class ExpenseReconciler {
         LOGGER.trace("Found a matching transaction");
         return true;
       default:
-        LOGGER.info("Found more than 1 matching transaction for this: ", csvTransaction);
+        LOGGER.info("Found more than 1 matching transaction for this: {}", csvTransaction);
         return true;
     }
   }
