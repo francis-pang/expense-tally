@@ -50,8 +50,8 @@ public class ExpenseAccountant {
      * 2. parameter = xxxxx
      * 3. parameter =xxxxx
      */
-    if (args.length % 2 != 0) {
-      LOGGER.error("Argument is not in odd number. Args= {}", Arrays.toString(args));
+    if (!isEven(args.length)) {
+      LOGGER.error("Argument is not in odd number. Args= {}", () -> Arrays.toString(args));
       throw new IllegalArgumentException("Odd number of parameters provided.");
     }
     this.csvFilename = args[0];
@@ -87,6 +87,10 @@ public class ExpenseAccountant {
       }
       argumentIndex++;
     }
+  }
+
+  private boolean isEven(int count) {
+    return count % 2 == 0;
   }
 
   public void reconcileData() throws IOException, SQLException {
