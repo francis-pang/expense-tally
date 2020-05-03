@@ -43,6 +43,12 @@ public class ExpenseAccountant {
     final char EQUAL_SIGN = '=';
     final String EQUAL_SEPARATOR = "=";
     final char DOUBLE_QUOTATION = '"';
+
+    if (args.length < 2) {
+      LOGGER.error("Console receives {} argument", args.length);
+      throw new IllegalArgumentException("Need to provide both CSV and database path.");
+    }
+
     /*
      * Expect to received --database-filepath = XXXX --csv-filepath= XXXX
      * Allow 3 format of declaring parameter
@@ -50,6 +56,7 @@ public class ExpenseAccountant {
      * 2. parameter = xxxxx
      * 3. parameter =xxxxx
      */
+    //TODO: For now, we ignore any parameters after 2nd parameters, next time we can handle them.
     if (!isEven(args.length)) {
       LOGGER.error("Argument is not in odd number. Args= {}", () -> Arrays.toString(args));
       throw new IllegalArgumentException("Odd number of parameters provided.");
