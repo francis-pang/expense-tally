@@ -34,6 +34,10 @@ import java.util.Map;
 public final class ExpenseTransactionMapper {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
 
+  private ExpenseTransactionMapper() {
+    throw new IllegalStateException("Not allowed to initialised " + this.getClass().getName());
+  }
+
   /**
    * Return a {@link Map} of {@link ExpenseManagerTransaction} mapped from a list of {@link ExpenseReport}.
    *
@@ -89,7 +93,7 @@ public final class ExpenseTransactionMapper {
     expenseManagerTransaction.setPaymentMethod(PaymentMethod.resolve(expenseReport.getPaymentMethod()));
     if (!expenseReport.getReferenceNumber().isBlank()) {
       expenseManagerTransaction.setReferenceAmount(Double.parseDouble(expenseReport.getReferenceNumber().replaceAll("[^\\d\\.]+", "")));
-      LOGGER.trace("TransactionType Amount is " + expenseManagerTransaction.getReferenceAmount());
+      LOGGER.trace("TransactionType Amount is {}", expenseManagerTransaction.getReferenceAmount());
     } else {
       expenseManagerTransaction.setReferenceAmount(0.0);
     }

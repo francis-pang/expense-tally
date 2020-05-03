@@ -52,13 +52,6 @@ public class CsvParser implements CsvParsable {
   private static final String CSV_DELIMITER = ",";
   private static final double DEFAULT_AMOUNT = 0.00;
 
-  /**
-   * Parse a CSV file in the pre-defined format from the file with the directory <i>filePath</i>.
-   *
-   * @param filePath file path of the CSV file, regardless relative or absolute path
-   * @return a list of CsvTransaction read from the CSV file
-   * @throws IOException when there is Input/Output error
-   */
   @Override
   public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
     try (BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filePath))) {

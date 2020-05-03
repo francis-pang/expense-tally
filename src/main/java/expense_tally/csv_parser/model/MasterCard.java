@@ -38,7 +38,7 @@ public class MasterCard extends CsvTransaction {
   public static MasterCard from(CsvTransaction csvTransaction) {
     TransactionType transactionType = csvTransaction.getTransactionType();
     if (transactionType == null || !transactionType.equals(TransactionType.MASTERCARD)) {
-      LOGGER.warn("This is not a MasterCard transaction", csvTransaction);
+      LOGGER.warn("This is not a MasterCard transaction: {}", csvTransaction);
       throw new IllegalArgumentException(NOT_MASTER_CARD_ERR_MSG);
     }
     MasterCard masterCard = new MasterCard();

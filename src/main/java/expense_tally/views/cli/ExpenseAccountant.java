@@ -31,7 +31,12 @@ public class ExpenseAccountant {
   private String csvFilename;
   private String databaseFilename;
 
-  public ExpenseAccountant(String[] args) throws IllegalArgumentException {
+  /**
+   *
+   * @param args
+   * @throws IllegalArgumentException
+   */
+  public ExpenseAccountant(String[] args) {
     final String DATABASE_PARAMETER = "database-filepath";
     final String CSV_PARAMETER = "csv-filepath";
     final String PARAMETER_PREFIX = "--";
@@ -46,7 +51,7 @@ public class ExpenseAccountant {
      * 3. parameter =xxxxx
      */
     if (args.length % 2 != 0) {
-      LOGGER.error("Argument is not in odd number. Args=" + Arrays.toString(args));
+      LOGGER.error("Argument is not in odd number. Args= {}", Arrays.toString(args));
       throw new IllegalArgumentException("Odd number of parameters provided.");
     }
     this.csvFilename = args[0];
@@ -91,7 +96,8 @@ public class ExpenseAccountant {
           getExpenseManagerTransactionsByKeyFrom(databaseFilename);
       reconcileData(bankTransactions, manuallyRecordedTransactionMap);
     } catch (SQLException ex) {
-      LOGGER.error("Problem accessing the database. Database file location=" + databaseFilename, ex);
+      LOGGER.error("Problem accessing the database. Database file location= {}", databaseFilename);
+      LOGGER.throwing(ex);
       throw ex;
     }
   }
