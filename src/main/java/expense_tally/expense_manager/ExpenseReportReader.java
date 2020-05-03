@@ -1,7 +1,6 @@
 package expense_tally.expense_manager;
 
 import expense_tally.expense_manager.model.ExpenseReport;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,8 +49,8 @@ public class ExpenseReportReader implements ExpenseReadable {
     try (Connection databaseConnection = databaseConnectable.connect()) {
       return importDataFromConnection(databaseConnection);
     } catch (SQLException ex) {
-      LOGGER.error("Cannot read from database");
-      throw LOGGER.throwing(Level.ERROR, ex);
+      LOGGER.error("Cannot read from database", ex);
+      throw ex;
     }
   }
 

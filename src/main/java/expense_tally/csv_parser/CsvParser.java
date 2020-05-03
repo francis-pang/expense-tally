@@ -81,8 +81,7 @@ public class CsvParser implements CsvParsable {
     try {
       csvTransaction = parseSingleTransaction(line);
     } catch (MonetaryAmountException e) {
-      LOGGER.error("Unable to parse transaction. line={}", line);
-      LOGGER.throwing(e);
+      LOGGER.error(() -> String.format("Unable to parse transaction. line={}", line), e);
     }
     if (csvTransaction == null) {
       return;

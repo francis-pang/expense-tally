@@ -56,8 +56,7 @@ public class MasterCard extends CsvTransaction {
     if (!ref2.isBlank()) {
       masterCard.setCardNumber(ref2);
     } else {
-      LOGGER.debug("This MasterCard transaction doesn't record the card number. {}",
-          csvTransaction);
+      LOGGER.debug("This MasterCard transaction doesn't record the card number. {}", csvTransaction);
     }
     return masterCard;
   }
@@ -154,7 +153,8 @@ public class MasterCard extends CsvTransaction {
     try {
       this.transactionDate = extractTransactionDate(transactionDate, transactionRef1);
     } catch (InvalidReferenceDateException | RuntimeException e) {
-      LOGGER.warn("Cannot retrieve transaction date from MasterCard transaction. Setting to bank transaction date.", e);
+      LOGGER.warn(() -> String.format("Cannot retrieve transaction date {0} from MasterCard transaction " +
+          "reference 1 {1}. Setting to bank transaction date.", transactionDate, transactionRef1), e);
       this.transactionDate = transactionDate;
     }
   }

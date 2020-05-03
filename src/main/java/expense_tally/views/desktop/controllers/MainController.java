@@ -117,9 +117,8 @@ public class MainController implements Initializable {
     try {
       expenseReports = expenseReadable.getExpenseTransactions();
     } catch (SQLException e) {
-      String errorMessage = "Unable to read from the database: " + databaseFilePath;
-      LOGGER.warn(errorMessage) ;
-      LOGGER.catching(e);
+      String errorMessage = String.format("Unable to read from the database: ",databaseFilePath) ;
+      LOGGER.warn(errorMessage, e) ;
       addErrorTextBelowInput(databaseFilePathHBox, errorMessage);
       return;
     }

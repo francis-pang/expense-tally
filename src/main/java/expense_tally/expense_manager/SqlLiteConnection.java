@@ -24,12 +24,6 @@ public class SqlLiteConnection implements DatabaseConnectable {
     this.databaseFile = SQLITE_JDBC_PREFIX + databaseFile;
   }
 
-  /**
-   * Returns the connection to the database
-   *
-   * @return the connection to the database
-   * @throws SQLException when there is an error accessing the database
-   */
   @Override
   public Connection connect() throws SQLException {
     return DriverManager.getConnection(databaseFile);
