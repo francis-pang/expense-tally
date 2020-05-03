@@ -1,5 +1,5 @@
 # expense-tally
-[![Build Status (master)](https://travis-ci.com/boyshawn/expense-tally.svg?branch=master)](https://travis-ci.com/boyshawn/expense-tally.svg?branch=master)
+[![Build Status](https://travis-ci.com/francis-pang/expense-tally.svg?branch=master)](https://travis-ci.com/francis-pang/expense-tally)
 [![Comments (%)](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=security_rating)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
