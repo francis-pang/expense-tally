@@ -1,6 +1,7 @@
 package expense_tally.csv_parser.model;
 
 import expense_tally.csv_parser.exception.MonetaryAmountException;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -435,5 +436,19 @@ class CsvTransactionTest {
         new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount).build())
         .isInstanceOf(MonetaryAmountException.class)
         .hasMessage("Debit and credit cannot be co-exist at same time.");
+  }
+
+  @Test
+  void builder_equal() throws MonetaryAmountException {
+    SoftAssertions softAssertions = new SoftAssertions();
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+
+    softAssertions.assertThat(csvTransaction1.equals(csvTransaction1)).isTrue();
+    softAssertions.assertThat(csvTransaction1.equals(csvTransaction2)).isTrue();
+    softAssertions.assertThat(csvTransaction1.equals(transactionDate)).isFalse();
   }
 }
