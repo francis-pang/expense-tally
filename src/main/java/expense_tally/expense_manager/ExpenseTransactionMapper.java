@@ -93,7 +93,7 @@ public final class ExpenseTransactionMapper {
     expenseManagerTransaction.setPaymentMethod(PaymentMethod.resolve(expenseReport.getPaymentMethod()));
     if (!expenseReport.getReferenceNumber().isBlank()) {
       expenseManagerTransaction.setReferenceAmount(Double.parseDouble(expenseReport.getReferenceNumber().replaceAll("[^\\d\\.]+", "")));
-      LOGGER.trace("TransactionType Amount is {}", expenseManagerTransaction.getReferenceAmount());
+      LOGGER.atTrace().log("TransactionType Amount is {}", () -> expenseManagerTransaction.getReferenceAmount());
     } else {
       expenseManagerTransaction.setReferenceAmount(0.0);
     }

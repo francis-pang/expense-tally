@@ -92,7 +92,7 @@ public class MainController implements Initializable {
   }
 
   public void handleGenerateTransactionTableButtonAction() {
-    LOGGER.trace("User clicks on generate transaction button");
+    LOGGER.atTrace().log("User clicks on generate transaction button");
     // Validate text field content
     String databaseFilePath = databaseFilePathTextField.getText();
     String csvFilePath = csvFilePathTextField.getText();
@@ -103,9 +103,8 @@ public class MainController implements Initializable {
     try {
       csvTransactions = csvParsable.parseCsvFile(csvFilePath);
     } catch (IOException e) {
-      String errorMessage = "Unable to read from the csv file: " + csvFilePath;
-      LOGGER.warn(errorMessage) ;
-      LOGGER.catching(e);
+      String errorMessage = String.format("Unable to read from the csv file: %s", csvFilePath);
+      LOGGER.atWarn().withThrowable(e).log(errorMessage);
       addErrorTextBelowInput(csvFilePathHBox, errorMessage);
       return;
     }
@@ -117,8 +116,8 @@ public class MainController implements Initializable {
     try {
       expenseReports = expenseReadable.getExpenseTransactions();
     } catch (SQLException e) {
-      String errorMessage = String.format("Unable to read from the database: ",databaseFilePath) ;
-      LOGGER.warn(errorMessage, e) ;
+      String errorMessage = String.format("Unable to read from the database: %s",databaseFilePath);
+      LOGGER.atWarn().withThrowable(e).log(errorMessage);
       addErrorTextBelowInput(databaseFilePathHBox, errorMessage);
       return;
     }

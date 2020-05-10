@@ -65,7 +65,7 @@ public class ExpenseReconciler {
       }
     }
     final int discrepantTransactionSize = discrepantTransactions.size();
-    LOGGER.info("Found {} non-matching transactions.", discrepantTransactionSize);
+    LOGGER.atInfo().log("Found {} non-matching transactions.", discrepantTransactionSize);
     return discrepantTransactions;
   }
 
@@ -107,7 +107,7 @@ public class ExpenseReconciler {
       case GIRO_COLLECTION:
         return PaymentMethod.GIRO;
       default:
-        LOGGER.warn("Unable to resolve transaction type {} to a payment method.", transactionType);
+        LOGGER.atWarn().log("Unable to resolve transaction type {} to a payment method.", transactionType);
         return null;
 
     }
@@ -129,30 +129,30 @@ public class ExpenseReconciler {
   private static boolean csvRecordHasMatchingTransaction(final CsvTransaction csvTransaction,
                                                          final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
     if (csvTransaction.getDebitAmount() == 0) {
-      LOGGER.trace("This is not a debit transaction");
+      LOGGER.atTrace().log("This is not a debit transaction");
       return true;
     }
     PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getTransactionType());
     if (expensePaymentMethod == null) {
-      LOGGER.warn("Found an unknown transaction type: {}", csvTransaction);
+      LOGGER.atWarn().log("Found an unknown transaction type: {}", csvTransaction);
       return true;
     }
     ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expensePaymentMethod, csvTransaction.getDebitAmount());
     List<ExpenseManagerTransaction> expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
     if (expenseManagerTransactionList == null) {
-      LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: {}", csvTransaction);
+      LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", csvTransaction);
       return false;
     }
     switch (calculateNumberOfMatchingTransactions(csvTransaction.getTransactionDate(),
         expenseManagerTransactionList)) {
       case 0:
-        LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: {}", csvTransaction);
+        LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", csvTransaction);
         return false;
       case 1:
-        LOGGER.trace("Found a matching transaction");
+        LOGGER.atTrace().log("Found a matching transaction");
         return true;
       default:
-        LOGGER.info("Found more than 1 matching transaction for this: {}", csvTransaction);
+        LOGGER.atInfo().log("Found more than 1 matching transaction for this: {}", csvTransaction);
         return true;
     }
   }

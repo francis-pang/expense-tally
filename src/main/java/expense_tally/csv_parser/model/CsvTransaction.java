@@ -252,7 +252,7 @@ public class CsvTransaction {
       // reflection is error prone and computationally expensive. Hence I have decided to deny the DRY principal and
       // duplicate the setter code.
       if (transactionRef1 == null || transactionRef1.isBlank()) {
-        LOGGER.trace("transactionRef1 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
+        LOGGER.atTrace().log("transactionRef1 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
         return this;
       }
       this.transactionRef1 = transactionRef1;
@@ -269,7 +269,7 @@ public class CsvTransaction {
      */
     public Builder transactionRef2(String transactionRef2) {
       if (transactionRef2 == null || transactionRef2.isBlank()) {
-        LOGGER.trace("transactionRef2 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
+        LOGGER.atTrace().log("transactionRef2 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
         return this;
       }
       this.transactionRef2 = transactionRef2;
@@ -286,7 +286,7 @@ public class CsvTransaction {
      */
     public Builder transactionRef3(String transactionRef3) {
       if (transactionRef3 == null || transactionRef3.isBlank()) {
-        LOGGER.trace("transactionRef3 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
+        LOGGER.atTrace().log("transactionRef3 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
         return this;
       }
       this.transactionRef3 = transactionRef3;

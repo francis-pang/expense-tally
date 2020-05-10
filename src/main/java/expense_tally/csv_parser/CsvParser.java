@@ -4,7 +4,6 @@ import expense_tally.csv_parser.exception.MonetaryAmountException;
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.MasterCard;
 import expense_tally.csv_parser.model.TransactionType;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,8 +56,8 @@ public class CsvParser implements CsvParsable {
     try (BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filePath))) {
       return parseCsvTransactionFromBufferedReader(csvBufferedReader);
     } catch (IOException ex) {
-      LOGGER.error("Cannot read from CSV input file {}", filePath);
-      throw LOGGER.throwing(Level.ERROR, ex);
+      LOGGER.atError().withThrowable(ex).log("Cannot read from CSV input file {}", filePath);
+      throw ex;
     }
   }
 
@@ -81,7 +80,7 @@ public class CsvParser implements CsvParsable {
     try {
       csvTransaction = parseSingleTransaction(line);
     } catch (MonetaryAmountException e) {
-      LOGGER.error(() -> String.format("Unable to parse transaction. line={}", line), e);
+      LOGGER.atError().withThrowable(e).log("Unable to parse transaction. line={}", line);
     }
     if (csvTransaction == null) {
       return;
@@ -111,7 +110,7 @@ public class CsvParser implements CsvParsable {
     String reference = csvElements[REFERENCE.position];
     TransactionType transactionType = TransactionType.resolve(reference);
     if (transactionType == null) {
-      LOGGER.info("Found a new transaction type: {}; {}", reference, csvLine);
+      LOGGER.atInfo().log("Found a new transaction type: {}; csvLine: {}", reference, csvLine);
       return null;
     } else if (!transactionType.isMeantToBeProcessed()) {
       return null;

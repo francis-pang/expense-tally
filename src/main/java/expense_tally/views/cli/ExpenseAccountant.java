@@ -45,7 +45,7 @@ public class ExpenseAccountant {
     final char DOUBLE_QUOTATION = '"';
 
     if (args.length < 2) {
-      LOGGER.error("Console receives {} argument", args.length);
+      LOGGER.atError().log("Console receives {} argument", args.length);
       throw new IllegalArgumentException("Need to provide both CSV and database path.");
     }
 
@@ -58,7 +58,7 @@ public class ExpenseAccountant {
      */
     //TODO: For now, we ignore any parameters after 2nd parameters, next time we can handle them.
     if (!isEven(args.length)) {
-      LOGGER.error("Argument is not in odd number. Args= {}", () -> Arrays.toString(args));
+      LOGGER.atError().log("Argument is not in odd number. Args= {}", () -> Arrays.toString(args));
       throw new IllegalArgumentException("Odd number of parameters provided.");
     }
     this.csvFilename = args[0];
@@ -107,8 +107,10 @@ public class ExpenseAccountant {
           getExpenseManagerTransactionsByKeyFrom(databaseFilename);
       reconcileData(bankTransactions, manuallyRecordedTransactionMap);
     } catch (SQLException ex) {
-      LOGGER.error("Problem accessing the database. Database file location= {}", databaseFilename);
-      LOGGER.throwing(ex);
+      LOGGER
+          .atError()
+          .withThrowable(ex)
+          .log("Problem accessing the database. Database file location= {}", databaseFilename);
       throw ex;
     }
   }

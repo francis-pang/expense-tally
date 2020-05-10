@@ -49,7 +49,7 @@ public class ExpenseReportReader implements ExpenseReadable {
     try (Connection databaseConnection = databaseConnectable.connect()) {
       return importDataFromConnection(databaseConnection);
     } catch (SQLException ex) {
-      LOGGER.error("Cannot read from database", ex);
+      LOGGER.atError().withThrowable(ex).log("Cannot read from database");
       throw ex;
     }
   }

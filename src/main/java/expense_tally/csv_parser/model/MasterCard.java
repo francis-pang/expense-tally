@@ -38,7 +38,7 @@ public class MasterCard extends CsvTransaction {
   public static MasterCard from(CsvTransaction csvTransaction) {
     TransactionType transactionType = csvTransaction.getTransactionType();
     if (transactionType == null || !transactionType.equals(TransactionType.MASTERCARD)) {
-      LOGGER.warn("This is not a MasterCard transaction: {}", csvTransaction);
+      LOGGER.atWarn().log("This is not a MasterCard transaction: {}", csvTransaction);
       throw new IllegalArgumentException(NOT_MASTER_CARD_ERR_MSG);
     }
     MasterCard masterCard = new MasterCard();
@@ -56,7 +56,7 @@ public class MasterCard extends CsvTransaction {
     if (!ref2.isBlank()) {
       masterCard.setCardNumber(ref2);
     } else {
-      LOGGER.debug("This MasterCard transaction doesn't record the card number. {}", csvTransaction);
+      LOGGER.atDebug().log("This MasterCard transaction doesn't record the card number. {}", csvTransaction);
     }
     return masterCard;
   }
@@ -75,7 +75,7 @@ public class MasterCard extends CsvTransaction {
       throws InvalidReferenceDateException {
     int yearOfTransaction = bankTransactionDate.getYear();
     if (reference1.isBlank()) { //Reference1 will never be null by design
-      LOGGER.warn("reference1 is empty");
+      LOGGER.atWarn().log("reference1 is empty");
       return bankTransactionDate;
     }
     // Inside the CSV file, it is known that the date of transaction (without the year) is recorded at end of the
@@ -153,8 +153,10 @@ public class MasterCard extends CsvTransaction {
     try {
       this.transactionDate = extractTransactionDate(transactionDate, transactionRef1);
     } catch (InvalidReferenceDateException | RuntimeException e) {
-      LOGGER.warn(() -> String.format("Cannot retrieve transaction date {0} from MasterCard transaction " +
-          "reference 1 {1}. Setting to bank transaction date.", transactionDate, transactionRef1), e);
+      LOGGER.atWarn()
+          .withThrowable(e)
+          .log("Cannot retrieve transaction date {0} from MasterCard transaction reference 1 {1}. Setting to bank " +
+              "transaction date.", transactionDate, transactionRef1);
       this.transactionDate = transactionDate;
     }
   }

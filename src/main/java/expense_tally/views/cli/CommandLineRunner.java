@@ -22,12 +22,10 @@ public class CommandLineRunner {
       ExpenseAccountant expenseAccountant = new ExpenseAccountant(args);
       expenseAccountant.reconcileData();
     } catch (IOException ioException) {
-      LOGGER.error("Error reading CSV file", ioException);
+      LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");
       System.exit(CSV_FILE_PARSING_ERR_CODE);
-      //TODO: Print a error message, then exit the program
     } catch (SQLException sqlException) {
-      LOGGER.error("Error reading from database", sqlException);
-      //TODO: Print a error message, then exit the program
+      LOGGER.atError().withThrowable(sqlException).log("Error reading from database");
       System.exit(DATABASE_ERR_CODE);
     }
   }
