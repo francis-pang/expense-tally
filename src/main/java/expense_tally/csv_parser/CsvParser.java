@@ -146,8 +146,11 @@ public class CsvParser implements CsvParsable {
       case MASTERCARD:
         try {
           return MasterCard.from(csvTransaction);
-        } catch (RuntimeException e) {
-          LOGGER.warn(() -> "Unable to convert csv transaction to MasterCard transaction: " + csvTransaction, e);
+        } catch (RuntimeException runtimeException) {
+          //FIXME: Mockito does not support mocking of static method, so this cannot be tested yet
+          LOGGER.atWarn()
+              .withThrowable(runtimeException)
+              .log("Unable to convert csv transaction to MasterCard transaction: {}", csvTransaction);
           return csvTransaction;
         }
       case FAST_PAYMENT:
