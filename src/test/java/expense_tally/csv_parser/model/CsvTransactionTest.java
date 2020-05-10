@@ -1,10 +1,10 @@
 package expense_tally.csv_parser.model;
 
 import expense_tally.csv_parser.exception.MonetaryAmountException;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -439,16 +439,127 @@ class CsvTransactionTest {
   }
 
   @Test
-  void builder_equal() throws MonetaryAmountException {
-    SoftAssertions softAssertions = new SoftAssertions();
+  void equals_sameObjectReference() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+
+    assertThat(csvTransaction1.equals(csvTransaction1)).isTrue();
+  }
+
+  @Test
+  void equals_notSameObject() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+
+    assertThat(csvTransaction1.equals(transactionType)).isFalse();
+  }
+
+  @Test
+  void equals_allFieldsAreEqual() throws MonetaryAmountException {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
     CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
     CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isTrue();
+  }
 
-    softAssertions.assertThat(csvTransaction1.equals(csvTransaction1)).isTrue();
-    softAssertions.assertThat(csvTransaction1.equals(csvTransaction2)).isTrue();
-    softAssertions.assertThat(csvTransaction1.equals(transactionDate)).isFalse();
+  @Test
+  void equals_differentDebitAmount() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount + 0.01)
+        .build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+  }
+
+  @Test
+  void equals_differentCreditAmount() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double creditAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction
+        .Builder(transactionDate, transactionType, 0.00)
+        .creditAmount(creditAmount)
+        .build();
+
+    CsvTransaction csvTransaction2 = new CsvTransaction
+        .Builder(transactionDate, transactionType, 0.00)
+        .creditAmount(creditAmount + 0.01)
+        .build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+  }
+
+  @Test
+  void equals_differentTransactionDate() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate.plusDays(1L), transactionType,
+        debitAmount).build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+  }
+
+  @Test
+  void equals_differentTransactionRef1() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+        .transactionRef1("Test").build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+  }
+
+  @Test
+  void equals_differentTransactionRef2() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+        .transactionRef2("Test").build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+  }
+
+  @Test
+  void equals_differentTransactionRef3() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+        .transactionRef3("Test").build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+  }
+
+  @Test
+  void equals_differentTransactionType() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD,
+        debitAmount).build();
+    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+  }
+
+  @Test
+  void hashCode_same() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    int expectedHashCode = Objects.hashCode(csvTransaction1);
+    assertThat(csvTransaction1.hashCode())
+        .isNotZero()
+        .isEqualByComparingTo(expectedHashCode);
   }
 }
