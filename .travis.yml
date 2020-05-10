@@ -1,7 +1,7 @@
 dist: bionic
 language: java
 jdk:
-  - openjdk13
+  - openjdk14
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_0e40c5863533_key -iv $encrypted_0e40c5863533_iv
