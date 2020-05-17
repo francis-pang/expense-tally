@@ -15,7 +15,7 @@ public enum ExpenseCategory {
   VACATION("Vacation"),
   UNCATEGORIZED("Uncategorized");
 
-  public final String value;
+  private final String value;
 
   /**
    * Default constructor
@@ -39,5 +39,9 @@ public enum ExpenseCategory {
       }
     }
     return null;
+  }
+
+  public String value() {
+    return value;
   }
 }
