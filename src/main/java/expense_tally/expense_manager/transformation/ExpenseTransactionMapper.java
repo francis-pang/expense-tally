@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A static class to provide methods for mapping {@link ExpenseReport} to
- * {@link ExpenseManagerTransaction}.
+ * A static class to provide methods for mapping {@link ExpenseReport} to {@link ExpenseManagerTransaction}.
  *
  * <p>This class is an use case of the Mapper design pattern, in which the class's main purpose is to provide a set of
  * helpful method to map {@link ExpenseReport} into
@@ -32,8 +31,7 @@ public final class ExpenseTransactionMapper {
   private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
   private static final double ZERO_AMOUNT = 0.0;
 
-  private ExpenseTransactionMapper() {
-    throw new IllegalStateException("Not allowed to initialised " + this.getClass().getName());
+  private ExpenseTransactionMapper() { // Not allow to initialised
   }
 
   /**
