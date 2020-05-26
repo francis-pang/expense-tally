@@ -60,6 +60,9 @@ public enum ExpenseSubCategory {
    * @return the category of the expense record given its string form, null if not found
    */
   public static ExpenseSubCategory resolve(String subExpenseCategoryStr) {
+    if (subExpenseCategoryStr == null || "".equals(subExpenseCategoryStr.trim())) {
+      return null;
+    }
     for (ExpenseSubCategory expenseSubCategory : values()) {
       if (expenseSubCategory.value.equals(subExpenseCategoryStr)) {
         return expenseSubCategory;

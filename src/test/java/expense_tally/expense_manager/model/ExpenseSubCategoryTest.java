@@ -20,6 +20,18 @@ class ExpenseSubCategoryTest {
   }
 
   @Test
+  void resolve_null() {
+    assertThat(ExpenseSubCategory.resolve(null))
+        .isNull();
+  }
+
+  @Test
+  void resolve_emptyString() {
+    assertThat(ExpenseSubCategory.resolve(""))
+        .isNull();
+  }
+
+  @Test
   void value() {
     assertThat(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT.value())
         .isEqualTo("Alcohol/ Restaurant");
