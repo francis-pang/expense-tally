@@ -170,10 +170,10 @@ public class MasterCard extends CsvTransaction {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o){
+    if (this == o) {
       return true;
     }
-    if (!(o instanceof MasterCard)) {
+    if (getClass() != o.getClass()) {
       return false;
     }
     if (!super.equals(o)) {

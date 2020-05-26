@@ -149,7 +149,7 @@ public class CsvTransaction {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof CsvTransaction)) {
+    if (getClass() != o.getClass()) {
       return false;
     }
     CsvTransaction that = (CsvTransaction) o;

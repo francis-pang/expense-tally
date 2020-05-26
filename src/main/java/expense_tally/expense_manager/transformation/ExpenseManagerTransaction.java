@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * This class models the database schema of a transaction stored in the Expense Manager application.
+ *
  */
 public class ExpenseManagerTransaction {
   private Double amount;
@@ -80,8 +80,12 @@ public class ExpenseManagerTransaction {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ExpenseManagerTransaction)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (getClass() != o.getClass()) {
+      return false;
+    }
     ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
     return amount.equals(that.amount) &&
         category == that.category &&
