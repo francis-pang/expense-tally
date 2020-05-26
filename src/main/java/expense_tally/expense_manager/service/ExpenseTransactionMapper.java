@@ -1,4 +1,4 @@
-package expense_tally.expense_manager;
+package expense_tally.expense_manager.service;
 
 import expense_tally.expense_manager.model.ExpenseCategory;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;

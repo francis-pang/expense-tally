@@ -4,6 +4,7 @@ import expense_tally.csv_parser.exception.MonetaryAmountException;
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.MasterCard;
 import expense_tally.csv_parser.model.TransactionType;
+import expense_tally.csv_parser.service.CsvParser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

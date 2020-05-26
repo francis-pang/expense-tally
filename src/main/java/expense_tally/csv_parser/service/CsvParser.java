@@ -1,4 +1,4 @@
-package expense_tally.csv_parser;
+package expense_tally.csv_parser.service;
 
 import expense_tally.csv_parser.exception.MonetaryAmountException;
 import expense_tally.csv_parser.model.CsvTransaction;

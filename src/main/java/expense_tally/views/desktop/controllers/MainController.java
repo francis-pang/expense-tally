@@ -1,16 +1,16 @@
 package expense_tally.views.desktop.controllers;
 
-import expense_tally.csv_parser.CsvParsable;
-import expense_tally.csv_parser.CsvParser;
 import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.expense_manager.DatabaseConnectable;
-import expense_tally.expense_manager.ExpenseReadable;
-import expense_tally.expense_manager.ExpenseReportReader;
-import expense_tally.expense_manager.ExpenseTransactionMapper;
-import expense_tally.expense_manager.SqlLiteConnection;
+import expense_tally.csv_parser.service.CsvParsable;
+import expense_tally.csv_parser.service.CsvParser;
 import expense_tally.expense_manager.model.ExpenseManagerMapKey;
 import expense_tally.expense_manager.model.ExpenseManagerTransaction;
 import expense_tally.expense_manager.model.ExpenseReport;
+import expense_tally.expense_manager.service.DatabaseConnectable;
+import expense_tally.expense_manager.service.ExpenseReadable;
+import expense_tally.expense_manager.service.ExpenseReportReader;
+import expense_tally.expense_manager.service.ExpenseTransactionMapper;
+import expense_tally.expense_manager.service.SqlLiteConnection;
 import expense_tally.reconciliation.ExpenseReconciler;
 import expense_tally.reconciliation.model.DiscrepantTransaction;
 import expense_tally.views.desktop.model.Transaction;
