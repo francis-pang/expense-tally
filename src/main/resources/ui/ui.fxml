@@ -82,14 +82,14 @@
                                         <Insets right="10.0" />
                                     </BorderPane.margin>
                                     <children>
-                                        <HBox spacing="5.0">
+                                        <HBox fx:id="databaseFilePathHBox" spacing="5.0">
                                             <children>
-                                                <TextField fx:id="databaseFilePathTextField" onAction="#handleDatabaseFilePathTextFieldAction" onMouseClicked="#handleDatabaseFilePathTextFieldAction" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="Database file path" />
+                                                <TextField fx:id="databaseFilePathTextField" onAction="#handleDatabaseFilePathTextFieldAction" onMouseClicked="#handleDatabaseFilePathTextFieldAction" opacity="0.5" prefHeight="25.0" prefWidth="500.0" text="Database file path" />
                                             </children>
                                         </HBox>
-                                        <HBox spacing="5.0">
+                                        <HBox fx:id="csvFilePathHBox" spacing="5.0">
                                             <children>
-                                                <TextField fx:id="csvFilePathTextField" onAction="#handleCsvFilePathTextFieldAction" onMouseClicked="#handleCsvFilePathTextFieldAction" opacity="0.5" prefHeight="25.0" prefWidth="350.0" text="CSV file path" />
+                                                <TextField fx:id="csvFilePathTextField" onAction="#handleCsvFilePathTextFieldAction" onMouseClicked="#handleCsvFilePathTextFieldAction" opacity="0.5" prefHeight="25.0" prefWidth="500.0" text="CSV file path" />
                                             </children>
                                         </HBox>
                                     </children>

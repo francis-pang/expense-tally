@@ -5,12 +5,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * This class check on the validity of the payment card provided.
  */
-public class PaymentCardValidator {
+public final class PaymentCardValidator {
   private static final List<Integer> MASTER_CARD_PREFIX_LIST = List.of(51, 52, 53, 54, 55);
   private static final int MASTER_CARD_LENGTH = 16;
   private static final Pattern REGEX = Pattern.compile("\\d+"); // All digits
+
+  /**
+   * Default constructor
+   */
+  private PaymentCardValidator() {
+  }
 
   /**
    * Validates if the payment card number is valid

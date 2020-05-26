@@ -23,8 +23,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,11 +51,21 @@ public class MainController implements Initializable {
   private TextField csvFilePathTextField;
   @FXML
   private TableView<Transaction> transactionTableView;
+  @FXML
+  private HBox csvFilePathHBox;
+  @FXML
+  private HBox databaseFilePathHBox;
+  @FXML
+  private VBox userFormVBox;
+  @FXML
+  private BorderPane baseBorderPane;
+
+  private static final Logger LOGGER = LogManager.getLogger(MainController.class);
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     tableAddRecordCheckBox.setCellValueFactory(cellData -> cellData.getValue().meantToBeAddedToDatabaseProperty());
-    tableAddRecordCheckBox.setCellFactory($ -> new CheckBoxTableCell<>());
+    tableAddRecordCheckBox.setCellFactory(parameter -> new CheckBoxTableCell<>());
   }
 
   @FXML
@@ -63,18 +80,19 @@ public class MainController implements Initializable {
 
   private void handleFilePathTextFieldAction(MouseEvent event) {
     TextField textField = (TextField) event.getSource();
-    String filePath = getFilePathFromUser();
+    File file = getFileFromUser();
+    String filePath = file.getAbsolutePath();
     textField.setText(filePath);
   }
 
-  private String getFilePathFromUser() {
+  private File getFileFromUser() {
     FileChooser fileChooser = new FileChooser();
-    File selectedFile = fileChooser.showOpenDialog(new Stage());
-    //TODO: Check on file validity
-    return selectedFile.getAbsolutePath();
+    // There is no need to check if the file path is a valid file, this is provided off the shell by showOpenDialog()
+    return fileChooser.showOpenDialog(new Stage());
   }
 
-  public void handleGenerateTransactionTableButtonAction(javafx.event.ActionEvent event) {
+  public void handleGenerateTransactionTableButtonAction() {
+    LOGGER.atTrace().log("User clicks on generate transaction button");
     // Validate text field content
     String databaseFilePath = databaseFilePathTextField.getText();
     String csvFilePath = csvFilePathTextField.getText();
@@ -85,20 +103,25 @@ public class MainController implements Initializable {
     try {
       csvTransactions = csvParsable.parseCsvFile(csvFilePath);
     } catch (IOException e) {
-      //FIXME
-      e.printStackTrace();
+      String errorMessage = String.format("Unable to read from the csv file: %s", csvFilePath);
+      LOGGER.atWarn().withThrowable(e).log(errorMessage);
+      addErrorTextBelowInput(csvFilePathHBox, errorMessage);
+      return;
     }
 
     // Parse database
     DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFilePath);
     ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
-    List<ExpenseReport> expenseReports = null;
+    List<ExpenseReport> expenseReports;
     try {
       expenseReports = expenseReadable.getExpenseTransactions();
     } catch (SQLException e) {
-      //FIXME
-      e.printStackTrace();
+      String errorMessage = String.format("Unable to read from the database: %s",databaseFilePath);
+      LOGGER.atWarn().withThrowable(e).log(errorMessage);
+      addErrorTextBelowInput(databaseFilePathHBox, errorMessage);
+      return;
     }
+
     Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMap =
         ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
 
@@ -117,5 +140,14 @@ public class MainController implements Initializable {
 
     // Convert to table view
     transactionTableView.setItems(transactionObservableList);
+  }
+
+  private void addErrorTextBelowInput(HBox inputHBox, String errorMessage) {
+    Text errorText = new Text(errorMessage);
+    errorText.setSelectionFill(Color.RED); //FIXME: Color is not red
+    // FIXME: There is an issue with adding it straight after the input box.
+    userFormVBox.getChildren().add(errorText);
+    // FIXME: Auto-resizing does not work
+    baseBorderPane.resize(baseBorderPane.getMaxWidth(), baseBorderPane.getMaxHeight());
   }
 }

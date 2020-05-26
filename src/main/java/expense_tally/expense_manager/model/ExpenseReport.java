@@ -25,9 +25,6 @@ public class ExpenseReport {
   private String tax;
   private String expenseTag;
 
-  public ExpenseReport() {
-  }
-
   public void setId(int id) {
     this.id = id;
   }

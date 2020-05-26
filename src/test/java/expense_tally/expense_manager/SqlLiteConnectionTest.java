@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ExtendWith(MockitoExtension.class)
 class SqlLiteConnectionTest {
   @Spy
@@ -18,14 +20,15 @@ class SqlLiteConnectionTest {
   @Test
   void constructor() {
     String testDatabaseConnection = "testSql";
-    spyDatabaseConnectable = new SqlLiteConnection(testDatabaseConnection);
+    assertThat(new SqlLiteConnection(testDatabaseConnection))
+        .isNotNull();
   }
 
   @Test
   void connect_connectionSuccess() throws SQLException {
     Connection mockConnection = Mockito.mock(Connection.class);
     Mockito.when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
-    Assertions.assertThat(spyDatabaseConnectable.connect())
+    assertThat(spyDatabaseConnectable.connect())
         .isEqualTo(mockConnection);
   }
 

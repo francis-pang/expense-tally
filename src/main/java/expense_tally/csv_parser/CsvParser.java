@@ -4,7 +4,6 @@ import expense_tally.csv_parser.exception.MonetaryAmountException;
 import expense_tally.csv_parser.model.CsvTransaction;
 import expense_tally.csv_parser.model.MasterCard;
 import expense_tally.csv_parser.model.TransactionType;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,20 +51,13 @@ public class CsvParser implements CsvParsable {
   private static final String CSV_DELIMITER = ",";
   private static final double DEFAULT_AMOUNT = 0.00;
 
-  /**
-   * Parse a CSV file in the pre-defined format from the file with the directory <i>filePath</i>.
-   *
-   * @param filePath file path of the CSV file, regardless relative or absolute path
-   * @return a list of CsvTransaction read from the CSV file
-   * @throws IOException when there is Input/Output error
-   */
   @Override
   public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
     try (BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filePath))) {
       return parseCsvTransactionFromBufferedReader(csvBufferedReader);
     } catch (IOException ex) {
-      LOGGER.error("Cannot read from CSV input file {}", filePath);
-      throw LOGGER.throwing(Level.ERROR, ex);
+      LOGGER.atError().withThrowable(ex).log("Cannot read from CSV input file {}", filePath);
+      throw ex;
     }
   }
 
@@ -88,8 +80,7 @@ public class CsvParser implements CsvParsable {
     try {
       csvTransaction = parseSingleTransaction(line);
     } catch (MonetaryAmountException e) {
-      LOGGER.error("Unable to parse transaction. line={}", line);
-      LOGGER.throwing(e);
+      LOGGER.atError().withThrowable(e).log("Unable to parse transaction. line={}", line);
     }
     if (csvTransaction == null) {
       return;
@@ -111,14 +102,15 @@ public class CsvParser implements CsvParsable {
    *
    * @param csvLine a single line of csv with proper line ending, delimited by the comma character
    * @return a CsvTransaction based on the line of csv. The sequence (position of each of the elements) of the csv
-   * file is fixed. If it is of a transacton not meant for processing, null will be returned.
+   * file is fixed. If it is of a transaction not meant for processing, null will be returned.
+   * @throws MonetaryAmountException if both the debit and credit amount isn't fill up as non-zero value
    */
   private CsvTransaction parseSingleTransaction(String csvLine) throws MonetaryAmountException {
     String[] csvElements = csvLine.split(CSV_DELIMITER);
     String reference = csvElements[REFERENCE.position];
     TransactionType transactionType = TransactionType.resolve(reference);
     if (transactionType == null) {
-      LOGGER.info("Found a new transaction type: {}; {}", reference, csvLine);
+      LOGGER.atInfo().log("Found a new transaction type: {}; csvLine: {}", reference, csvLine);
       return null;
     } else if (!transactionType.isMeantToBeProcessed()) {
       return null;
@@ -153,10 +145,11 @@ public class CsvParser implements CsvParsable {
       case MASTERCARD:
         try {
           return MasterCard.from(csvTransaction);
-        } catch (RuntimeException e) {
-          LOGGER.warn("Unable to convert csv transaction to MasterCard transaction - csvTransaction={}",
-              csvTransaction);
-          LOGGER.throwing(Level.WARN, e);
+        } catch (RuntimeException runtimeException) {
+          //FIXME: Mockito does not support mocking of static method, so this cannot be tested yet
+          LOGGER.atWarn()
+              .withThrowable(runtimeException)
+              .log("Unable to convert csv transaction to MasterCard transaction: {}", csvTransaction);
           return csvTransaction;
         }
       case FAST_PAYMENT:

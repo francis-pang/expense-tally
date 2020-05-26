@@ -23,6 +23,8 @@ Configutation:
     File:
       name: debug_file_appender
       fileName: ${log-path}.log
+      # Enable asynchronous logging
+      immediateFlush: false
       PatternLayout:
         pattern: "%d{dd MMM yyyy HH:mm:ss.SSS} [%-5level{lowerCase=false}] %class{-1}.%method:%line - %message{nolookups}{ansi}%n"
 

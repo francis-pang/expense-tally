@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * database (definitions, tables, indices, and the data itself) is stored inside a single cross-platform file.</p>
  */
 public class SqlLiteConnection implements DatabaseConnectable {
-  private final static String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
+  private static final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
   private String databaseFile;
 
   /**
@@ -24,14 +24,12 @@ public class SqlLiteConnection implements DatabaseConnectable {
     this.databaseFile = SQLITE_JDBC_PREFIX + databaseFile;
   }
 
-  /**
-   * Returns the connection to the database
-   *
-   * @return the connection to the database
-   * @throws SQLException when there is an error accessing the database
-   */
   @Override
   public Connection connect() throws SQLException {
+    /**
+     * This line of code cannot be tested because DriverManager cannot be further mocked as Mockito does not support
+     * static method mocking
+     */
     return DriverManager.getConnection(databaseFile);
   }
 }
