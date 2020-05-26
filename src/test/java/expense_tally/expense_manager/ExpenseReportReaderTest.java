@@ -1,8 +1,8 @@
 package expense_tally.expense_manager;
 
-import expense_tally.expense_manager.model.ExpenseReport;
-import expense_tally.expense_manager.service.DatabaseConnectable;
-import expense_tally.expense_manager.service.ExpenseReportReader;
+import expense_tally.expense_manager.persistence.DatabaseConnectable;
+import expense_tally.expense_manager.persistence.ExpenseReport;
+import expense_tally.expense_manager.persistence.ExpenseReportReader;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

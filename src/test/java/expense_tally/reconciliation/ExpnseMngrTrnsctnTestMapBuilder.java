@@ -1,10 +1,10 @@
 package expense_tally.reconciliation;
 
-import expense_tally.expense_manager.model.ExpenseCategory;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.ExpenseSubCategory;
-import expense_tally.expense_manager.model.PaymentMethod;
+import expense_tally.expense_manager.transformation.ExpenseCategory;
+import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
+import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
+import expense_tally.expense_manager.transformation.ExpenseSubCategory;
+import expense_tally.expense_manager.transformation.PaymentMethod;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

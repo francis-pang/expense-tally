@@ -1,5 +1,9 @@
 package expense_tally.expense_manager.model;
 
+import expense_tally.expense_manager.transformation.ExpenseCategory;
+import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
+import expense_tally.expense_manager.transformation.ExpenseSubCategory;
+import expense_tally.expense_manager.transformation.PaymentMethod;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -436,6 +440,6 @@ class ExpenseManagerTransactionTest {
         testTime
     );
     assertThat(testExpenseManagerTransaction.toString())
-        .isEqualTo("[amount=5.48, category=ENTERTAINMENT, subcategory=CLOTHING, paymentMethod=GRAY_PAY, description='sd', expendedTime=2020-05-27T01:19:00Z, referenceAmount=null]");
+        .isEqualTo("ExpenseManagerTransaction[amount=5.48, category=ENTERTAINMENT, subcategory=CLOTHING, paymentMethod=GRAY_PAY, description='sd', expendedTime=2020-05-27T01:19:00Z, referenceAmount=null]");
   }
 }

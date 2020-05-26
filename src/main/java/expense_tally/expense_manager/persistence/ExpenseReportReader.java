@@ -1,6 +1,5 @@
-package expense_tally.expense_manager.service;
+package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.model.ExpenseReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,10 +12,10 @@ import java.util.List;
 
 /**
  * {@code ExpenseReportReader} provide the user ways to retrieve the
- * {@link expense_tally.expense_manager.model.ExpenseReport} from a database file.
+ * {@link ExpenseReport} from a database file.
  * <p>The current implementation only support reading from SQLite database system.</p>
  *
- * @see expense_tally.expense_manager.model.ExpenseReport
+ * @see ExpenseReport
  */
 public class ExpenseReportReader implements ExpenseReadable {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseReportReader.class);
@@ -89,7 +88,7 @@ public class ExpenseReportReader implements ExpenseReadable {
     return expenseReports;
   }
 
-  public enum Column {
+  private enum Column {
     ID ("_id"),
     ACCOUNT ("account"),
     AMOUNT ("amount"),
@@ -111,7 +110,7 @@ public class ExpenseReportReader implements ExpenseReadable {
 
     private String value;
 
-    private Column(String value) {
+    Column(String value) {
       this.value = value;
     }
 

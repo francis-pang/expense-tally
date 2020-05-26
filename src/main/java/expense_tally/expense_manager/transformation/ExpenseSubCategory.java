@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.model;
+package expense_tally.expense_manager.transformation;
 
 public enum ExpenseSubCategory {
   ALCOHOL_AND_RESTAURANT("Alcohol/ Restaurant"),

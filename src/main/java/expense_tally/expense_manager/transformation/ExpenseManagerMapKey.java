@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.model;
+package expense_tally.expense_manager.transformation;
 
 import java.util.Objects;
 import java.util.StringJoiner;

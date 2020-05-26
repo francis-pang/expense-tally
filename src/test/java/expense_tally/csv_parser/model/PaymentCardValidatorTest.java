@@ -1,5 +1,7 @@
 package expense_tally.csv_parser.model;
 
+import expense_tally.csv_parser.PaymentCardValidator;
+import expense_tally.csv_parser.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

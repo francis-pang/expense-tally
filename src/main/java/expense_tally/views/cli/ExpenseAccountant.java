@@ -1,15 +1,15 @@
 package expense_tally.views.cli;
 
-import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.csv_parser.service.CsvParser;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.ExpenseReport;
-import expense_tally.expense_manager.service.DatabaseConnectable;
-import expense_tally.expense_manager.service.ExpenseReadable;
-import expense_tally.expense_manager.service.ExpenseReportReader;
-import expense_tally.expense_manager.service.ExpenseTransactionMapper;
-import expense_tally.expense_manager.service.SqlLiteConnection;
+import expense_tally.csv_parser.CsvParser;
+import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.expense_manager.persistence.DatabaseConnectable;
+import expense_tally.expense_manager.persistence.ExpenseReadable;
+import expense_tally.expense_manager.persistence.ExpenseReport;
+import expense_tally.expense_manager.persistence.ExpenseReportReader;
+import expense_tally.expense_manager.persistence.SqlLiteConnection;
+import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
+import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
+import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

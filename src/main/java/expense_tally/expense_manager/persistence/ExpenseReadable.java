@@ -1,6 +1,6 @@
-package expense_tally.expense_manager.service;
+package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.model.ExpenseReport;
+import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -8,10 +8,10 @@ import java.util.List;
 /**
  * This interface provides a way for reading data from a source.
  * <p>The source can be from a database engine, external files, e.g a XML, comma-separated values, and etc. The data
- * read will reconstruct and return in {@link expense_tally.expense_manager.model.ExpenseManagerTransaction} format.</p>
+ * read will reconstruct and return in {@link ExpenseManagerTransaction} format.</p>
  * <p><b>Restriction</b>: For now the interface is limited to read from a database file.</p>
  *
- * @see expense_tally.expense_manager.model.ExpenseManagerTransaction
+ * @see ExpenseManagerTransaction
  */
 public interface ExpenseReadable {
   /**

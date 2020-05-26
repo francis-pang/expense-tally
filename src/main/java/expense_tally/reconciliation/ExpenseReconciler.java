@@ -1,11 +1,10 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.csv_parser.model.TransactionType;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.PaymentMethod;
-import expense_tally.reconciliation.model.DiscrepantTransaction;
+import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.TransactionType;
+import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
+import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
+import expense_tally.expense_manager.transformation.PaymentMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

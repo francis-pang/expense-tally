@@ -1,7 +1,10 @@
-package expense_tally.expense_manager.model;
+package expense_tally.expense_manager.persistence;
 
 import java.util.Objects;
 
+/**
+ *
+ */
 public class ExpenseReport {
   private int id;
   private String account;
@@ -24,6 +27,9 @@ public class ExpenseReport {
   private String property5;
   private String tax;
   private String expenseTag;
+
+  public ExpenseReport() {
+  }
 
   public void setId(int id) {
     this.id = id;
