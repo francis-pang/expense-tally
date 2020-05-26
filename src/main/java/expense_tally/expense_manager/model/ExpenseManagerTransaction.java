@@ -9,55 +9,36 @@ public class ExpenseManagerTransaction {
   private ExpenseSubCategory subcategory;
   private PaymentMethod paymentMethod;
   private String description;
-  private Instant expensedTime;
+  private Instant expendedTime;
   private Double referenceAmount;
+
+  private ExpenseManagerTransaction() {
+  }
+
+  public static ExpenseManagerTransaction createInstanceOf(double amount, ExpenseCategory category,
+                                                           ExpenseSubCategory subCategory,
+                                                           PaymentMethod paymentMethod, String description,
+                                                           Instant expendedTime) {
+    ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
+    expenseManagerTransaction.amount = amount;
+    expenseManagerTransaction.category = category;
+    expenseManagerTransaction.subcategory = subCategory;
+    expenseManagerTransaction.paymentMethod = paymentMethod;
+    expenseManagerTransaction.description = description;
+    expenseManagerTransaction.expendedTime = expendedTime;
+    return expenseManagerTransaction;
+  }
 
   public Double getAmount() {
     return amount;
-  }
-
-  public void setAmount(Double amount) {
-    this.amount = amount;
-  }
-
-  public ExpenseCategory getCategory() {
-    return category;
-  }
-
-  public void setCategory(ExpenseCategory category) {
-    this.category = category;
-  }
-
-  public ExpenseSubCategory getSubcategory() {
-    return subcategory;
-  }
-
-  public void setSubcategory(ExpenseSubCategory subcategory) {
-    this.subcategory = subcategory;
   }
 
   public PaymentMethod getPaymentMethod() {
     return paymentMethod;
   }
 
-  public void setPaymentMethod(PaymentMethod paymentMethod) {
-    this.paymentMethod = paymentMethod;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public Instant getExpensedTime() {
-    return expensedTime;
-  }
-
-  public void setExpensedTime(Instant expensedTime) {
-    this.expensedTime = expensedTime;
+  public Instant getExpendedTime() {
+    return expendedTime;
   }
 
   public Double getReferenceAmount() {
@@ -78,12 +59,12 @@ public class ExpenseManagerTransaction {
         subcategory == that.subcategory &&
         paymentMethod == that.paymentMethod &&
         description.equals(that.description) &&
-        expensedTime.equals(that.expensedTime) &&
+        expendedTime.equals(that.expendedTime) &&
         referenceAmount.equals(that.referenceAmount);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(amount, category, subcategory, paymentMethod, description, expensedTime, referenceAmount);
+    return Objects.hash(amount, category, subcategory, paymentMethod, description, expendedTime, referenceAmount);
   }
 }

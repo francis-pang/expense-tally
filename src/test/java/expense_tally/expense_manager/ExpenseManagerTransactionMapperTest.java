@@ -63,13 +63,8 @@ class ExpenseManagerTransactionMapperTest {
       String description,
       String expensedTime,
       double referenceAmount) {
-    ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
-    expenseManagerTransaction.setAmount(amount);
-    expenseManagerTransaction.setCategory(category);
-    expenseManagerTransaction.setSubcategory(subcategory);
-    expenseManagerTransaction.setPaymentMethod(paymentMethod);
-    expenseManagerTransaction.setDescription(description);
-    expenseManagerTransaction.setExpensedTime(Instant.parse(expensedTime));
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+        category, subcategory, paymentMethod, description, Instant.parse(expensedTime));
     expenseManagerTransaction.setReferenceAmount(referenceAmount);
     return expenseManagerTransaction;
   }
@@ -146,7 +141,7 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Description", atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
+        .extracting("expendedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(0.0, atIndex(0));
     softly.assertAll();
@@ -239,7 +234,7 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Dinner. Single bowl salad. Happy Tummy", atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
+        .extracting("expendedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(0.0, atIndex(0));
 
@@ -254,7 +249,7 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Monthly allowed expenditure", atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(1));
+        .extracting("expendedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(7.0, atIndex(1));
 
@@ -269,7 +264,7 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Ice 2.5 kg", atIndex(2));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(2));
+        .extracting("expendedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(2));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(0.0, atIndex(2));
 

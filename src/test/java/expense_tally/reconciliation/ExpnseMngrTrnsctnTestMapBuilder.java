@@ -34,13 +34,8 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
     ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(paymentMethod, amount);
     addCustomisedTransations(expenseManagerMapKeyListMap, expenseManagerTransactionList);
     for (int index = 0; index < numberOfTransaction; index++) {
-      ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
-      expenseManagerTransaction.setAmount(amount);
-      expenseManagerTransaction.setCategory(category);
-      expenseManagerTransaction.setSubcategory(subcategory);
-      expenseManagerTransaction.setPaymentMethod(paymentMethod);
-      expenseManagerTransaction.setDescription(description);
-      expenseManagerTransaction.setExpensedTime(expensedTime);
+      ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+          category, subcategory, paymentMethod, description, expensedTime);
       expenseManagerTransaction.setReferenceAmount(referenceAmount);
       expenseManagerTransactionList.add(expenseManagerTransaction);
     }
@@ -103,10 +98,8 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
     final int MINUTES = 15;
     final int SECONDS = 30;
     Instant expensedTime = LocalDateTime.of(expensedYear, expensedMonth, expensedDay, HOURS, MINUTES, SECONDS).toInstant(ZoneOffset.UTC);
-    ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
-    expenseManagerTransaction.setAmount(amount);
-    expenseManagerTransaction.setPaymentMethod(paymentMethod);
-    expenseManagerTransaction.setExpensedTime(expensedTime);
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+        category, subcategory, paymentMethod, description, expensedTime);
     expenseManagerTransactionList.add(expenseManagerTransaction);
     return this;
   }

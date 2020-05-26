@@ -117,7 +117,7 @@ public class ExpenseReconciler {
                                                            final List<ExpenseManagerTransaction> expenseManagerTransactionList) {
     int noOfMatchingTransaction = 0;
     for (ExpenseManagerTransaction matchingExpenseManagerTransaction : expenseManagerTransactionList) {
-      Duration transactionTimeDifference = Duration.between(matchingExpenseManagerTransaction.getExpensedTime(),
+      Duration transactionTimeDifference = Duration.between(matchingExpenseManagerTransaction.getExpendedTime(),
           endOfDay(csvTransactionDate));
       if (transactionTimeDifference.toHours() >= 0 && transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
         noOfMatchingTransaction++;
