@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * This class models the database schema of a transaction stored in the Expense Manager application.
+ */
 public class ExpenseManagerTransaction {
   private Double amount;
   private ExpenseCategory category;
@@ -17,15 +20,17 @@ public class ExpenseManagerTransaction {
   }
 
   /**
-   *
-   * @param amount
-   * @param category
-   * @param subCategory
-   * @param paymentMethod
-   * @param description
-   * @param expendedTime
-   * @return
-   * @hrows IllegalArgumentException
+   * Create a {@link ExpenseManagerTransaction} with the minimally required parameters.
+   * @param amount transaction amount
+   * @param category transaction category
+   * @param subCategory transaction sub-category
+   * @param paymentMethod transaction payment method
+   * @param description transaction description
+   * @param expendedTime time when the transaction occurs
+   * @see ExpenseCategory
+   * @see ExpenseSubCategory
+   * @return a new instance of {@link ExpenseManagerTransaction}
+   * @hrows IllegalArgumentException when any of the enum class is null, or an blank description is provided
    */
   public static ExpenseManagerTransaction createInstanceOf(double amount, ExpenseCategory category,
                                                            ExpenseSubCategory subCategory,
