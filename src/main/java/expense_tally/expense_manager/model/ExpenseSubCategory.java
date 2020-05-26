@@ -1,7 +1,6 @@
 package expense_tally.expense_manager.model;
 
 public enum ExpenseSubCategory {
-
   ALCOHOL_AND_RESTAURANT("Alcohol/ Restaurant"),
   KARAOKE_PARTY("Karaoke/ Party"),
   FOOD_COURT_AND_FAST_FOOD("Food court/ Fast food"),
@@ -43,7 +42,7 @@ public enum ExpenseSubCategory {
   VACATION_TRANSPORT_INTRACITY("Transport within city"),
   GIFT_TREAT("Gift/ Treat");
 
-  public final String value;
+  private final String value;
 
   /**
    * Default constructor
@@ -67,5 +66,9 @@ public enum ExpenseSubCategory {
       }
     }
     return null;
+  }
+
+  public String value() {
+    return value;
   }
 }
