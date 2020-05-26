@@ -4,6 +4,7 @@ import expense_tally.csv_parser.exception.MonetaryAmountException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -232,5 +233,105 @@ class MasterCardTest {
             "",
             TransactionType.MASTERCARD
         );
+  }
+
+  @Test
+  void toString_test() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+    MasterCard masterCard = MasterCard.from(testCsvTransaction);
+    assertThat(masterCard.toString())
+        .isNotBlank()
+        .isEqualTo("MasterCard[CsvTransaction[transactionDate=2019-12-20, debitAmount=4.55, creditAmount=0.0, transactionRef1='TAPAS SI NG 20DEC', transactionRef2='5132-4172-5981-4347', transactionRef3='', type=TransactionType[value='MST']], cardNumber=5132-4172-5981-4347]");
+  }
+
+  @Test
+  void equals_sameObject() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+    MasterCard masterCard = MasterCard.from(testCsvTransaction);
+    MasterCard masterCardDifferenceReference = masterCard;
+    assertThat(masterCard.equals(masterCardDifferenceReference)).isTrue();
+  }
+
+  @Test
+  void equals_differentClass() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+    MasterCard masterCard = MasterCard.from(testCsvTransaction);
+    assertThat(masterCard.equals(testCsvTransaction)).isFalse();
+  }
+
+  @Test
+  void equals_differentBySuperClassComparison() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction1 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+
+    CsvTransaction testCsvTransaction2 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI ")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+    MasterCard masterCard1 = MasterCard.from(testCsvTransaction1);
+    MasterCard masterCard2 = MasterCard.from(testCsvTransaction2);
+    assertThat(masterCard1.equals(testCsvTransaction2)).isFalse();
+  }
+
+  @Test
+  void equals_differentCardNumber() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction1 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+
+    CsvTransaction testCsvTransaction2 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4346")
+        .build();
+    MasterCard masterCard1 = MasterCard.from(testCsvTransaction1);
+    MasterCard masterCard2 = MasterCard.from(testCsvTransaction2);
+    assertThat(masterCard1.equals(masterCard2)).isFalse();
+  }
+
+  @Test
+  void equals_allFieldsAreSame() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction1 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+
+    CsvTransaction testCsvTransaction2 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+    MasterCard masterCard1 = MasterCard.from(testCsvTransaction1);
+    MasterCard masterCard2 = MasterCard.from(testCsvTransaction2);
+    assertThat(masterCard1.equals(masterCard2)).isTrue();
+  }
+
+  @Test
+  void hashCode_same() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+    MasterCard masterCard = MasterCard.from(testCsvTransaction);
+    assertThat(masterCard.hashCode())
+        .isNotZero()
+        .isEqualByComparingTo(Objects.hashCode(masterCard));
   }
 }

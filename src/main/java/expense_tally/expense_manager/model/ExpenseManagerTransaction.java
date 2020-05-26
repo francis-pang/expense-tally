@@ -12,9 +12,6 @@ public class ExpenseManagerTransaction {
   private Instant expensedTime;
   private Double referenceAmount;
 
-  public ExpenseManagerTransaction() {
-  }
-
   public Double getAmount() {
     return amount;
   }

@@ -7,7 +7,6 @@ import expense_tally.csv_parser.model.TransactionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -21,11 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CsvParserTest {
-  //TODO: This 2 constant tag should be in its own enum class, but there is an error wit the error message"Attribute
-  // value must be constant" prohibit me from doing so. Putting a task here to look at it later as a clean up.
-  private static final String NEGATIVE_TAG = "Negative";
-  private static final String POSITIVE_TAG = "Positive";
-
   private static CsvParser csvParser;
   private static Path currentRelativePath;
   private File csvFile;
@@ -57,7 +51,6 @@ class CsvParserTest {
    * Expects that all the data in the file is filled
    */
   @Test
-  @Tag(value = POSITIVE_TAG)
   void parseCsvFile_parseOneRowDataFullyFilled() throws IOException, MonetaryAmountException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("09 Nov 2018,ICT, 148.88, 0,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
@@ -81,7 +74,6 @@ class CsvParserTest {
   }
 
   @Test
-  @Tag(POSITIVE_TAG)
   void parseCsvFile_parseHeaderWithNoRow() throws IOException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.close();
@@ -91,7 +83,6 @@ class CsvParserTest {
   }
 
   @Test
-  @Tag(POSITIVE_TAG)
   void parseCsvFile_parseOneRowDataNoDebit() throws IOException, MonetaryAmountException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("09 Nov 2018,ICT, , 148.88,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
@@ -118,7 +109,6 @@ class CsvParserTest {
    * This test case also prove that a transaction record without credit amount will work alright
    */
   @Test
-  @Tag(NEGATIVE_TAG)
   void parseCsvFile_oneRowDataNoTransactionRef() throws IOException, MonetaryAmountException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("09 Nov 2018,ICT, 148.88,,,,\n");
@@ -142,7 +132,6 @@ class CsvParserTest {
   }
 
   @Test
-  @Tag(NEGATIVE_TAG)
   void parseCsvFile_oneRowDataNoHeader() throws IOException {
     csvFileWriter.write("09 Nov 2018,ICT, 148.88, ,,,\n");
     csvFileWriter.close();
@@ -156,7 +145,6 @@ class CsvParserTest {
    * per the code, a number will be return, and then we will get a 0 size list back.
    */
   @Test
-  @Tag(POSITIVE_TAG)
   void parseCsvFile_oneAwlTransaction() throws IOException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("25 Oct 2018,AWL, 20.00, ,00141067,DTL ROCHOR,,,\n");
@@ -171,7 +159,6 @@ class CsvParserTest {
    * skipped.
    */
   @Test
-  @Tag(POSITIVE_TAG)
   void parseCsvFile_unknownTransaction() throws IOException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("\n");
@@ -183,7 +170,6 @@ class CsvParserTest {
   }
 
   @Test
-  @Tag(POSITIVE_TAG)
   void parseCsvFile_masterCardTransaction() throws IOException, MonetaryAmountException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("\n");
@@ -209,7 +195,6 @@ class CsvParserTest {
   }
 
   @Test
-  @Tag(POSITIVE_TAG)
   void parseCsvFile_billTransaction() throws IOException, MonetaryAmountException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("\n");
@@ -234,7 +219,6 @@ class CsvParserTest {
   }
 
   @Test
-  @Tag(NEGATIVE_TAG)
   void parseCsvFile_ioException() {
     assertThatThrownBy(() -> csvParser.parseCsvFile("invalidfile.csv"))
         .isInstanceOf(IOException.class);
@@ -245,7 +229,6 @@ class CsvParserTest {
    * normally the MasterCard card number is inside that field
    */
   @Test
-  @Tag(POSITIVE_TAG)
   void parseCsvFile_masterCardEmptyTransactionRef2() throws IOException, MonetaryAmountException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("\n");
@@ -269,5 +252,21 @@ class CsvParserTest {
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
         .containsExactlyInAnyOrder(expectedMaster);
+  }
+
+  /**
+   * This tests that the csv parser reads the invalid line with both positive debit and credit value, show an error in
+   * the log but it does not stop the program.
+   */
+  @Test
+  void parseCsvFile_debitAndCreditHavePositionValue() throws IOException {
+    csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
+    csvFileWriter.write("\n");
+    csvFileWriter.write("04 Oct 2018,MST, 10.16, 15.6,test ref 1 SI NG 10OCT,,test ref 3\n");
+    csvFileWriter.close();
+
+    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+        .isNotNull()
+        .hasSize(0);
   }
 }

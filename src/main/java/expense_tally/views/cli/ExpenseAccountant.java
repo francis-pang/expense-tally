@@ -31,13 +31,24 @@ public class ExpenseAccountant {
   private String csvFilename;
   private String databaseFilename;
 
-  public ExpenseAccountant(String[] args) throws IllegalArgumentException {
+  /**
+   *
+   * @param args
+   * @throws IllegalArgumentException
+   */
+  public ExpenseAccountant(String[] args) {
     final String DATABASE_PARAMETER = "database-filepath";
     final String CSV_PARAMETER = "csv-filepath";
     final String PARAMETER_PREFIX = "--";
     final char EQUAL_SIGN = '=';
     final String EQUAL_SEPARATOR = "=";
     final char DOUBLE_QUOTATION = '"';
+
+    if (args.length < 2) {
+      LOGGER.atError().log("Console receives {} argument", args.length);
+      throw new IllegalArgumentException("Need to provide both CSV and database path.");
+    }
+
     /*
      * Expect to received --database-filepath = XXXX --csv-filepath= XXXX
      * Allow 3 format of declaring parameter
@@ -45,8 +56,9 @@ public class ExpenseAccountant {
      * 2. parameter = xxxxx
      * 3. parameter =xxxxx
      */
-    if (args.length % 2 != 0) {
-      LOGGER.error("Argument is not in odd number. Args=" + Arrays.toString(args));
+    //TODO: For now, we ignore any parameters after 2nd parameters, next time we can handle them.
+    if (!isEven(args.length)) {
+      LOGGER.atError().log("Argument is not in odd number. Args= {}", () -> Arrays.toString(args));
       throw new IllegalArgumentException("Odd number of parameters provided.");
     }
     this.csvFilename = args[0];
@@ -84,6 +96,10 @@ public class ExpenseAccountant {
     }
   }
 
+  private boolean isEven(int count) {
+    return count % 2 == 0;
+  }
+
   public void reconcileData() throws IOException, SQLException {
     List<CsvTransaction> bankTransactions = getCsvTransactionsFrom(csvFilename);
     try {
@@ -91,7 +107,10 @@ public class ExpenseAccountant {
           getExpenseManagerTransactionsByKeyFrom(databaseFilename);
       reconcileData(bankTransactions, manuallyRecordedTransactionMap);
     } catch (SQLException ex) {
-      LOGGER.error("Problem accessing the database. Database file location=" + databaseFilename, ex);
+      LOGGER
+          .atError()
+          .withThrowable(ex)
+          .log("Problem accessing the database. Database file location= {}", databaseFilename);
       throw ex;
     }
   }

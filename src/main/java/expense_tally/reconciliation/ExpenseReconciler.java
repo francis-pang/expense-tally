@@ -28,6 +28,10 @@ public class ExpenseReconciler {
   private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
   private static final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
 
+  private ExpenseReconciler() {
+    throw new IllegalStateException("Shouldn't be able to initialise " + this.getClass().getName());
+  }
+
   /**
    * Reconcile the data in the CSV file against the database record in the Expense Manager database
    * <p>This is a one way matching exercise. The reconciler iterates through each record in the CSV files to match
@@ -40,10 +44,10 @@ public class ExpenseReconciler {
   public static List<DiscrepantTransaction> reconcileBankData(
       final List<CsvTransaction> csvTransactions,
       final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
-    /**
-     * Taking context from <a href="https://stackoverflow.com/a/15210142/1522867">stack overflow answer</a>, the
-     * correct way <q cite="https://stackoverflow.com/a/15210142/1522867"> In this case it's perfectly ok to throw
-     * an unchecked exception like an IllegalArgumentException, which should not be caught</q>
+    /*
+     * Taking context from stack overflow answer(https://stackoverflow.com/a/15210142/1522867), the correct way
+     * (https://stackoverflow.com/a/15210142/1522867) in this case it's perfectly ok to throw
+     * an unchecked exception like an IllegalArgumentException, which should not be caught.
      */
     if (csvTransactions == null) {
       throw new IllegalArgumentException(NULL_CSV_TRANSACTION_EXCEPTION_MSG);
@@ -61,7 +65,7 @@ public class ExpenseReconciler {
       }
     }
     final int discrepantTransactionSize = discrepantTransactions.size();
-    LOGGER.info("Found " + discrepantTransactionSize + " non-matching transactions.");
+    LOGGER.atInfo().log("Found {} non-matching transactions.", discrepantTransactionSize);
     return discrepantTransactions;
   }
 
@@ -103,7 +107,7 @@ public class ExpenseReconciler {
       case GIRO_COLLECTION:
         return PaymentMethod.GIRO;
       default:
-        LOGGER.warn("Unable to resolve transaction type " + transactionType + " to a payment method.");
+        LOGGER.atWarn().log("Unable to resolve transaction type {} to a payment method.", transactionType);
         return null;
 
     }
@@ -125,30 +129,30 @@ public class ExpenseReconciler {
   private static boolean csvRecordHasMatchingTransaction(final CsvTransaction csvTransaction,
                                                          final Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap) {
     if (csvTransaction.getDebitAmount() == 0) {
-      LOGGER.trace("This is not a debit transaction");
+      LOGGER.atTrace().log("This is not a debit transaction");
       return true;
     }
     PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getTransactionType());
     if (expensePaymentMethod == null) {
-      LOGGER.warn("Found an unknown transaction type: " + csvTransaction.toString());
+      LOGGER.atWarn().log("Found an unknown transaction type: {}", csvTransaction);
       return true;
     }
     ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expensePaymentMethod, csvTransaction.getDebitAmount());
     List<ExpenseManagerTransaction> expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
     if (expenseManagerTransactionList == null) {
-      LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
+      LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", csvTransaction);
       return false;
     }
     switch (calculateNumberOfMatchingTransactions(csvTransaction.getTransactionDate(),
         expenseManagerTransactionList)) {
       case 0:
-        LOGGER.info("Transaction in the CSV file does not exist in Expense Manager: " + csvTransaction.toString());
+        LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", csvTransaction);
         return false;
       case 1:
-        LOGGER.trace("Found a matching transaction");
+        LOGGER.atTrace().log("Found a matching transaction");
         return true;
       default:
-        LOGGER.info("Found more than 1 matching transaction for this: " + csvTransaction.toString());
+        LOGGER.atInfo().log("Found more than 1 matching transaction for this: {}", csvTransaction);
         return true;
     }
   }
