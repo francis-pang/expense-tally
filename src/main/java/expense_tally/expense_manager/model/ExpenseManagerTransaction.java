@@ -2,6 +2,7 @@ package expense_tally.expense_manager.model;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class ExpenseManagerTransaction {
   private Double amount;
@@ -15,15 +16,38 @@ public class ExpenseManagerTransaction {
   private ExpenseManagerTransaction() {
   }
 
+  /**
+   *
+   * @param amount
+   * @param category
+   * @param subCategory
+   * @param paymentMethod
+   * @param description
+   * @param expendedTime
+   * @return
+   * @hrows IllegalArgumentException
+   */
   public static ExpenseManagerTransaction createInstanceOf(double amount, ExpenseCategory category,
                                                            ExpenseSubCategory subCategory,
                                                            PaymentMethod paymentMethod, String description,
                                                            Instant expendedTime) {
     ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
     expenseManagerTransaction.amount = amount;
+    if (category == null) {
+      throw new IllegalArgumentException("Category cannot be null");
+    }
     expenseManagerTransaction.category = category;
+    if (subCategory == null) {
+      throw new IllegalArgumentException("Subcategory cannot be null");
+    }
     expenseManagerTransaction.subcategory = subCategory;
+    if (paymentMethod == null) {
+      throw new IllegalArgumentException("Payment method cannot be null");
+    }
     expenseManagerTransaction.paymentMethod = paymentMethod;
+    if (description == null || description.isBlank()) {
+      throw new IllegalArgumentException("Description cannot be null or blank");
+    }
     expenseManagerTransaction.description = description;
     expenseManagerTransaction.expendedTime = expendedTime;
     return expenseManagerTransaction;
@@ -60,11 +84,24 @@ public class ExpenseManagerTransaction {
         paymentMethod == that.paymentMethod &&
         description.equals(that.description) &&
         expendedTime.equals(that.expendedTime) &&
-        referenceAmount.equals(that.referenceAmount);
+        Objects.equals(referenceAmount, that.referenceAmount);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(amount, category, subcategory, paymentMethod, description, expendedTime, referenceAmount);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ExpenseManagerTransaction.class.getSimpleName() + "[", "]")
+        .add("amount=" + amount)
+        .add("category=" + category)
+        .add("subcategory=" + subcategory)
+        .add("paymentMethod=" + paymentMethod)
+        .add("description='" + description + "'")
+        .add("expendedTime=" + expendedTime)
+        .add("referenceAmount=" + referenceAmount)
+        .toString();
   }
 }

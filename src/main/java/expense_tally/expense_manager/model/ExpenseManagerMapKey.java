@@ -1,6 +1,7 @@
 package expense_tally.expense_manager.model;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Custom class to store the content of key for a map between the this key and the list of
@@ -43,5 +44,13 @@ public class ExpenseManagerMapKey implements Comparable<ExpenseManagerMapKey> {
     } else {
       return paymentMethod.compareTo(that.paymentMethod);
     }
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ExpenseManagerMapKey.class.getSimpleName() + "[", "]")
+        .add("paymentMethod=" + paymentMethod)
+        .add("amount=" + amount)
+        .toString();
   }
 }

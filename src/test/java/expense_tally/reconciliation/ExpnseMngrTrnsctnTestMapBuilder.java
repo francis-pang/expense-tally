@@ -20,7 +20,7 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
   private Double referenceAmount = 0.0;
   private ExpenseCategory category = ExpenseCategory.ENTERTAINMENT;
   private ExpenseSubCategory subcategory = ExpenseSubCategory.ALCOHOL_AND_RESTAURANT;
-  private String description = "";
+  private String description = "test description";
   private Instant expensedTime = Instant.parse("2009-04-24T10:15:30.00Z");
   private int numberOfTransaction;
   private List<ExpenseManagerTransaction> expenseManagerTransactionList = new ArrayList<>();
