@@ -15,7 +15,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,7 +36,7 @@ public class ExpenseReconciler {
    * <p>This is a one way matching exercise. The reconciler iterates through each record in the CSV files to match
    * for at least a record in the database</p>
    *
-   * @param csvTransactions       list of transactions in the CSV file
+   * @param csvTransactions                  list of transactions in the CSV file
    * @param expensesByAmountAndPaymentMethod a collection of the database record in the Expense Manager
    * @return the number of transaction that is not found in the CSV
    */
@@ -131,7 +130,7 @@ public class ExpenseReconciler {
 
   private static boolean csvRecordHasMatchingTransaction(final CsvTransaction csvTransaction,
                                                          final Map<Double, Map<PaymentMethod,
-                                                              List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod) {
+                                                             List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod) {
     if (csvTransaction.getDebitAmount() == 0) {
       LOGGER.atTrace().log("This is not a debit transaction");
       return true;
@@ -143,7 +142,8 @@ public class ExpenseReconciler {
       return true;
     }
     List<ExpenseManagerTransaction> possibleMatchingExpenses = expensesByAmountAndPaymentMethod
-            .getOrDefault(debitAmount, new HashMap<>()).getOrDefault(expensePaymentMethod, Collections.EMPTY_LIST);
+        .getOrDefault(debitAmount, Collections.emptyMap())
+        .getOrDefault(expensePaymentMethod, Collections.emptyList());
     LocalDate csvTransactionDate = csvTransaction.getTransactionDate();
     int matchingTransactionCount = calculateNumberOfMatchingTransactions(csvTransactionDate, possibleMatchingExpenses);
     switch (matchingTransactionCount) {
