@@ -1,7 +1,7 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.csv_parser.model.TransactionType;
+import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.TransactionType;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package expense_tally.csv_parser.model;
+package expense_tally.csv_parser;
 
 public enum CsvPosition {
   // All these are zero based position

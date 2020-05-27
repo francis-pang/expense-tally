@@ -1,7 +1,11 @@
-package expense_tally.expense_manager.model;
+package expense_tally.expense_manager.persistence;
 
 import java.util.Objects;
 
+/**
+ * This class models the database schema of a transaction stored in the Expense Manager application. All the
+ * attributes inside this class model after the equivalence data type of the database schema declaration.
+ */
 public class ExpenseReport {
   private int id;
   private String account;
@@ -24,6 +28,9 @@ public class ExpenseReport {
   private String property5;
   private String tax;
   private String expenseTag;
+
+  public ExpenseReport() { //Default implementation
+  }
 
   public void setId(int id) {
     this.id = id;
@@ -127,8 +134,15 @@ public class ExpenseReport {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ExpenseReport)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    if (getClass() != o.getClass()) {
+      return false;
+    }
     ExpenseReport that = (ExpenseReport) o;
     return id == that.id &&
         expensedTime == that.expensedTime &&

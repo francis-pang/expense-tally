@@ -1,7 +1,7 @@
-package expense_tally.reconciliation.model;
+package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.csv_parser.model.TransactionType;
+import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.TransactionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,10 +20,10 @@ public class DiscrepantTransaction {
   private TransactionType type;
 
   /**
-   * Construct an instance from a {@link expense_tally.csv_parser.model.CsvTransaction}
+   * Construct an instance from a {@link CsvTransaction}
    *
    * @param csvTransaction the CSV transaction with discrepancy
-   * @return an instance constructed from {@link expense_tally.csv_parser.model.CsvTransaction}
+   * @return an instance constructed from {@link CsvTransaction}
    */
   public static DiscrepantTransaction from(CsvTransaction csvTransaction) {
     DiscrepantTransaction transaction = new DiscrepantTransaction();
@@ -47,7 +47,7 @@ public class DiscrepantTransaction {
       amount = csvTransaction.getDebitAmount();
     } else {
       LOGGER.atInfo().log("Found a discrepant transaction with credit amount. Credit: {}",
-          () -> csvTransaction.getCreditAmount());
+          csvTransaction::getCreditAmount);
       amount = csvTransaction.getCreditAmount();
     }
   }

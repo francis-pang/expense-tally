@@ -1,5 +1,6 @@
 package expense_tally.expense_manager.model;
 
+import expense_tally.expense_manager.transformation.ExpenseCategory;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

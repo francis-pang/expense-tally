@@ -1,11 +1,12 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.csv_parser.model.TransactionType;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.PaymentMethod;
-import expense_tally.reconciliation.model.DiscrepantTransaction;
+import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.TransactionType;
+import expense_tally.expense_manager.transformation.ExpenseCategory;
+import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
+import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
+import expense_tally.expense_manager.transformation.ExpenseSubCategory;
+import expense_tally.expense_manager.transformation.PaymentMethod;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ class ExpenseReconcilerTest {
    * Test Case:
    * CsvTransaction:
    * Size - 0, 1, many,
-   * Transaction Type: refers to {@link expense_tally.csv_parser.model.TransactionType}. e.g POS, ATR, AWL
+   * Transaction Type: refers to {@link TransactionType}. e.g POS, ATR, AWL
    * debit amount - negative, 0, positive
    * credit amount - negative, 0, positive
    * Reference - ?? (There are some extra logic)
@@ -33,9 +34,9 @@ class ExpenseReconcilerTest {
    * ExpenseManagerTransaction:
    * Size - 0, 1, many
    * amount - negative, 0, positive
-   * ExpenseCategory - Refers to {@link expense_tally.expense_manager.model.ExpenseCategory}
-   * ExpenseSubCategory - Refers to {@link expense_tally.expense_manager.model.ExpenseSubCategory}
-   * Payment Method - Refers to {@link expense_tally.expense_manager.model.PaymentMethod}
+   * ExpenseCategory - Refers to {@link ExpenseCategory}
+   * ExpenseSubCategory - Refers to {@link ExpenseSubCategory}
+   * Payment Method - Refers to {@link PaymentMethod}
    * Description - empty, non-empty
    * Expensed Time- past/ future?
    * reference amount - tally?

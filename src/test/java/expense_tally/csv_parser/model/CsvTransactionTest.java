@@ -1,6 +1,8 @@
 package expense_tally.csv_parser.model;
 
-import expense_tally.csv_parser.exception.MonetaryAmountException;
+import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.MonetaryAmountException;
+import expense_tally.csv_parser.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

@@ -1,6 +1,5 @@
-package expense_tally.csv_parser.model;
+package expense_tally.csv_parser;
 
-import expense_tally.csv_parser.exception.MonetaryAmountException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -150,7 +149,10 @@ public class CsvTransaction {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof CsvTransaction)) {
+    if (o == null) {
+      return false;
+    }
+    if (getClass() != o.getClass()) {
       return false;
     }
     CsvTransaction that = (CsvTransaction) o;

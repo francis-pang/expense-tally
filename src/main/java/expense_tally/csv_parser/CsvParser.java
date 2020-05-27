@@ -1,9 +1,5 @@
 package expense_tally.csv_parser;
 
-import expense_tally.csv_parser.exception.MonetaryAmountException;
-import expense_tally.csv_parser.model.CsvTransaction;
-import expense_tally.csv_parser.model.MasterCard;
-import expense_tally.csv_parser.model.TransactionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,13 +11,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static expense_tally.csv_parser.model.CsvPosition.CREDIT_AMOUNT;
-import static expense_tally.csv_parser.model.CsvPosition.DEBIT_AMOUNT;
-import static expense_tally.csv_parser.model.CsvPosition.REFERENCE;
-import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_DATE;
-import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_REF_1;
-import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_REF_2;
-import static expense_tally.csv_parser.model.CsvPosition.TRANSACTION_REF_3;
+import static expense_tally.csv_parser.CsvPosition.CREDIT_AMOUNT;
+import static expense_tally.csv_parser.CsvPosition.DEBIT_AMOUNT;
+import static expense_tally.csv_parser.CsvPosition.REFERENCE;
+import static expense_tally.csv_parser.CsvPosition.TRANSACTION_DATE;
+import static expense_tally.csv_parser.CsvPosition.TRANSACTION_REF_1;
+import static expense_tally.csv_parser.CsvPosition.TRANSACTION_REF_2;
+import static expense_tally.csv_parser.CsvPosition.TRANSACTION_REF_3;
 
 /**
  * Parses a CSV file of bank transaction.

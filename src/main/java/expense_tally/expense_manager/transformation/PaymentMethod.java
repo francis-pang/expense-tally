@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.model;
+package expense_tally.expense_manager.transformation;
 
 /**
  * Different type of payment method for {@link ExpenseManagerTransaction}
@@ -12,7 +12,8 @@ public enum PaymentMethod {
   GRAY_PAY("Grab Pay"),
   NETS("NETS"),
   I_BANKING("iBanking");
-  private String value;
+
+  private final String value;
 
   /**
    * Construct a payment method with the <i>value</i>
@@ -26,15 +27,15 @@ public enum PaymentMethod {
   /**
    * Returns the payment method represented by this <i>value</i>
    *
-   * @param value content of the payment method
+   * @param paymentMethodStr content of the payment method
    * @return the payment method represented by this <i>value</i>
    */
-  public static PaymentMethod resolve(String value) {
-    if (value == null || "".equals(value.trim())) {
+  public static PaymentMethod resolve(String paymentMethodStr) {
+    if (paymentMethodStr == null || "".equals(paymentMethodStr.trim())) {
       return null;
     }
     for (PaymentMethod paymentMethod : values()) {
-      if (paymentMethod.value.equals(value)) {
+      if (paymentMethod.value.equals(paymentMethodStr)) {
         return paymentMethod;
       }
     }

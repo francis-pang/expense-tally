@@ -1,6 +1,6 @@
 package expense_tally.views.desktop.model;
 
-import expense_tally.reconciliation.model.DiscrepantTransaction;
+import expense_tally.reconciliation.DiscrepantTransaction;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;

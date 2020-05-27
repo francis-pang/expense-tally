@@ -1,7 +1,5 @@
 package expense_tally.csv_parser;
 
-import expense_tally.csv_parser.model.CsvTransaction;
-
 import java.io.IOException;
 import java.util.List;
 
