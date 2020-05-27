@@ -2,7 +2,6 @@ package expense_tally.expense_manager;
 
 import expense_tally.expense_manager.persistence.ExpenseReport;
 import expense_tally.expense_manager.transformation.ExpenseCategory;
-import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
 import expense_tally.expense_manager.transformation.ExpenseSubCategory;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -350,16 +350,17 @@ class ExpenseManagerTransactionMapperTest {
         "2019-05-20T20:54:03.00Z",
         0
     ));
-
-    ExpenseManagerMapKey expectedExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.GRAY_PAY, 1.78);
-
-    Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMapKeyListMap =
+    Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
         ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
-    softly.assertThat(actualExpenseManagerMapKeyListMap).isNotEmpty();
-    softly.assertThat(actualExpenseManagerMapKeyListMap).hasSize(1);
-    softly.assertThat(actualExpenseManagerMapKeyListMap).containsExactly(
-        entry(expectedExpenseManagerMapKey, expectedExpenseManagerTransactionList));
+    softly.assertThat(actualExpenseManagerMap).isNotEmpty();
+    softly.assertThat(actualExpenseManagerMap).hasSize(1);
+    softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);
+    softly.assertThat(actualExpenseManagerMap.get(1.78)).containsOnlyKeys(PaymentMethod.GRAY_PAY);
 
+    Map<PaymentMethod, List<ExpenseManagerTransaction>> expectedExpensesPaymentMethod = new HashMap<>();
+    expectedExpensesPaymentMethod.put(PaymentMethod.GRAY_PAY, expectedExpenseManagerTransactionList);
+
+    softly.assertThat(actualExpenseManagerMap).containsExactly(entry(1.78, expectedExpensesPaymentMethod));
     softly.assertAll();
   }
 
@@ -476,8 +477,6 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
 
-    ExpenseManagerMapKey expectedcashExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.CASH, 1.78);
-
     List<ExpenseManagerTransaction> expectedGrabPayExpenseManagerTransactionList = new ArrayList<>();
     expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
         2.0,
@@ -498,15 +497,18 @@ class ExpenseManagerTransactionMapperTest {
         3.0
     ));
 
-    ExpenseManagerMapKey expectedGrabPayExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.GRAY_PAY, 3.0);
-
-    Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMapKeyListMap =
+    Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
         ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
-    softly.assertThat(actualExpenseManagerMapKeyListMap).isNotEmpty();
-    softly.assertThat(actualExpenseManagerMapKeyListMap).hasSize(2);
-    softly.assertThat(actualExpenseManagerMapKeyListMap).containsOnly(
-        entry(expectedcashExpenseManagerMapKey, expectedCashExpenseManagerTransactionList),
-        entry(expectedGrabPayExpenseManagerMapKey, expectedGrabPayExpenseManagerTransactionList));
+    softly.assertThat(actualExpenseManagerMap).isNotEmpty();
+    softly.assertThat(actualExpenseManagerMap).hasSize(2);
+
+    Map<PaymentMethod, List<ExpenseManagerTransaction>> expectedExpensesMapByCash = new HashMap<>();
+    expectedExpensesMapByCash.put(PaymentMethod.CASH, expectedCashExpenseManagerTransactionList);
+    Map<PaymentMethod, List<ExpenseManagerTransaction>> expectedExpensesByGrabPay = new HashMap<>();
+    expectedExpensesByGrabPay.put(PaymentMethod.GRAY_PAY, expectedGrabPayExpenseManagerTransactionList);
+    softly.assertThat(actualExpenseManagerMap).containsOnly(
+        entry(1.78, expectedExpensesMapByCash),
+        entry(3.0, expectedExpensesByGrabPay));
 
     softly.assertAll();
 

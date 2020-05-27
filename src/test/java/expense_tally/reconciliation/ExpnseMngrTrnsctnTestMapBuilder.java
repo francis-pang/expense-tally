@@ -1,7 +1,6 @@
 package expense_tally.reconciliation;
 
 import expense_tally.expense_manager.transformation.ExpenseCategory;
-import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
 import expense_tally.expense_manager.transformation.ExpenseSubCategory;
 import expense_tally.expense_manager.transformation.PaymentMethod;
@@ -29,28 +28,28 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
     this.numberOfTransaction = numberOfTransaction;
   }
 
-  public Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> build() {
-    Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMapKeyListMap = new HashMap<>();
-    ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(paymentMethod, amount);
-    addCustomisedTransations(expenseManagerMapKeyListMap, expenseManagerTransactionList);
+  public final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> build() {
+    final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (int index = 0; index < numberOfTransaction; index++) {
       ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
           category, subcategory, paymentMethod, description, expensedTime);
       expenseManagerTransaction.setReferenceAmount(referenceAmount);
       expenseManagerTransactionList.add(expenseManagerTransaction);
     }
-    expenseManagerMapKeyListMap.put(expenseManagerMapKey, expenseManagerTransactionList);
-    return expenseManagerMapKeyListMap;
+    addCustomisedTransations(expensesByAmountAndPaymentMethod, expenseManagerTransactionList);
+    return expensesByAmountAndPaymentMethod;
   }
 
-  private void addCustomisedTransations(Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMapKeyListMap,
+  private void addCustomisedTransations(Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod,
                                         List<ExpenseManagerTransaction> expenseManagerTransactionList) {
     for (ExpenseManagerTransaction expenseManagerTransaction : expenseManagerTransactionList) {
-      ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(expenseManagerTransaction.getPaymentMethod(), expenseManagerTransaction.getAmount());
-
-      List<ExpenseManagerTransaction> containingExpenseManagerTransactionList = expenseManagerMapKeyListMap.getOrDefault(expenseManagerMapKey, new ArrayList<>());
-      containingExpenseManagerTransactionList.add(expenseManagerTransaction);
-      expenseManagerMapKeyListMap.put(expenseManagerMapKey, containingExpenseManagerTransactionList);
+      double amount = expenseManagerTransaction.getAmount();
+      PaymentMethod paymentMethod = expenseManagerTransaction.getPaymentMethod();
+      Map<PaymentMethod, List<ExpenseManagerTransaction>> expenseByPaymentMethod =
+          expensesByAmountAndPaymentMethod.compute(amount, (k, v) -> (v == null) ? new HashMap<>() : v);
+      List<ExpenseManagerTransaction> mappedExpenseManagerTransactionList =
+          expenseByPaymentMethod.compute(paymentMethod, (k, v) -> (v == null) ? new ArrayList<>() : v);
+      mappedExpenseManagerTransactionList.add(expenseManagerTransaction);
     }
   }
 

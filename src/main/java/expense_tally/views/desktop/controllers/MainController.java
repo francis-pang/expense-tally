@@ -8,9 +8,9 @@ import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReport;
 import expense_tally.expense_manager.persistence.ExpenseReportReader;
 import expense_tally.expense_manager.persistence.SqlLiteConnection;
-import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
+import expense_tally.expense_manager.transformation.PaymentMethod;
 import expense_tally.reconciliation.DiscrepantTransaction;
 import expense_tally.reconciliation.ExpenseReconciler;
 import expense_tally.views.desktop.model.Transaction;
@@ -122,12 +122,12 @@ public class MainController implements Initializable {
       return;
     }
 
-    Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseManagerMap =
+    Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod =
         ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
 
     // Reconcile both data source
     List<DiscrepantTransaction> discrepantTransactions =
-        ExpenseReconciler.reconcileBankData(csvTransactions, expenseManagerMap);
+        ExpenseReconciler.reconcileBankData(csvTransactions, expensesByAmountAndPaymentMethod);
 
     List<Transaction> tableViewTransactions = new ArrayList<>();
     discrepantTransactions.forEach(discrepantTransaction -> {

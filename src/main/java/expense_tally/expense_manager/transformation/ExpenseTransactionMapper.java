@@ -34,30 +34,31 @@ public final class ExpenseTransactionMapper {
   private ExpenseTransactionMapper() { // Not allow to initialised
   }
 
+
+
   /**
-   * Return a {@link Map} of {@link ExpenseManagerTransaction} mapped from a list of {@link ExpenseReport}.
+   * Return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment
+   * method.
    *
    * @param expenseReports the list of expense reports
-   * @return a {@link Map} with transaction amount as key, and the list of expense transactions as value.
+   * @return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment method.
    */
-  public static Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> mapExpenseReportsToMap(List<ExpenseReport> expenseReports) {
-    Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> expenseTransactionMap = new HashMap<>();
+  public static Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
+      List<ExpenseReport> expenseReports) {
+    Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (ExpenseReport expenseReport : expenseReports) {
       ExpenseManagerTransaction expenseManagerTransaction = mapAExpenseReport(expenseReport);
       Double transactionAmount = (expenseManagerTransaction.getReferenceAmount() > 0)
           ? expenseManagerTransaction.getReferenceAmount()
           : expenseManagerTransaction.getAmount();
-      ExpenseManagerMapKey expenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.resolve(expenseReport.getPaymentMethod()), transactionAmount);
-      List<ExpenseManagerTransaction> expenseManagerTransactionList;
-      if (expenseTransactionMap.containsKey(expenseManagerMapKey)) {
-        expenseManagerTransactionList = expenseTransactionMap.get(expenseManagerMapKey);
-      } else {
-        expenseManagerTransactionList = new ArrayList<>();
-      }
+      PaymentMethod paymentMethod = expenseManagerTransaction.getPaymentMethod();
+      Map<PaymentMethod, List<ExpenseManagerTransaction>> expenseTransactionsByPaymentMethod
+          = expensesByAmountAndPaymentMethod.compute(transactionAmount, (k, v) -> (v == null) ? new HashMap<>() : v);
+      List<ExpenseManagerTransaction> expenseManagerTransactionList =
+          expenseTransactionsByPaymentMethod.compute(paymentMethod, (k, v) -> (v == null) ? new ArrayList<>() : v);
       expenseManagerTransactionList.add(expenseManagerTransaction);
-      expenseTransactionMap.put(expenseManagerMapKey, expenseManagerTransactionList);
     }
-    return expenseTransactionMap;
+    return expensesByAmountAndPaymentMethod;
   }
 
   /**
