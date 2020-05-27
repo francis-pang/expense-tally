@@ -70,8 +70,15 @@ public class ExpenseManagerTransaction {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ExpenseManagerTransaction)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    if (getClass() != o.getClass()) {
+      return false;
+    }
     ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
     return amount.equals(that.amount) &&
         category == that.category &&

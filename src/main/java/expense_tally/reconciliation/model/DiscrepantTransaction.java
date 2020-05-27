@@ -47,7 +47,7 @@ public class DiscrepantTransaction {
       amount = csvTransaction.getDebitAmount();
     } else {
       LOGGER.atInfo().log("Found a discrepant transaction with credit amount. Credit: {}",
-          () -> csvTransaction.getCreditAmount());
+          csvTransaction::getCreditAmount);
       amount = csvTransaction.getCreditAmount();
     }
   }

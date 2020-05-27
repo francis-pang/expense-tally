@@ -127,8 +127,15 @@ public class ExpenseReport {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ExpenseReport)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    if (getClass() != o.getClass()) {
+      return false;
+    }
     ExpenseReport that = (ExpenseReport) o;
     return id == that.id &&
         expensedTime == that.expensedTime &&

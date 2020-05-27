@@ -174,6 +174,9 @@ public class MasterCard extends CsvTransaction {
     if (this == o){
       return true;
     }
+    if (o == null) {
+      return false;
+    }
     if (!(o instanceof MasterCard)) {
       return false;
     }

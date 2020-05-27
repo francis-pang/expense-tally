@@ -24,7 +24,7 @@ public class ExpenseManagerMapKey implements Comparable<ExpenseManagerMapKey> {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ExpenseManagerMapKey)) return false;
+    if (o == null || !(o instanceof ExpenseManagerMapKey)) return false;
     ExpenseManagerMapKey that = (ExpenseManagerMapKey) o;
     return paymentMethod == that.paymentMethod &&
         Objects.equals(amount, that.amount);
