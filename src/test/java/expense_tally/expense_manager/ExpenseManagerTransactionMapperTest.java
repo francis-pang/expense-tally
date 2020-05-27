@@ -1,11 +1,12 @@
 package expense_tally.expense_manager;
 
-import expense_tally.expense_manager.model.ExpenseCategory;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.ExpenseReport;
-import expense_tally.expense_manager.model.ExpenseSubCategory;
-import expense_tally.expense_manager.model.PaymentMethod;
+import expense_tally.expense_manager.persistence.ExpenseReport;
+import expense_tally.expense_manager.transformation.ExpenseCategory;
+import expense_tally.expense_manager.transformation.ExpenseManagerMapKey;
+import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
+import expense_tally.expense_manager.transformation.ExpenseSubCategory;
+import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
+import expense_tally.expense_manager.transformation.PaymentMethod;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -23,11 +24,11 @@ import static org.assertj.core.api.Assertions.entry;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class ExpenseManagerTransactionMapperTest {
-  private ExpenseReport constructExpenseReport(
-      int id, String account, double amount, String category, String subcategory, String paymentMethod,
-      String description, String expensedTime, String modificationTime, double referenceAmount, String status,
-      String property1, String property2, String property3, String property4, String property5, String tax,
-      String expenseTag) {
+  private ExpenseReport constructExpenseReport(int id, String account, double amount, String category,
+                                               String subcategory, String paymentMethod, String description,
+                                               String expensedTime, String modificationTime, double referenceAmount,
+                                               String status, String property1, String property2, String property3,
+                                               String property4, String property5, String tax, String expenseTag) {
     ExpenseReport expenseReport = new ExpenseReport();
     expenseReport.setId(id);
     expenseReport.setAccount(account);
@@ -62,13 +63,8 @@ class ExpenseManagerTransactionMapperTest {
       String description,
       String expensedTime,
       double referenceAmount) {
-    ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
-    expenseManagerTransaction.setAmount(amount);
-    expenseManagerTransaction.setCategory(category);
-    expenseManagerTransaction.setSubcategory(subcategory);
-    expenseManagerTransaction.setPaymentMethod(paymentMethod);
-    expenseManagerTransaction.setDescription(description);
-    expenseManagerTransaction.setExpensedTime(Instant.parse(expensedTime));
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+        category, subcategory, paymentMethod, description, Instant.parse(expensedTime));
     expenseManagerTransaction.setReferenceAmount(referenceAmount);
     return expenseManagerTransaction;
   }
@@ -114,9 +110,9 @@ class ExpenseManagerTransactionMapperTest {
         1,
         "Test Account",
         1.78,
-        "Category",
-        "Subcategory",
-        "PaymentMethod",
+        "Vacation",
+        "Airplane/ Train",
+        "Credit Card",
         "Description",
         "2019-05-20T20:54:03.00Z",
         "2019-05-20T20:54:03.00Z",
@@ -137,15 +133,15 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("amount").contains(1.78, atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("category").contains(null, atIndex(0));
+        .extracting("category").contains(ExpenseCategory.VACATION, atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("subcategory").contains(null, atIndex(0));
+        .extracting("subcategory").contains(ExpenseSubCategory.AIRPLANE_TRAIN, atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("paymentMethod").contains(null, atIndex(0));
+        .extracting("paymentMethod").contains(PaymentMethod.CREDIT_CARD, atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Description", atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
+        .extracting("expendedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(0.0, atIndex(0));
     softly.assertAll();
@@ -185,8 +181,8 @@ class ExpenseManagerTransactionMapperTest {
         1, //Same ID, to show that ID doesn't matter
         "Test Account",
         944,
-        "Income",
-        "",
+        "Personal",
+        "Karaoke/ Party",
         "Electronic Transfer",
         "Monthly allowed expenditure",
         "2018-01-31T16:00:00.00Z",
@@ -238,22 +234,22 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Dinner. Single bowl salad. Happy Tummy", atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
+        .extracting("expendedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), atIndex(0));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(0.0, atIndex(0));
 
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("amount").contains(944.0, atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("category").contains(null, atIndex(1));
+        .extracting("category").contains(ExpenseCategory.PERSONAL, atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("subcategory").contains(null, atIndex(1));
+        .extracting("subcategory").contains(ExpenseSubCategory.KARAOKE_PARTY, atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("paymentMethod").contains(PaymentMethod.ELECTRONIC_TRANSFER, atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Monthly allowed expenditure", atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(1));
+        .extracting("expendedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(1));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(7.0, atIndex(1));
 
@@ -268,7 +264,7 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("description").contains("Ice 2.5 kg", atIndex(2));
     softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expensedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(2));
+        .extracting("expendedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), atIndex(2));
     softly.assertThat(actualExpenseManagerTransactions)
         .extracting("referenceAmount").contains(0.0, atIndex(2));
 
@@ -326,9 +322,9 @@ class ExpenseManagerTransactionMapperTest {
         1,
         "Test Account",
         1.78,
-        "Category",
-        "Subcategory",
-        "PaymentMethod",
+        "Entertainment",
+        "Breakfast",
+        "Grab Pay",
         "Description",
         "2019-05-20T20:54:03.00Z",
         "2019-05-20T20:54:03.00Z",
@@ -347,15 +343,15 @@ class ExpenseManagerTransactionMapperTest {
     List<ExpenseManagerTransaction> expectedExpenseManagerTransactionList = new ArrayList<>();
     expectedExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
         1.78,
-        null,
-        null,
-        null,
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.BREAKFAST,
+        PaymentMethod.GRAY_PAY,
         "Description",
         "2019-05-20T20:54:03.00Z",
         0
     ));
 
-    ExpenseManagerMapKey expectedExpenseManagerMapKey = new ExpenseManagerMapKey(null, 1.78);
+    ExpenseManagerMapKey expectedExpenseManagerMapKey = new ExpenseManagerMapKey(PaymentMethod.GRAY_PAY, 1.78);
 
     Map<ExpenseManagerMapKey, List<ExpenseManagerTransaction>> actualExpenseManagerMapKeyListMap =
         ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
@@ -380,7 +376,7 @@ class ExpenseManagerTransactionMapperTest {
         "Test Account",
         1.78,
         "Food",
-        "Subcategory",
+        "Pay For Others",
         "Cash",
         "Description",
         "2019-05-20T20:54:03.00Z",
@@ -401,7 +397,7 @@ class ExpenseManagerTransactionMapperTest {
         "Test Account",
         1.78,
         "Food",
-        "Subcategory",
+        "Pay For Others",
         "Cash",
         "Description",
         "2019-05-21T20:54:03.00Z",
@@ -422,7 +418,7 @@ class ExpenseManagerTransactionMapperTest {
         "Test Account",
         2,
         "Food",
-        "Subcategory",
+        "Clothing",
         "Grab Pay",
         "Description",
         "2019-05-22T20:54:03.00Z",
@@ -443,7 +439,7 @@ class ExpenseManagerTransactionMapperTest {
         "Test Account",
         200.0,
         "Food",
-        "Subcategory",
+        "Airplane/ Train",
         "Grab Pay",
         "Description",
         "2019-05-23T20:54:03.00Z",
@@ -464,7 +460,7 @@ class ExpenseManagerTransactionMapperTest {
     expectedCashExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
         1.78,
         ExpenseCategory.FOOD,
-        null,
+        ExpenseSubCategory.PAY_FOR_OTHERS,
         PaymentMethod.CASH,
         "Description",
         "2019-05-20T20:54:03.00Z",
@@ -473,7 +469,7 @@ class ExpenseManagerTransactionMapperTest {
     expectedCashExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
         1.78,
         ExpenseCategory.FOOD,
-        null,
+        ExpenseSubCategory.PAY_FOR_OTHERS,
         PaymentMethod.CASH,
         "Description",
         "2019-05-21T20:54:03.00Z",
@@ -486,7 +482,7 @@ class ExpenseManagerTransactionMapperTest {
     expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
         2.0,
         ExpenseCategory.FOOD,
-        null,
+        ExpenseSubCategory.CLOTHING,
         PaymentMethod.GRAY_PAY,
         "Description",
         "2019-05-22T20:54:03.00Z",
@@ -495,7 +491,7 @@ class ExpenseManagerTransactionMapperTest {
     expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
         200.0,
         ExpenseCategory.FOOD,
-        null,
+        ExpenseSubCategory.AIRPLANE_TRAIN,
         PaymentMethod.GRAY_PAY,
         "Description",
         "2019-05-23T20:54:03.00Z",

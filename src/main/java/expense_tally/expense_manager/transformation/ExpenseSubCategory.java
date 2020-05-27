@@ -1,7 +1,6 @@
-package expense_tally.expense_manager.model;
+package expense_tally.expense_manager.transformation;
 
 public enum ExpenseSubCategory {
-
   ALCOHOL_AND_RESTAURANT("Alcohol/ Restaurant"),
   KARAOKE_PARTY("Karaoke/ Party"),
   FOOD_COURT_AND_FAST_FOOD("Food court/ Fast food"),
@@ -43,7 +42,7 @@ public enum ExpenseSubCategory {
   VACATION_TRANSPORT_INTRACITY("Transport within city"),
   GIFT_TREAT("Gift/ Treat");
 
-  public final String value;
+  private final String value;
 
   /**
    * Default constructor
@@ -61,11 +60,18 @@ public enum ExpenseSubCategory {
    * @return the category of the expense record given its string form, null if not found
    */
   public static ExpenseSubCategory resolve(String subExpenseCategoryStr) {
+    if (subExpenseCategoryStr == null || "".equals(subExpenseCategoryStr.trim())) {
+      return null;
+    }
     for (ExpenseSubCategory expenseSubCategory : values()) {
       if (expenseSubCategory.value.equals(subExpenseCategoryStr)) {
         return expenseSubCategory;
       }
     }
     return null;
+  }
+
+  public String value() {
+    return value;
   }
 }

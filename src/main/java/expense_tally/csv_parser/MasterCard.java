@@ -1,6 +1,5 @@
-package expense_tally.csv_parser.model;
+package expense_tally.csv_parser;
 
-import expense_tally.csv_parser.exception.InvalidReferenceDateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -171,10 +170,13 @@ public class MasterCard extends CsvTransaction {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o){
+    if (this == o) {
       return true;
     }
-    if (!(o instanceof MasterCard)) {
+    if (o == null) {
+      return false;
+    }
+    if (getClass() != o.getClass()) {
       return false;
     }
     if (!super.equals(o)) {

@@ -1,5 +1,7 @@
 package expense_tally.expense_manager;
 
+import expense_tally.expense_manager.persistence.DatabaseConnectable;
+import expense_tally.expense_manager.persistence.SqlLiteConnection;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

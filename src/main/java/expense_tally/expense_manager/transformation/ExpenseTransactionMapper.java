@@ -1,11 +1,6 @@
-package expense_tally.expense_manager;
+package expense_tally.expense_manager.transformation;
 
-import expense_tally.expense_manager.model.ExpenseCategory;
-import expense_tally.expense_manager.model.ExpenseManagerMapKey;
-import expense_tally.expense_manager.model.ExpenseManagerTransaction;
-import expense_tally.expense_manager.model.ExpenseReport;
-import expense_tally.expense_manager.model.ExpenseSubCategory;
-import expense_tally.expense_manager.model.PaymentMethod;
+import expense_tally.expense_manager.persistence.ExpenseReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A static class to provide methods for mapping {@link ExpenseReport} to
- * {@link ExpenseManagerTransaction}.
+ * A static class to provide methods for mapping {@link ExpenseReport} to {@link ExpenseManagerTransaction}.
  *
  * <p>This class is an use case of the Mapper design pattern, in which the class's main purpose is to provide a set of
  * helpful method to map {@link ExpenseReport} into
@@ -34,8 +28,10 @@ import java.util.Map;
 public final class ExpenseTransactionMapper {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
 
-  private ExpenseTransactionMapper() {
-    throw new IllegalStateException("Not allowed to initialised " + this.getClass().getName());
+  private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
+  private static final double ZERO_AMOUNT = 0.0;
+
+  private ExpenseTransactionMapper() { // Not allow to initialised
   }
 
   /**
@@ -85,19 +81,29 @@ public final class ExpenseTransactionMapper {
    * @return the mapped {@link ExpenseManagerTransaction}
    */
   private static ExpenseManagerTransaction mapAExpenseReport(ExpenseReport expenseReport) {
-    ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
-    expenseManagerTransaction.setAmount(Double.parseDouble(expenseReport.getAmount()));
-    expenseManagerTransaction.setCategory(ExpenseCategory.resolve(expenseReport.getCategory()));
-    expenseManagerTransaction.setDescription(expenseReport.getDescription());
-    expenseManagerTransaction.setExpensedTime(Instant.ofEpochMilli(expenseReport.getExpensedTime())); //This time is in UTC
-    expenseManagerTransaction.setPaymentMethod(PaymentMethod.resolve(expenseReport.getPaymentMethod()));
-    if (!expenseReport.getReferenceNumber().isBlank()) {
-      expenseManagerTransaction.setReferenceAmount(Double.parseDouble(expenseReport.getReferenceNumber().replaceAll("[^\\d\\.]+", "")));
-      LOGGER.atTrace().log("TransactionType Amount is {}", () -> expenseManagerTransaction.getReferenceAmount());
-    } else {
-      expenseManagerTransaction.setReferenceAmount(0.0);
-    }
-    expenseManagerTransaction.setSubcategory(ExpenseSubCategory.resolve(expenseReport.getSubcategory()));
+    String amountString = expenseReport.getAmount();
+    double amount = Double.parseDouble(amountString);
+    String expenseCategoryString = expenseReport.getCategory();
+    ExpenseCategory expenseCategory = ExpenseCategory.resolve(expenseCategoryString);
+    String expenseCategorySubcategoryString = expenseReport.getSubcategory();
+    ExpenseSubCategory expenseSubCategory = ExpenseSubCategory.resolve(expenseCategorySubcategoryString);
+    String description = expenseReport.getDescription();
+    long expendedTimeInSecondSinceEpoch = expenseReport.getExpensedTime();
+    Instant expendedTime = Instant.ofEpochMilli(expendedTimeInSecondSinceEpoch); //This time is in UTC
+    String paymentMethodString = expenseReport.getPaymentMethod();
+    PaymentMethod paymentMethod = PaymentMethod.resolve(paymentMethodString);
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+        expenseCategory, expenseSubCategory, paymentMethod, description, expendedTime);
+    String referenceNumber = expenseReport.getReferenceNumber();
+    double referenceAmount = (referenceNumber.isBlank()) ? ZERO_AMOUNT : parseReferenceAmount(referenceNumber);
+    expenseManagerTransaction.setReferenceAmount(referenceAmount);
     return expenseManagerTransaction;
+  }
+
+  private static double parseReferenceAmount(final String referenceAmountString) {
+    String cleansedReferenceAmountString = referenceAmountString.replaceAll(REFERENCE_AMOUNT_NUMBER_FORMAT, "");
+    double referenceAmount = Double.parseDouble(cleansedReferenceAmountString);
+    LOGGER.atTrace().log("Converted a reference amount string {} to {}", referenceAmountString, referenceAmount);
+    return referenceAmount;
   }
 }
