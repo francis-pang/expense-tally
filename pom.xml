@@ -4,7 +4,7 @@
     <groupId>expense-tally</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>jar</packaging>
-    <version>30</version>
+    <version>31-SNAPSHOT</version>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -24,7 +24,7 @@
     <scm>
         <connection>scm:git:git@github.com:boyshawn/expense-tally.git</connection>
         <developerConnection>scm:git:git@github.com:boyshawn/expense-tally.git</developerConnection>
-        <tag>expense-tally-30</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
