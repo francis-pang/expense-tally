@@ -15,6 +15,13 @@ The command line version of the application needs to be provided 2 information b
 |  database-filepath | The absolute or relative path to a database file which stores the transaction of the Expense Manager |
 | csv-filepath       | The absolute or relative path to a comma-separated value file which stores the bank transactions |
 
+The application accepts the parameters in 3 different formats:
+1. option=XXXX
+2. option = XXXX
+3. option XXXX
+
+Any other format of input is not accepted, and will result in system error. 
+
 **Note**
 * The javadocs in this project are inspired by the guidelines in [Liferay Portal Advanced Javadoc Guidelines](https://github.com/liferay/liferay-portal/blob/master/readme/ADVANCED_JAVADOC_GUIDELINES.markdown).
 * The package naming convention adopts the [Stack Exchange answer](https://softwareengineering.stackexchange.com/a/75929/88556):
@@ -31,3 +38,4 @@ The command line version of the application needs to be provided 2 information b
 | csv        | comma separated values |
 | err        | error |
 | msg        | message | 
+| app        | application |
