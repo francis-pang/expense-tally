@@ -7,6 +7,7 @@ import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
 import expense_tally.expense_manager.transformation.ExpenseSubCategory;
 import expense_tally.expense_manager.transformation.PaymentMethod;
 import expense_tally.utility.ExpnseMngrTrnsctnTestMapBuilder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -20,6 +21,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 class ExpenseReconcilerTest {
+  private ExpenseReconciler expenseReconciler;
+  @BeforeEach
+  void setUp() {
+    expenseReconciler = new ExpenseReconciler();
+  }
 
   /**
    * Test Case:
@@ -67,7 +73,7 @@ class ExpenseReconcilerTest {
             .build()
     );
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactions, new HashMap<>()))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactions, new HashMap<>()))
         .isNotNull()
         .hasSize(1)
         .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
@@ -84,7 +90,7 @@ class ExpenseReconcilerTest {
   @Test
   void reconcileBankData_noCsvTransaction() {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> testExpenseTransactionMap = new ExpnseMngrTrnsctnTestMapBuilder(0).build();
-    assertThat(ExpenseReconciler.reconcileBankData(new ArrayList<>(), testExpenseTransactionMap))
+    assertThat(expenseReconciler.reconcileBankData(new ArrayList<>(), testExpenseTransactionMap))
         .isNotNull()
         .hasSize(0);
   }
@@ -105,7 +111,7 @@ class ExpenseReconcilerTest {
         .build()
     );
     assertThatThrownBy(() -> {
-      ExpenseReconciler.reconcileBankData(testCsvTransactions, null);
+      expenseReconciler.reconcileBankData(testCsvTransactions, null);
     })
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Null reference is not an accepted expenseTransactionMap value.");
@@ -122,7 +128,7 @@ class ExpenseReconcilerTest {
   void reconcileBankData_nullCsvTransaction() {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod
         = new ExpnseMngrTrnsctnTestMapBuilder(0).build();
-    assertThatThrownBy(() -> ExpenseReconciler.reconcileBankData(null, expensesByAmountAndPaymentMethod))
+    assertThatThrownBy(() -> expenseReconciler.reconcileBankData(null, expensesByAmountAndPaymentMethod))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Null reference is not an accepted csvTransactions value.");
   }
@@ -147,7 +153,7 @@ class ExpenseReconcilerTest {
             .amount(0.0)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(1)
         .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
@@ -173,7 +179,7 @@ class ExpenseReconcilerTest {
         new ExpnseMngrTrnsctnTestMapBuilder(1)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(0);
   }
@@ -199,7 +205,7 @@ class ExpenseReconcilerTest {
             .amount(0.5)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(1)
         .extracting(
@@ -245,7 +251,7 @@ class ExpenseReconcilerTest {
             .addCustomisedTransaction(5.0, PaymentMethod.ELECTRONIC_TRANSFER, 2009, 4, 24)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(1)
         .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
@@ -271,7 +277,7 @@ class ExpenseReconcilerTest {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod =
         new ExpnseMngrTrnsctnTestMapBuilder(3)
             .build();
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(0);
   }
@@ -295,7 +301,7 @@ class ExpenseReconcilerTest {
         new ExpnseMngrTrnsctnTestMapBuilder(3)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(1)
         .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
@@ -318,7 +324,7 @@ class ExpenseReconcilerTest {
             .amount(0.5)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(0);
   }
@@ -339,7 +345,7 @@ class ExpenseReconcilerTest {
             .amount(0.5)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(0);
   }
@@ -360,7 +366,7 @@ class ExpenseReconcilerTest {
             .paymentMethod(PaymentMethod.NETS)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(0);
   }
@@ -381,7 +387,7 @@ class ExpenseReconcilerTest {
             .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(1)
         .extracting(DiscrepantTransaction::getAmount, DiscrepantTransaction::getDescription, DiscrepantTransaction::getTime, DiscrepantTransaction::getType)
@@ -404,7 +410,7 @@ class ExpenseReconcilerTest {
             .paymentMethod(PaymentMethod.ELECTRONIC_TRANSFER)
             .build();
 
-    assertThat(ExpenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
+    assertThat(expenseReconciler.reconcileBankData(testCsvTransactionList, expensesByAmountAndPaymentMethod))
         .isNotNull()
         .hasSize(0);
   }

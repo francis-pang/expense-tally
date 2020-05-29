@@ -129,7 +129,8 @@ public class ExpenseAccountant {
    * @throws IOException if there is error to read the CSV file
    * @throws SQLException if there is error to access the database record in Expense Manager
    */
-  public void reconcileData(ExpenseReadable expenseReadable) throws IOException, SQLException {
+  public void reconcileData(ExpenseReadable expenseReadable, ExpenseReconciler expenseReconciler) throws IOException,
+      SQLException {
     List<CsvTransaction> bankTransactions;
     try {
       bankTransactions = csvParsable.parseCsvFile(csvFilename);
@@ -138,11 +139,10 @@ public class ExpenseAccountant {
           .log("Unable to read the CSV file. CSV file location = {}", csvFilename);
       throw runtimeException;
     }
+    final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod;
     try {
       List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
-      final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod =
-          ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
-      ExpenseReconciler.reconcileBankData(bankTransactions, expensesByAmountAndPaymentMethod);
+      expensesByAmountAndPaymentMethod = ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
     } catch (SQLException ex) {
       LOGGER
           .atError()
@@ -150,6 +150,7 @@ public class ExpenseAccountant {
           .log("Problem accessing the database. Database file location= {}", databaseFilename);
       throw ex;
     }
+    expenseReconciler.reconcileBankData(bankTransactions, expensesByAmountAndPaymentMethod);
   }
 
   static class AppParameterValuePair {
