@@ -1,22 +1,20 @@
 package expense_tally.views.cli;
 
-import expense_tally.csv_parser.CsvParser;
+import expense_tally.csv_parser.CsvParsable;
 import expense_tally.csv_parser.CsvTransaction;
-import expense_tally.expense_manager.persistence.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReport;
-import expense_tally.expense_manager.persistence.ExpenseReportReader;
-import expense_tally.expense_manager.persistence.SqlLiteConnection;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.expense_manager.transformation.PaymentMethod;
 import expense_tally.reconciliation.ExpenseReconciler;
+import expense_tally.views.AppParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,82 +29,145 @@ public class ExpenseAccountant {
   private String csvFilename;
   private String databaseFilename;
 
+  private Map<AppParameter, String> extractOptions(String[] args) {
+    final String EQUAL_SEPARATOR = "=";
+    Map<AppParameter, String> optionValues = new EnumMap<>(AppParameter.class);
+    // Expect to received --database-filepath = XXXX --csv-filepath= XXXX
+    // Allow 3 format of declaring parameter
+    // 1. parameter=XXXX
+    // 2. parameter = xxxxx
+    // 3. parameter xxxxx
+    int currentPosition = 0;
+    while (currentPosition < args.length) {
+      String string = args[currentPosition];
+      AppParameterValuePair appParameterValuePair;
+      // Handling case 1
+      if (string.contains(EQUAL_SEPARATOR)) {
+        appParameterValuePair = extractOptionKeyValuePair(string);
+        if (appParameterValuePair == null) {
+          throw new IllegalArgumentException("Unable to recognised option " + string);
+        }
+      } else {
+        currentPosition++;
+        String value = getStringFromArray(args, currentPosition, string);
+        // Case 2
+        if (value.equals(EQUAL_SEPARATOR)) { // Case 3
+          currentPosition++;
+          value = getStringFromArray(args, currentPosition, string);
+        }
+        if (value.isBlank()) {
+          LOGGER.atError().log("Detect empty value for option {}", string);
+          throw new IllegalArgumentException("Unable to process empty value for option " + string);
+        }
+        appParameterValuePair = AppParameterValuePair.create(string, value);
+      }
+      optionValues.put(appParameterValuePair.key, appParameterValuePair.value);
+      currentPosition++;
+    }
+    return optionValues;
+  }
+
+  private String getStringFromArray(String[] args, int position, String key) {
+    if (position == args.length) {
+      LOGGER.atError().log("Unable to find value for key {}", key);
+      throw new IllegalArgumentException("Unable to find value for a key.");
+    }
+    return args[position];
+  }
+
   /**
-   *
-   * @param args
-   * @throws IllegalArgumentException
+   * Extracts the key value pair of the command line option from the string.
+   * <p>If there is not valid key extracted, <b>null</b> will be returned.</p>
+   * @param optionString string containing the option and its associated value
+   * @return the extracted key-value pair of the command line option if exists, else returns null
+   */
+  private AppParameterValuePair extractOptionKeyValuePair(String optionString) {
+    final char EQUAL_SIGN = '=';
+    int indexOfEqualsSign = optionString.indexOf(EQUAL_SIGN);
+    String key = optionString.substring(0, indexOfEqualsSign);
+    AppParameter appParameter = AppParameter.resolve(key);
+    if (appParameter == null) {
+      LOGGER.atWarn().log("Unknown app parameter encountered: {}", key);
+      return null;
+    }
+    String value = optionString.substring(indexOfEqualsSign + 1);
+    return AppParameterValuePair.create(appParameter, value);
+  }
+
+  /**
+   * Create a new instance of {@code ExpenseAccountant} based on the command line arguments
+   * @param args command line arguments
+   * @throws IllegalArgumentException if the arguments provided is malformed or missing compulsory field
    */
   public ExpenseAccountant(String[] args) {
-    final String DATABASE_PARAMETER = "database-filepath";
-    final String CSV_PARAMETER = "csv-filepath";
-    final String PARAMETER_PREFIX = "--";
-    final char EQUAL_SIGN = '=';
-    final String EQUAL_SEPARATOR = "=";
-    final char DOUBLE_QUOTATION = '"';
-
-    if (args.length < 2) {
-      LOGGER.atError().log("Console receives {} argument", args.length);
+    Map<AppParameter, String> optionValues = extractOptions(args);
+    if (!haveAllCompulsoryFieldsFilled(optionValues)) {
+      LOGGER.atError().log("Missing at least one compulsory parameter. Parameters: {}", optionValues);
       throw new IllegalArgumentException("Need to provide both CSV and database path.");
     }
-
-    /*
-     * Expect to received --database-filepath = XXXX --csv-filepath= XXXX
-     * Allow 3 format of declaring parameter
-     * 1. parameter=XXXX //TODO
-     * 2. parameter = xxxxx
-     * 3. parameter =xxxxx
-     */
-    //TODO: For now, we ignore any parameters after 2nd parameters, next time we can handle them.
-    if (!isEven(args.length)) {
-      LOGGER.atError().log("Argument is not in odd number. Args= {}", () -> Arrays.toString(args));
-      throw new IllegalArgumentException("Odd number of parameters provided.");
-    }
-    this.csvFilename = args[0];
-    this.databaseFilename = args[1];
-    // Parse first string
-    // Strip the equal sign at the place if any
-
-    int argumentIndex = 0;
-    while (argumentIndex < args.length) {
-      String parameter = args[argumentIndex].trim().replace(EQUAL_SIGN, Character.MIN_VALUE);
-      argumentIndex++;
-      // Next string can be an equal, or an actual parameter with equal in front
-      String value = args[argumentIndex].trim();
-      boolean canHaveEqualInFront = true;
-      if (EQUAL_SEPARATOR.equals(value)) {
-        argumentIndex++;
-        value = args[argumentIndex].replace(DOUBLE_QUOTATION, Character.MIN_VALUE); //Ignore the current parameter
-        canHaveEqualInFront = false;
-      }
-      if (value.charAt(0) == EQUAL_SIGN && !canHaveEqualInFront) {
-        throw new IllegalArgumentException("Unknown value found: " + value);
-      } else {
-        switch (parameter) {
-          case PARAMETER_PREFIX + DATABASE_PARAMETER:
-            databaseFilename = value;
-            break;
-          case PARAMETER_PREFIX + CSV_PARAMETER:
-            csvFilename = value;
-            break;
-          default:
-            throw new IllegalArgumentException("Unknown parameter found: " + parameter);
-        }
-      }
-      argumentIndex++;
-    }
+    csvFilename = optionValues.get(AppParameter.CSV_PATH);
+    databaseFilename = optionValues.get(AppParameter.DATABASE_PATH);
   }
 
-  private boolean isEven(int count) {
-    return count % 2 == 0;
+  public String getDatabaseFilename() {
+    return databaseFilename;
   }
 
-  public void reconcileData() throws IOException, SQLException {
-    List<CsvTransaction> bankTransactions = getCsvTransactionsFrom(csvFilename);
+  private boolean haveAllCompulsoryFieldsFilled(Map<AppParameter, String> optionValues) {
+    for (AppParameter appParameter : AppParameter.values()) {
+      if (appParameter.isCompulsory() && !optionValues.containsKey(appParameter)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Reconciles the data from CSV file against the transaction records in the Expense Manager application
+   * @param csvParsable
+   * @param expenseReadable
+   * @param expenseTransactionMapper
+   * @param expenseReconciler
+   * @throws IOException if there is error to read the CSV file
+   * @throws SQLException if there is error to access the database record in Expense Manager
+   */
+  public void reconcileData(CsvParsable csvParsable,
+                            ExpenseReadable expenseReadable,
+                            ExpenseTransactionMapper expenseTransactionMapper,
+                            ExpenseReconciler expenseReconciler) throws IOException, SQLException {
+    if (csvParsable == null) {
+      String errorMessage = "CSV Parsable is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+    }
+    if (expenseReadable == null) {
+      String errorMessage = "Expense Readable is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+    }
+    if (expenseTransactionMapper == null) {
+      String errorMessage = "Expense Transaction Mapper is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+
+    }
+    if (expenseReconciler == null) {
+      String errorMessage = "Expense Reconciler is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+    }
+    List<CsvTransaction> bankTransactions;
     try {
-      final Map<Double, Map<PaymentMethod,
-          List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod =
-          getExpenseManagerTransactionsByKeyFrom(databaseFilename);
-      reconcileData(bankTransactions, expensesByAmountAndPaymentMethod);
+      bankTransactions = csvParsable.parseCsvFile(csvFilename);
+    } catch (RuntimeException runtimeException) {
+      LOGGER.atError().withThrowable(runtimeException)
+          .log("Unable to read the CSV file. CSV file location = {}", csvFilename);
+      throw runtimeException;
+    }
+    final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod;
+    try {
+      List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
+      expensesByAmountAndPaymentMethod = expenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
     } catch (SQLException ex) {
       LOGGER
           .atError()
@@ -114,27 +175,45 @@ public class ExpenseAccountant {
           .log("Problem accessing the database. Database file location= {}", databaseFilename);
       throw ex;
     }
+    expenseReconciler.reconcileBankData(bankTransactions, expensesByAmountAndPaymentMethod);
   }
 
-  public void reconcileData(List<CsvTransaction> csvTransactions, Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod) {
-    ExpenseReconciler.reconcileBankData(csvTransactions, expensesByAmountAndPaymentMethod);
-  }
+  static class AppParameterValuePair {
+    private AppParameter key;
+    private String value;
 
-  private List<CsvTransaction> getCsvTransactionsFrom(String filename) throws IOException {
-    CsvParser transactionCsvParser = new CsvParser();
-    return transactionCsvParser.parseCsvFile(csvFilename);
-  }
+    public AppParameterValuePair() {// Default implementation
+    }
 
-  private final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>>
-    getExpenseManagerTransactionsByKeyFrom(String databaseFilename) throws SQLException {
-    /*
-     * Instead of using the caller as an Inversion of Control container, it will be better to create and initialise the
-     *  service whenever you need them. Unless this is a long running process, each Service life cycle is short. They
-     *  are one time use, and can be garbage collected after the information is extracted.
+    /**
+     * Create a new instance of {@code AppParameterValuePair} based on the {@code key} and {@code value}
+     * @param key the application execution parameter
+     * @param value value correspond to the application execution parameter
+     * @return a new instance of {@code AppParameterValuePair} based on the {@code key} and {@code value}
      */
-    DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFilename);
-    ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
-    List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
-    return ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
+    static AppParameterValuePair create(AppParameter key, String value) {
+      AppParameterValuePair appParameterValuePair = new AppParameterValuePair();
+      appParameterValuePair.key = key;
+      appParameterValuePair.value = value;
+      return appParameterValuePair;
+    }
+
+    /**
+     * Create a new instance of {@code AppParameterValuePair} based on the {@code appParameter} and {@code value}
+     * @param appParameter a String representation of the {@code AppParameter}
+     * @param value value correspond to the {@code AppParameter}
+     * @return a new instance of {@code AppParameterValuePair} based on the {@code appParameter} and {@code value}
+     * @throws IllegalArgumentException if the {@code appParameter} is an invalid {@code AppParameter}
+     */
+    static AppParameterValuePair create(String appParameter, String value) {
+      AppParameter key = AppParameter.resolve(appParameter);
+      if (key == null) {
+        throw new IllegalArgumentException("appParameter is invalid.");
+      }
+      AppParameterValuePair appParameterValuePair = new AppParameterValuePair();
+      appParameterValuePair.key = key;
+      appParameterValuePair.value = value;
+      return appParameterValuePair;
+    }
   }
 }

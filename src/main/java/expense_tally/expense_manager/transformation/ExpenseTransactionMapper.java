@@ -25,16 +25,14 @@ import java.util.Map;
  * @see ExpenseManagerTransaction
  * @see ExpenseReport
  */
-public final class ExpenseTransactionMapper {
+public class ExpenseTransactionMapper {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
 
   private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
   private static final double ZERO_AMOUNT = 0.0;
 
-  private ExpenseTransactionMapper() { // Not allow to initialised
+  public ExpenseTransactionMapper() { // Default implementation
   }
-
-
 
   /**
    * Return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment
@@ -43,7 +41,7 @@ public final class ExpenseTransactionMapper {
    * @param expenseReports the list of expense reports
    * @return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment method.
    */
-  public static Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
+  public Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
       List<ExpenseReport> expenseReports) {
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (ExpenseReport expenseReport : expenseReports) {
@@ -93,7 +91,7 @@ public final class ExpenseTransactionMapper {
     Instant expendedTime = Instant.ofEpochMilli(expendedTimeInSecondSinceEpoch); //This time is in UTC
     String paymentMethodString = expenseReport.getPaymentMethod();
     PaymentMethod paymentMethod = PaymentMethod.resolve(paymentMethodString);
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
         expenseCategory, expenseSubCategory, paymentMethod, description, expendedTime);
     String referenceNumber = expenseReport.getReferenceNumber();
     double referenceAmount = (referenceNumber.isBlank()) ? ZERO_AMOUNT : parseReferenceAmount(referenceNumber);

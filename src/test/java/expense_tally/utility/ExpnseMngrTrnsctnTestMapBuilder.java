@@ -1,4 +1,4 @@
-package expense_tally.reconciliation;
+package expense_tally.utility;
 
 import expense_tally.expense_manager.transformation.ExpenseCategory;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
@@ -31,7 +31,7 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
   public final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> build() {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (int index = 0; index < numberOfTransaction; index++) {
-      ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+      ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
           category, subcategory, paymentMethod, description, expensedTime);
       expenseManagerTransaction.setReferenceAmount(referenceAmount);
       expenseManagerTransactionList.add(expenseManagerTransaction);
@@ -97,7 +97,7 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
     final int MINUTES = 15;
     final int SECONDS = 30;
     Instant expensedTime = LocalDateTime.of(expensedYear, expensedMonth, expensedDay, HOURS, MINUTES, SECONDS).toInstant(ZoneOffset.UTC);
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
         category, subcategory, paymentMethod, description, expensedTime);
     expenseManagerTransactionList.add(expenseManagerTransaction);
     return this;

@@ -28,7 +28,7 @@ public class ExpenseReconciler {
   private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
   private static final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
 
-  private ExpenseReconciler() {// No allowed to initialise this class
+  public ExpenseReconciler() { //Default implementation
   }
 
   /**
@@ -40,7 +40,7 @@ public class ExpenseReconciler {
    * @param expensesByAmountAndPaymentMethod a collection of the database record in the Expense Manager
    * @return the number of transaction that is not found in the CSV
    */
-  public static List<DiscrepantTransaction> reconcileBankData(
+  public List<DiscrepantTransaction> reconcileBankData(
       final List<CsvTransaction> csvTransactions,
       final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod) {
     /*
