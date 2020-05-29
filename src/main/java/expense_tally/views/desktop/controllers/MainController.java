@@ -122,12 +122,14 @@ public class MainController implements Initializable {
       return;
     }
 
+    ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
+        expenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
 
     // Reconcile both data source
-    List<DiscrepantTransaction> discrepantTransactions =
-        ExpenseReconciler.reconcileBankData(csvTransactions, expensesByAmountAndPaymentMethod);
+    ExpenseReconciler expenseReconciler = new ExpenseReconciler();
+    List<DiscrepantTransaction> discrepantTransactions = expenseReconciler.reconcileBankData(csvTransactions,
+        expensesByAmountAndPaymentMethod);
 
     List<Transaction> tableViewTransactions = new ArrayList<>();
     discrepantTransactions.forEach(discrepantTransaction -> {

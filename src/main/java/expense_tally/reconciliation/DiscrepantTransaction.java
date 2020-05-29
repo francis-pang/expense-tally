@@ -27,8 +27,8 @@ public class DiscrepantTransaction {
    */
   public static DiscrepantTransaction from(CsvTransaction csvTransaction) {
     DiscrepantTransaction transaction = new DiscrepantTransaction();
-    transaction.setAmount(csvTransaction);
-    transaction.setDescription(csvTransaction);
+    transaction.amount = extractAmount(csvTransaction);
+    transaction.description = extractDescription(csvTransaction);
     transaction.time = csvTransaction.getTransactionDate();
     transaction.type = csvTransaction.getTransactionType();
     return transaction;
@@ -42,39 +42,50 @@ public class DiscrepantTransaction {
     return amount;
   }
 
-  private void setAmount(CsvTransaction csvTransaction) {
-    if (csvTransaction.getDebitAmount() > 0) {
-      amount = csvTransaction.getDebitAmount();
-    } else {
-      LOGGER.atInfo().log("Found a discrepant transaction with credit amount. Credit: {}",
-          csvTransaction::getCreditAmount);
-      amount = csvTransaction.getCreditAmount();
-    }
-  }
-
   public String getDescription() {
     return description;
-  }
-
-  private void setDescription(CsvTransaction csvTransaction) {
-    StringJoiner stringJoiner = new StringJoiner(" ");
-    String ref1 = csvTransaction.getTransactionRef1();
-    stringJoiner.add(parseReference(ref1));
-
-    String ref2 = csvTransaction.getTransactionRef2();
-    stringJoiner.add(parseReference(ref2));
-
-    String ref3 = csvTransaction.getTransactionRef3();
-    stringJoiner.add(parseReference(ref3));
-
-    description = stringJoiner.toString().trim();
   }
 
   public TransactionType getType() {
     return type;
   }
 
-  private String parseReference(String ref) {
-    return (ref == null || ref.isBlank()) ? "" : ref;
+  /**
+   * Parse the
+   * @param csvTransaction
+   * @return
+   */
+  private static double extractAmount(CsvTransaction csvTransaction) {
+    if (csvTransaction.getDebitAmount() > 0) {
+      return csvTransaction.getDebitAmount();
+    } else if (csvTransaction.getCreditAmount() > 0) {
+      LOGGER.atInfo().log("Found a discrepant transaction with credit amount. Credit: {}",
+          csvTransaction::getCreditAmount);
+      return csvTransaction.getCreditAmount();
+    } else {
+      LOGGER.atInfo().log("Found a discrepant transaction with no credit or debit amount.");
+      return 0.0;
+    }
+  }
+
+  private static String extractDescription(CsvTransaction csvTransaction) {
+    StringJoiner stringJoiner = new StringJoiner(" ");
+    String reference1 = csvTransaction.getTransactionRef1();
+    addReferenceToStringJoiner(stringJoiner, reference1);
+    String reference2 = csvTransaction.getTransactionRef2();
+    addReferenceToStringJoiner(stringJoiner, reference2);
+    String reference3 = csvTransaction.getTransactionRef3();
+    addReferenceToStringJoiner(stringJoiner, reference3);
+    return stringJoiner.toString().trim();
+  }
+
+
+  private static void addReferenceToStringJoiner(StringJoiner stringJoiner, String reference) {
+    String parsedReference = parseReference(reference);
+    stringJoiner.add(parsedReference);
+  }
+
+  private static String parseReference(String ref) {
+    return (ref == null || ref.isBlank()) ? "" : ref.trim();
   }
 }

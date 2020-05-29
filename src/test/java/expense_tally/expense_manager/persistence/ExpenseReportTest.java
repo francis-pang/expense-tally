@@ -14,6 +14,13 @@ class ExpenseReportTest {
   }
 
   @Test
+  void testEquals_null() {
+    ExpenseReport testExpenseReport = new ExpenseReport();
+    assertThat(testExpenseReport.equals(null))
+        .isFalse();
+  }
+
+  @Test
   void testEquals_notSameInstanceType() {
     ExpenseReport testExpenseReport = new ExpenseReport();
     assertThat(testExpenseReport.equals(1))

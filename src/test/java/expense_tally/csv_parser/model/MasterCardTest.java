@@ -264,6 +264,18 @@ class MasterCardTest {
   }
 
   @Test
+  void equals_null() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    CsvTransaction testCsvTransaction = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)
+        .transactionRef1("TAPAS SI NG 20DEC")
+        .transactionRef2("5132-4172-5981-4347")
+        .build();
+    MasterCard masterCard = MasterCard.from(testCsvTransaction);
+    MasterCard masterCardDifferenceReference = masterCard;
+    assertThat(masterCard.equals(null)).isFalse();
+  }
+
+  @Test
   void equals_differentClass() throws MonetaryAmountException {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     CsvTransaction testCsvTransaction = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD, 4.55)

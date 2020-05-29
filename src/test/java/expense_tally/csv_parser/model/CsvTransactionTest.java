@@ -461,6 +461,16 @@ class CsvTransactionTest {
   }
 
   @Test
+  void equals_null() throws MonetaryAmountException {
+    LocalDate transactionDate = LocalDate.of(2019, 12, 27);
+    TransactionType transactionType = TransactionType.PAY_NOW;
+    double debitAmount = 5.00;
+    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+
+    assertThat(csvTransaction1.equals(null)).isFalse();
+  }
+
+  @Test
   void equals_allFieldsAreEqual() throws MonetaryAmountException {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;

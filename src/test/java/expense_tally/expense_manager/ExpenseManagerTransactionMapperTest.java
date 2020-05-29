@@ -9,6 +9,7 @@ import expense_tally.expense_manager.transformation.PaymentMethod;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -24,6 +25,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class ExpenseManagerTransactionMapperTest {
+  private ExpenseTransactionMapper expenseTransactionMapper;
+
+  @BeforeEach
+  void setUp() {
+    expenseTransactionMapper = new ExpenseTransactionMapper();
+  }
+
   private ExpenseReport constructExpenseReport(int id, String account, double amount, String category,
                                                String subcategory, String paymentMethod, String description,
                                                String expensedTime, String modificationTime, double referenceAmount,
@@ -63,7 +71,7 @@ class ExpenseManagerTransactionMapperTest {
       String description,
       String expensedTime,
       double referenceAmount) {
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
         category, subcategory, paymentMethod, description, Instant.parse(expensedTime));
     expenseManagerTransaction.setReferenceAmount(referenceAmount);
     return expenseManagerTransaction;
@@ -296,7 +304,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
 
-    Assertions.assertThat(ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports)).isEmpty();
+    Assertions.assertThat(expenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports)).isEmpty();
   }
 
   /*
@@ -306,7 +314,7 @@ class ExpenseManagerTransactionMapperTest {
   @Test
   void mapExpenseReportsToMap_nullExpenseReports() {
     Assertions.assertThatThrownBy(() -> {
-      ExpenseTransactionMapper.mapExpenseReportsToMap(null);
+      expenseTransactionMapper.mapExpenseReportsToMap(null);
     }).isInstanceOf(NullPointerException.class);
   }
 
@@ -351,7 +359,7 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        expenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(1);
     softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);
@@ -498,7 +506,7 @@ class ExpenseManagerTransactionMapperTest {
     ));
 
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        expenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(2);
 
@@ -509,8 +517,6 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertThat(actualExpenseManagerMap).containsOnly(
         entry(1.78, expectedExpensesMapByCash),
         entry(3.0, expectedExpensesByGrabPay));
-
     softly.assertAll();
-
   }
 }

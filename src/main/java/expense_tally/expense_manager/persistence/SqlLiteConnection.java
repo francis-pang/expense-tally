@@ -26,10 +26,8 @@ public class SqlLiteConnection implements DatabaseConnectable {
 
   @Override
   public Connection connect() throws SQLException {
-    /**
-     * This line of code cannot be tested because DriverManager cannot be further mocked as Mockito does not support
-     * static method mocking
-     */
+    // This line of code cannot be tested because DriverManager cannot be further mocked as Mockito does not support
+    // static method mocking
     return DriverManager.getConnection(databaseFile);
   }
 }
