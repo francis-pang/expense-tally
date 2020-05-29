@@ -122,8 +122,9 @@ public class MainController implements Initializable {
       return;
     }
 
+    ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
+        expenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
 
     // Reconcile both data source
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();

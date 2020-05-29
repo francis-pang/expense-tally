@@ -129,7 +129,8 @@ public class ExpenseAccountant {
    * @throws IOException if there is error to read the CSV file
    * @throws SQLException if there is error to access the database record in Expense Manager
    */
-  public void reconcileData(ExpenseReadable expenseReadable, ExpenseReconciler expenseReconciler) throws IOException,
+  public void reconcileData(ExpenseReadable expenseReadable, ExpenseReconciler expenseReconciler,
+                            ExpenseTransactionMapper expenseTransactionMapper) throws IOException,
       SQLException {
     List<CsvTransaction> bankTransactions;
     try {
@@ -142,7 +143,7 @@ public class ExpenseAccountant {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod;
     try {
       List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
-      expensesByAmountAndPaymentMethod = ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
+      expensesByAmountAndPaymentMethod = expenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
     } catch (SQLException ex) {
       LOGGER
           .atError()

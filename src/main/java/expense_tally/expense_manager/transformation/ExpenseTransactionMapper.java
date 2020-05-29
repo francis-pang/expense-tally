@@ -31,10 +31,8 @@ public final class ExpenseTransactionMapper {
   private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
   private static final double ZERO_AMOUNT = 0.0;
 
-  private ExpenseTransactionMapper() { // Not allow to initialised
+  public ExpenseTransactionMapper() {
   }
-
-
 
   /**
    * Return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment
@@ -43,7 +41,7 @@ public final class ExpenseTransactionMapper {
    * @param expenseReports the list of expense reports
    * @return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment method.
    */
-  public static Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
+  public Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
       List<ExpenseReport> expenseReports) {
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (ExpenseReport expenseReport : expenseReports) {

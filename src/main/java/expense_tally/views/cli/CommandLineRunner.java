@@ -5,6 +5,7 @@ import expense_tally.expense_manager.persistence.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReportReader;
 import expense_tally.expense_manager.persistence.SqlLiteConnection;
+import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,13 +27,14 @@ public class CommandLineRunner {
 
     CsvParser csvParser = new CsvParser();
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();
+    ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
     try {
       ExpenseAccountant expenseAccountant = new ExpenseAccountant(args, csvParser);
       String databaseFileName = expenseAccountant.getDatabaseFilename();
       DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFileName);
       ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
 
-      expenseAccountant.reconcileData(expenseReadable, expenseReconciler);
+      expenseAccountant.reconcileData(expenseReadable, expenseReconciler, expenseTransactionMapper);
     } catch (IOException ioException) {
       LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");
       System.exit(CSV_FILE_PARSING_ERR_CODE);
