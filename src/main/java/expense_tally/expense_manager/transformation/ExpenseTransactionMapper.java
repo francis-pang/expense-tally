@@ -25,7 +25,7 @@ import java.util.Map;
  * @see ExpenseManagerTransaction
  * @see ExpenseReport
  */
-public final class ExpenseTransactionMapper {
+public class ExpenseTransactionMapper {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
 
   private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";

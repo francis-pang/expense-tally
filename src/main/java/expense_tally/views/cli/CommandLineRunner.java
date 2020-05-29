@@ -29,12 +29,12 @@ public class CommandLineRunner {
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();
     ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
     try {
-      ExpenseAccountant expenseAccountant = new ExpenseAccountant(args, csvParser);
+      ExpenseAccountant expenseAccountant = new ExpenseAccountant(args);
       String databaseFileName = expenseAccountant.getDatabaseFilename();
       DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFileName);
       ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
 
-      expenseAccountant.reconcileData(expenseReadable, expenseReconciler, expenseTransactionMapper);
+      expenseAccountant.reconcileData(csvParser, expenseReadable, expenseTransactionMapper, expenseReconciler);
     } catch (IOException ioException) {
       LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");
       System.exit(CSV_FILE_PARSING_ERR_CODE);

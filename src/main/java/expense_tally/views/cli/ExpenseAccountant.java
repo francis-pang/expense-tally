@@ -28,7 +28,6 @@ public class ExpenseAccountant {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseAccountant.class);
   private String csvFilename;
   private String databaseFilename;
-  private CsvParsable csvParsable;
 
   private Map<AppParameter, String> extractOptions(String[] args) {
     final String EQUAL_SEPARATOR = "=";
@@ -100,8 +99,7 @@ public class ExpenseAccountant {
    * @param args command line arguments
    * @throws IllegalArgumentException if the arguments provided is malformed or missing compulsory field
    */
-  public ExpenseAccountant(String[] args, CsvParsable csvParsable) throws IllegalArgumentException {
-    this.csvParsable = csvParsable;
+  public ExpenseAccountant(String[] args) throws IllegalArgumentException {
     Map<AppParameter, String> optionValues = extractOptions(args);
     if (!haveAllCompulsoryFieldsFilled(optionValues)) {
       LOGGER.atError().log("Missing at least one compulsory parameter. Parameters: {}", optionValues);
@@ -125,13 +123,39 @@ public class ExpenseAccountant {
   }
 
   /**
-   * Reconcile the data from CSV file against the transaction records in the Expense Manager application
+   * Reconciles the data from CSV file against the transaction records in the Expense Manager application
+   * @param csvParsable
+   * @param expenseReadable
+   * @param expenseTransactionMapper
+   * @param expenseReconciler
    * @throws IOException if there is error to read the CSV file
    * @throws SQLException if there is error to access the database record in Expense Manager
    */
-  public void reconcileData(ExpenseReadable expenseReadable, ExpenseReconciler expenseReconciler,
-                            ExpenseTransactionMapper expenseTransactionMapper) throws IOException,
-      SQLException {
+  public void reconcileData(CsvParsable csvParsable,
+                            ExpenseReadable expenseReadable,
+                            ExpenseTransactionMapper expenseTransactionMapper,
+                            ExpenseReconciler expenseReconciler) throws IOException, SQLException {
+    if (csvParsable == null) {
+      String errorMessage = "CSV Parsable is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+    }
+    if (expenseReadable == null) {
+      String errorMessage = "Expense Readable is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+    }
+    if (expenseTransactionMapper == null) {
+      String errorMessage = "Expense Transaction Mapper is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+
+    }
+    if (expenseReconciler == null) {
+      String errorMessage = "Expense Reconciler is null";
+      LOGGER.atError().log(errorMessage);
+      throw new IllegalArgumentException(errorMessage);
+    }
     List<CsvTransaction> bankTransactions;
     try {
       bankTransactions = csvParsable.parseCsvFile(csvFilename);
