@@ -29,7 +29,6 @@ public class DiscrepantTransaction {
     DiscrepantTransaction transaction = new DiscrepantTransaction();
     transaction.amount = extractAmount(csvTransaction);
     transaction.description = extractDescription(csvTransaction);
-    transaction.extractDescription(csvTransaction);
     transaction.time = csvTransaction.getTransactionDate();
     transaction.type = csvTransaction.getTransactionType();
     return transaction;

@@ -28,7 +28,7 @@ public class ExpenseReconciler {
   private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
   private static final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
 
-  public ExpenseReconciler() {
+  public ExpenseReconciler() { //Default implementation
   }
 
   /**

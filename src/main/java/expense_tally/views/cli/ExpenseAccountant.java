@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public class ExpenseAccountant {
 
   private Map<AppParameter, String> extractOptions(String[] args) {
     final String EQUAL_SEPARATOR = "=";
-    Map<AppParameter, String> optionValues = new HashMap<>();
+    Map<AppParameter, String> optionValues = new EnumMap<>(AppParameter.class);
     // Expect to received --database-filepath = XXXX --csv-filepath= XXXX
     // Allow 3 format of declaring parameter
     // 1. parameter=XXXX
@@ -99,7 +99,7 @@ public class ExpenseAccountant {
    * @param args command line arguments
    * @throws IllegalArgumentException if the arguments provided is malformed or missing compulsory field
    */
-  public ExpenseAccountant(String[] args) throws IllegalArgumentException {
+  public ExpenseAccountant(String[] args) {
     Map<AppParameter, String> optionValues = extractOptions(args);
     if (!haveAllCompulsoryFieldsFilled(optionValues)) {
       LOGGER.atError().log("Missing at least one compulsory parameter. Parameters: {}", optionValues);
@@ -182,7 +182,7 @@ public class ExpenseAccountant {
     private AppParameter key;
     private String value;
 
-    public AppParameterValuePair() {
+    public AppParameterValuePair() {// Default implementation
     }
 
     /**

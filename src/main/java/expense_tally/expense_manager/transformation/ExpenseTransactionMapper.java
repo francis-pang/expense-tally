@@ -31,7 +31,7 @@ public class ExpenseTransactionMapper {
   private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
   private static final double ZERO_AMOUNT = 0.0;
 
-  public ExpenseTransactionMapper() {
+  public ExpenseTransactionMapper() { // Default implementation
   }
 
   /**
