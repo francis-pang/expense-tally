@@ -93,7 +93,7 @@ public final class ExpenseTransactionMapper {
     Instant expendedTime = Instant.ofEpochMilli(expendedTimeInSecondSinceEpoch); //This time is in UTC
     String paymentMethodString = expenseReport.getPaymentMethod();
     PaymentMethod paymentMethod = PaymentMethod.resolve(paymentMethodString);
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
         expenseCategory, expenseSubCategory, paymentMethod, description, expendedTime);
     String referenceNumber = expenseReport.getReferenceNumber();
     double referenceAmount = (referenceNumber.isBlank()) ? ZERO_AMOUNT : parseReferenceAmount(referenceNumber);

@@ -32,10 +32,10 @@ public class ExpenseManagerTransaction {
    * @return a new instance of {@link ExpenseManagerTransaction}
    * @hrows IllegalArgumentException when any of the enum class is null, or an blank description is provided
    */
-  public static ExpenseManagerTransaction createInstanceOf(double amount, ExpenseCategory category,
-                                                           ExpenseSubCategory subCategory,
-                                                           PaymentMethod paymentMethod, String description,
-                                                           Instant expendedTime) {
+  public static ExpenseManagerTransaction create(double amount, ExpenseCategory category,
+                                                 ExpenseSubCategory subCategory,
+                                                 PaymentMethod paymentMethod, String description,
+                                                 Instant expendedTime) {
     ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
     expenseManagerTransaction.amount = amount;
     if (category == null) {

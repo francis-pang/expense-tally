@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ExpenseManagerTransactionTest {
   @Test
   void createInstanceOf_nullCategory() {
-    assertThatThrownBy(() -> ExpenseManagerTransaction.createInstanceOf(
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
           5.48,
           null,
           ExpenseSubCategory.CLOTHING,
@@ -30,7 +30,7 @@ class ExpenseManagerTransactionTest {
 
   @Test
   void createInstanceOf_nullSubCategory() {
-    assertThatThrownBy(() -> ExpenseManagerTransaction.createInstanceOf(
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
         null,
@@ -44,7 +44,7 @@ class ExpenseManagerTransactionTest {
 
   @Test
   void createInstanceOf_nullPaymentMethod() {
-    assertThatThrownBy(() -> ExpenseManagerTransaction.createInstanceOf(
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -58,7 +58,7 @@ class ExpenseManagerTransactionTest {
 
   @Test
   void createInstanceOf_nullDescription() {
-    assertThatThrownBy(() -> ExpenseManagerTransaction.createInstanceOf(
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -72,7 +72,7 @@ class ExpenseManagerTransactionTest {
 
   @Test
   void createInstanceOf_emptyDescription() {
-    assertThatThrownBy(() -> ExpenseManagerTransaction.createInstanceOf(
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -88,7 +88,7 @@ class ExpenseManagerTransactionTest {
   void getAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -106,7 +106,7 @@ class ExpenseManagerTransactionTest {
   void getPaymentMethod() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -123,7 +123,7 @@ class ExpenseManagerTransactionTest {
   void getExpendedTime() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -140,7 +140,7 @@ class ExpenseManagerTransactionTest {
   void getReferenceAmount_notSet() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -156,7 +156,7 @@ class ExpenseManagerTransactionTest {
   void getReferenceAmount_afterSet() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -175,7 +175,7 @@ class ExpenseManagerTransactionTest {
   void setReferenceAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -194,7 +194,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_sameObject() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -210,7 +210,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSameInstanceType() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -226,7 +226,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSameAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -234,7 +234,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         5.47,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -250,7 +250,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSameCategory() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -258,7 +258,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.AESTHETIC,
             ExpenseSubCategory.CLOTHING,
@@ -274,7 +274,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSameSubcategory() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -282,7 +282,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
@@ -298,7 +298,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSamePaymentMethod() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -306,7 +306,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -322,7 +322,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSameDescription() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -330,7 +330,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -346,7 +346,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSameExpendedTime() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -354,7 +354,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -370,7 +370,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_noReferenceAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -378,7 +378,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -395,7 +395,7 @@ class ExpenseManagerTransactionTest {
   void testEquals_notSameReferenceAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -404,7 +404,7 @@ class ExpenseManagerTransactionTest {
         testTime
     );
     testExpenseManagerTransaction.setReferenceAmount(0.01);
-    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         testAmount,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,
@@ -420,18 +420,18 @@ class ExpenseManagerTransactionTest {
   @Test
   void testHashCode() {
     Instant testTime = Instant.now();
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(5.48,
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(5.48,
         ExpenseCategory.ENTERTAINMENT, ExpenseSubCategory.CLOTHING, PaymentMethod.GRAY_PAY, "sd", testTime);
     assertThat(testExpenseManagerTransaction.hashCode())
         .isNotZero()
-        .isEqualTo(ExpenseManagerTransaction.createInstanceOf(5.48, ExpenseCategory.ENTERTAINMENT,
+        .isEqualTo(ExpenseManagerTransaction.create(5.48, ExpenseCategory.ENTERTAINMENT,
             ExpenseSubCategory.CLOTHING, PaymentMethod.GRAY_PAY, "sd", testTime).hashCode());
   }
 
   @Test
   void testToString() {
     Instant testTime = LocalDateTime.of(2020, 5, 27, 1, 19).atZone(ZoneId.of("UTC")).toInstant();
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.CLOTHING,

@@ -63,7 +63,7 @@ class ExpenseManagerTransactionMapperTest {
       String description,
       String expensedTime,
       double referenceAmount) {
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.createInstanceOf(amount,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
         category, subcategory, paymentMethod, description, Instant.parse(expensedTime));
     expenseManagerTransaction.setReferenceAmount(referenceAmount);
     return expenseManagerTransaction;
