@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ExpenseManagerTransactionTest {
   @Test
-  void createInstanceOf_nullCategory() {
+  void create_nullCategory() {
     assertThatThrownBy(() -> ExpenseManagerTransaction.create(
           5.48,
           null,
@@ -29,7 +29,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void createInstanceOf_nullSubCategory() {
+  void create_nullSubCategory() {
     assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
@@ -43,7 +43,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void createInstanceOf_nullPaymentMethod() {
+  void create_nullPaymentMethod() {
     assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
@@ -57,7 +57,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void createInstanceOf_nullDescription() {
+  void create_nullDescription() {
     assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
@@ -71,7 +71,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void createInstanceOf_emptyDescription() {
+  void create_emptyDescription() {
     assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         5.48,
         ExpenseCategory.ENTERTAINMENT,
@@ -204,6 +204,22 @@ class ExpenseManagerTransactionTest {
     );
     assertThat(testExpenseManagerTransaction.equals(testExpenseManagerTransaction))
         .isTrue();
+  }
+
+  @Test
+  void testEquals_null() {
+    Instant testTime = Instant.now();
+    double testAmount = 5.48;
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
+        testAmount,
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.CLOTHING,
+        PaymentMethod.GRAY_PAY,
+        "sd",
+        testTime
+    );
+    assertThat(testExpenseManagerTransaction.equals(null))
+        .isFalse();
   }
 
   @Test
