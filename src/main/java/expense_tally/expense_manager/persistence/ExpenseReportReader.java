@@ -18,7 +18,7 @@ import java.util.Objects;
  *
  * @see ExpenseReport
  */
-public class ExpenseReportReader implements ExpenseReadable {
+public final class ExpenseReportReader implements ExpenseReadable {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseReportReader.class);
 
   private DatabaseConnectable databaseConnectable;
