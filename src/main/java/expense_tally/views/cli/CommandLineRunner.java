@@ -7,11 +7,13 @@ import expense_tally.expense_manager.persistence.ExpenseReportReader;
 import expense_tally.expense_manager.persistence.SqlLiteConnection;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
+import expense_tally.views.AppParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 
 /**
@@ -28,13 +30,16 @@ public class CommandLineRunner {
     CsvParser csvParser = new CsvParser();
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();
     ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
+    CommandParser commandParser = new CommandParser();
+
     try {
-      ExpenseAccountant expenseAccountant = new ExpenseAccountant(args);
-      String databaseFileName = expenseAccountant.getDatabaseFilename();
+      Map<AppParameter, String> optionValues = commandParser.parseCommandArgs(args);
+      String databaseFileName = optionValues.get(AppParameter.DATABASE_PATH);
       DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFileName);
       ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
-
-      expenseAccountant.reconcileData(csvParser, expenseReadable, expenseTransactionMapper, expenseReconciler);
+      ExpenseAccountant expenseAccountant = new ExpenseAccountant(csvParser, expenseReadable,
+          expenseTransactionMapper, expenseReconciler);
+      expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));
     } catch (IOException ioException) {
       LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");
       System.exit(CSV_FILE_PARSING_ERR_CODE);
