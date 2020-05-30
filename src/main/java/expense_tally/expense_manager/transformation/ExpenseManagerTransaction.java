@@ -83,10 +83,7 @@ public class ExpenseManagerTransaction {
     if (this == o) {
       return true;
     }
-    if (o == null) {
-      return false;
-    }
-    if (getClass() != o.getClass()) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
     ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;

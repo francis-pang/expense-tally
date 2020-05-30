@@ -137,10 +137,7 @@ public class ExpenseReport {
     if (this == o) {
       return true;
     }
-    if (o == null) {
-      return false;
-    }
-    if (getClass() != o.getClass()) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
     ExpenseReport that = (ExpenseReport) o;
