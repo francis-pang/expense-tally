@@ -38,7 +38,7 @@ import static expense_tally.csv_parser.CsvPosition.TRANSACTION_REF_3;
  *
  * @see CsvTransaction
  */
-public class CsvParser implements CsvParsable {
+public final class CsvParser implements CsvParsable {
   private static final Logger LOGGER = LogManager.getLogger(CsvParser.class);
   private static final String CSV_HEADER_LINE = "Transaction Date";
   private static final String CSV_TRANSACTION_DATE_FORMAT = "dd MMM yyyy"; //09 Nov 2018

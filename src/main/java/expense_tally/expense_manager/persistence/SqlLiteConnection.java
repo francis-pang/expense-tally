@@ -12,7 +12,7 @@ import java.util.Objects;
  * , SQLite library is linked and form part of the application. Hence there isn't a database server. The entire
  * database (definitions, tables, indices, and the data itself) is stored inside a single cross-platform file.</p>
  */
-public class SqlLiteConnection implements DatabaseConnectable {
+public final class SqlLiteConnection implements DatabaseConnectable {
   private static final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
   private final String databaseFile;
 

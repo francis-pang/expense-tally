@@ -6,7 +6,7 @@ import java.util.Objects;
  * This class models the database schema of a transaction stored in the Expense Manager application. All the
  * attributes inside this class model after the equivalence data type of the database schema declaration.
  */
-public class ExpenseReport {
+public final class ExpenseReport {
   private int id;
   private String account;
   private String amount;
