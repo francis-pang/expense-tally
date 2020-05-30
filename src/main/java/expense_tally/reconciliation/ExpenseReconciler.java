@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Reconciles the expenses between the Expense Manager application and the CSV file.
  */
-public class ExpenseReconciler {
+public final class ExpenseReconciler {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseReconciler.class);
   private static final int MAXIMUM_TIME_DIFFERENCE_ALLOWED = 24;
   private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";

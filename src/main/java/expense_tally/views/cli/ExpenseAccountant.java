@@ -23,7 +23,7 @@ import java.util.Objects;
  * <p>The word Accountant is used as that is the job of the accountant in the real finance department.</p>
  * <p>This marks the start of the whole program.</p>
  */
-public class ExpenseAccountant {
+public final class ExpenseAccountant {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseAccountant.class);
   private final CsvParsable csvParsable;
   private final ExpenseReadable expenseReadable;

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class CommandParser {
+public final class CommandParser {
   private static final Logger LOGGER = LogManager.getLogger(CommandParser.class);
 
   public CommandParser() { //Default implementation

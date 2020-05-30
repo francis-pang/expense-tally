@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Transaction {
+public final class Transaction {
   private SimpleBooleanProperty meantToBeAddedToDatabase;
   private SimpleStringProperty time;
   private SimpleDoubleProperty amount;

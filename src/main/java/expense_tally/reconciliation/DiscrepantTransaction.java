@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 /**
  * Display a transaction which has discrepancy among the data sources.
  */
-public class DiscrepantTransaction {
+public final class DiscrepantTransaction {
   private static final Logger LOGGER = LogManager.getLogger(DiscrepantTransaction.class);
 
   private LocalDate time;

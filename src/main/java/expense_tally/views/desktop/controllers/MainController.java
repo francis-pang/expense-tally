@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class MainController implements Initializable {
+public final class MainController implements Initializable {
   @FXML
   TableColumn<Transaction, Boolean> tableAddRecordCheckBox;
   @FXML

@@ -20,7 +20,7 @@ import java.util.Map;
  * This class acts as the Dependency Injection container. It create all the dependencies and inject into the rest of
  * the class
  */
-public class CommandLineRunner {
+public final class CommandLineRunner {
   private static final Logger LOGGER = LogManager.getLogger(CommandLineRunner.class);
 
   public static void main(String[] args) {

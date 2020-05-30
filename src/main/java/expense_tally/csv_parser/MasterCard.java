@@ -17,7 +17,7 @@ import java.util.StringJoiner;
  *
  * @see CsvTransaction
  */
-public class MasterCard extends CsvTransaction {
+public final class MasterCard extends CsvTransaction {
   private static final Logger LOGGER = LogManager.getLogger(MasterCard.class);
   private static final char SPACE_CHARACTER = ' ';
   private static final DateTimeFormatter REFERENCE_1_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMM");

@@ -7,7 +7,7 @@ import java.util.StringJoiner;
 /**
  *
  */
-public class ExpenseManagerTransaction {
+public final class ExpenseManagerTransaction {
   private Double amount;
   private ExpenseCategory category;
   private ExpenseSubCategory subcategory;
