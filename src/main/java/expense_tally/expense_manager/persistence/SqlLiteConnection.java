@@ -3,6 +3,7 @@ package expense_tally.expense_manager.persistence;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Manages the database connection to SQLite embedded database engine.
@@ -13,7 +14,7 @@ import java.sql.SQLException;
  */
 public class SqlLiteConnection implements DatabaseConnectable {
   private static final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
-  private String databaseFile;
+  private final String databaseFile;
 
   /**
    * Construct a SqlLiteConnection with the file path to the database file
@@ -21,7 +22,7 @@ public class SqlLiteConnection implements DatabaseConnectable {
    * @param databaseFile file path of the database file
    */
   public SqlLiteConnection(String databaseFile) {
-    this.databaseFile = SQLITE_JDBC_PREFIX + databaseFile;
+    this.databaseFile = SQLITE_JDBC_PREFIX + Objects.requireNonNull(databaseFile);
   }
 
   @Override

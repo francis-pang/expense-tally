@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {@code ExpenseReportReader} provide the user ways to retrieve the
@@ -28,7 +29,7 @@ public class ExpenseReportReader implements ExpenseReadable {
    * @param databaseConnectable the database source of the expense report retrieval
    */
   public ExpenseReportReader(DatabaseConnectable databaseConnectable) {
-    this.databaseConnectable = databaseConnectable;
+    this.databaseConnectable = Objects.requireNonNull(databaseConnectable);
   }
 
   @Override
