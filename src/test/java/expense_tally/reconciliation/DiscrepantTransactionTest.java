@@ -1,6 +1,6 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.GenericCsvTransaction;
 import expense_tally.csv_parser.TransactionType;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
@@ -23,126 +23,107 @@ class DiscrepantTransactionTest {
   @Test
   void from_creditAmount() {
     LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        0.0,
-        7.89,
-        "Test ref 1",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionDate(testDate.getYear(), testDate.getMonthValue(), testDate.getDayOfMonth())
+        .transactionRef1("Test ref 1")
+        .transactionRef2("Test ref 3")
+        .transactionRef3("Testt ref 3")
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(discrepantTransaction.getTime()).isEqualTo(testDate);
-    softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(7.89);
+    softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(0.8);
     softAssertions.assertThat(discrepantTransaction.getDescription()).isEqualTo("Test ref 1 Test ref 3 Testt ref 3");
-    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.GIRO);
+    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.MASTERCARD);
     softAssertions.assertAll();
   }
 
   @Test
   void from_debitAmount() {
     LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        6.66,
-        0.00,
-        "Test ref 1",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionDate(testDate.getYear(), testDate.getMonthValue(), testDate.getDayOfMonth())
+        .debitAmount(6.66)
+        .transactionRef1("Test ref 1")
+        .transactionRef2("Test ref 3")
+        .transactionRef3("Testt ref 3")
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(discrepantTransaction.getTime()).isEqualTo(testDate);
     softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(6.66);
     softAssertions.assertThat(discrepantTransaction.getDescription()).isEqualTo("Test ref 1 Test ref 3 Testt ref 3");
-    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.GIRO);
+    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.MASTERCARD);
     softAssertions.assertAll();
   }
 
   @Test
   void from_zeroAmount() {
     LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        0.00,
-        0.00,
-        "Test ref 1",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionDate(testDate.getYear(), testDate.getMonthValue(), testDate.getDayOfMonth())
+        .debitAmount(0.00)
+        .transactionRef1("Test ref 1")
+        .transactionRef2("Test ref 3")
+        .transactionRef3("Testt ref 3")
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(discrepantTransaction.getTime()).isEqualTo(testDate);
     softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(0.00);
     softAssertions.assertThat(discrepantTransaction.getDescription()).isEqualTo("Test ref 1 Test ref 3 Testt ref 3");
-    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.GIRO);
+    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.MASTERCARD);
     softAssertions.assertAll();
   }
 
   @Test
   void from_spaceOutsideRef() {
     LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        6.66,
-        0.00,
-        "   Test ref 1    ",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionDate(testDate.getYear(), testDate.getMonthValue(), testDate.getDayOfMonth())
+        .transactionRef1("   Test ref 1    ")
+        .transactionRef2("Test ref 3")
+        .transactionRef3("Testt ref 3")
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(discrepantTransaction.getTime()).isEqualTo(testDate);
-    softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(6.66);
+    softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(0.8);
     softAssertions.assertThat(discrepantTransaction.getDescription()).isEqualTo("Test ref 1 Test ref 3 Testt ref 3");
-    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.GIRO);
+    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.MASTERCARD);
     softAssertions.assertAll();
   }
 
   @Test
   void from_emptyRef3() {
     LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        6.66,
-        0.00,
-        "   Test ref 1    ",
-        "Test ref 3",
-        ""
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionDate(testDate.getYear(), testDate.getMonthValue(), testDate.getDayOfMonth())
+        .transactionRef1("   Test ref 1    ")
+        .transactionRef2("Test ref 3")
+        .transactionRef3("")
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(discrepantTransaction.getTime()).isEqualTo(testDate);
-    softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(6.66);
+    softAssertions.assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(0.8);
     softAssertions.assertThat(discrepantTransaction.getDescription()).isEqualTo("Test ref 1 Test ref 3");
-    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.GIRO);
+    softAssertions.assertThat(discrepantTransaction.getType()).isEqualByComparingTo(TransactionType.MASTERCARD);
     softAssertions.assertAll();
   }
 
   @Test
   void getTime() {
     LocalDate testDate = LocalDate.parse("2020-05-28");
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        50.0,
-        0.00,
-        "Test ref 1",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionDate(testDate.getYear(), testDate.getMonthValue(), testDate.getDayOfMonth())
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
     assertThat(discrepantTransaction.getTime())
         .isNotNull()
@@ -151,34 +132,21 @@ class DiscrepantTransactionTest {
 
   @Test
   void getAmount() {
-    LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        50.0,
-        0.00,
-        "Test ref 1",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder().build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
-    assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(50.0);
+    assertThat(discrepantTransaction.getAmount()).isEqualByComparingTo(0.8);
   }
 
   @Test
   void getDescription() {
     LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        50.0,
-        0.00,
-        "Test ref 1",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionRef1("Test ref 1")
+        .transactionRef2("Test ref 3")
+        .transactionRef3("Testt ref 3")
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
     assertThat(discrepantTransaction.getDescription())
         .isNotBlank()
@@ -188,19 +156,17 @@ class DiscrepantTransactionTest {
   @Test
   void getType() {
     LocalDate testDate = LocalDate.now();
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        testDate,
-        TransactionType.GIRO,
-        50.0,
-        0.00,
-        "Test ref 1",
-        "Test ref 3",
-        "Testt ref 3"
-    );
-    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    GenericCsvTransaction genericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionDate(testDate.getYear(), testDate.getMonthValue(), testDate.getDayOfMonth())
+        .transactionRef1("Test ref 1")
+        .transactionRef2("Test ref 3")
+        .transactionRef3("Testt ref 3")
+        .transactionType(TransactionType.GIRO)
+        .build();
+    DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(genericCsvTransaction);
     assertThat(discrepantTransaction).isNotNull();
-    assertThat(discrepantTransaction.getDescription())
-        .isNotBlank()
-        .isEqualTo("Test ref 1 Test ref 3 Testt ref 3");
+    assertThat(discrepantTransaction.getType())
+        .isNotNull()
+        .isEqualByComparingTo(TransactionType.GIRO);
   }
 }

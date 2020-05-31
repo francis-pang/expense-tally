@@ -1,7 +1,7 @@
 package expense_tally.views.cli;
 
+import expense_tally.csv_parser.AbstractCsvTransaction;
 import expense_tally.csv_parser.CsvParsable;
-import expense_tally.csv_parser.CsvTransaction;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReport;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
@@ -68,7 +68,7 @@ public final class ExpenseAccountant {
       LOGGER.atError().log(errorMessage);
       throw new IllegalArgumentException(errorMessage);
     }
-    List<CsvTransaction> bankTransactions;
+    List<AbstractCsvTransaction> bankTransactions;
     try {
       bankTransactions = csvParsable.parseCsvFile(csvFilename);
     } catch (RuntimeException runtimeException) {

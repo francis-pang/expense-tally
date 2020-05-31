@@ -12,5 +12,5 @@ public interface CsvParsable {
    * @return list of transaction extracted from the csv file
    * @throws IOException when there is issue reading the filepath
    */
-  List<CsvTransaction> parseCsvFile(String filePath) throws IOException;
+  List<AbstractCsvTransaction> parseCsvFile(String filePath) throws IOException;
 }

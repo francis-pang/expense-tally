@@ -1,6 +1,6 @@
 package expense_tally.csv_parser.model;
 
-import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.GenericCsvTransaction;
 import expense_tally.csv_parser.MonetaryAmountException;
 import expense_tally.csv_parser.TransactionType;
 import org.junit.jupiter.api.Test;
@@ -15,14 +15,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * Even though it is common that there is no need to test the model class. I have decided to test this model class
  * because there has been business logic built into this model class
  */
-class CsvTransactionTest {
+class GenericCsvTransactionTest {
   @Test
   void builder_pastTransactionDate() throws MonetaryAmountException {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -50,7 +50,7 @@ class CsvTransactionTest {
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
 
-    assertThatThrownBy(() -> new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("transactionDate cannot be null.");
   }
@@ -61,7 +61,7 @@ class CsvTransactionTest {
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -89,7 +89,7 @@ class CsvTransactionTest {
     TransactionType transactionType = null;
     double debitAmount = 5.00;
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -117,7 +117,7 @@ class CsvTransactionTest {
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = -5.00;
 
-    assertThatThrownBy(() -> new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Debit amount cannot be negative.");
   }
@@ -129,7 +129,7 @@ class CsvTransactionTest {
     double debitAmount = 0;
     double creditAmount = 4.50;
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount)
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount)
         .build())
         .isNotNull()
         .extracting(
@@ -159,7 +159,7 @@ class CsvTransactionTest {
     double debitAmount = 0;
     double creditAmount = -4.50;
 
-    assertThatThrownBy(() -> new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount)
         .creditAmount(creditAmount)
         .build())
         .isInstanceOf(IllegalArgumentException.class)
@@ -173,7 +173,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref1 = "test ref1";
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -202,7 +202,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref1 = null;
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -231,7 +231,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref1 = "";
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef1(ref1).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -260,7 +260,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref2 = "test ref2";
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -289,7 +289,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref2 = null;
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -318,7 +318,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref2 = "      ";
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef2(ref2).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -347,7 +347,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref3 = "test ref3";
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -376,7 +376,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref3 = null;
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -405,7 +405,7 @@ class CsvTransactionTest {
     double debitAmount = 5.00;
     String ref3 = "      ";
 
-    assertThat(new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
+    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).transactionRef3(ref3).build())
         .isNotNull()
         .extracting(
             "transactionDate",
@@ -435,7 +435,7 @@ class CsvTransactionTest {
     double creditAmount = 4.50;
 
     assertThatThrownBy(() ->
-        new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount).build())
+        new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount).build())
         .isInstanceOf(MonetaryAmountException.class)
         .hasMessage("Debit and credit cannot be co-exist at same time.");
   }
@@ -445,9 +445,9 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
 
-    assertThat(csvTransaction1.equals(csvTransaction1)).isTrue();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction1)).isTrue();
   }
 
   @Test
@@ -455,9 +455,9 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
 
-    assertThat(csvTransaction1.equals(transactionType)).isFalse();
+    assertThat(genericCsvTransaction1.equals(transactionType)).isFalse();
   }
 
   @Test
@@ -465,9 +465,9 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
 
-    assertThat(csvTransaction1.equals(null)).isFalse();
+    assertThat(genericCsvTransaction1.equals(null)).isFalse();
   }
 
   @Test
@@ -475,9 +475,9 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isTrue();
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isTrue();
   }
 
   @Test
@@ -485,10 +485,10 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount + 0.01)
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount + 0.01)
         .build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isFalse();
   }
 
   @Test
@@ -496,16 +496,16 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double creditAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction
         .Builder(transactionDate, transactionType, 0.00)
         .creditAmount(creditAmount)
         .build();
 
-    CsvTransaction csvTransaction2 = new CsvTransaction
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction
         .Builder(transactionDate, transactionType, 0.00)
         .creditAmount(creditAmount + 0.01)
         .build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isFalse();
   }
 
   @Test
@@ -513,10 +513,10 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate.plusDays(1L), transactionType,
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction.Builder(transactionDate.plusDays(1L), transactionType,
         debitAmount).build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isFalse();
   }
 
   @Test
@@ -524,10 +524,10 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount)
         .transactionRef1("Test").build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isFalse();
   }
 
   @Test
@@ -535,10 +535,10 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount)
         .transactionRef2("Test").build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isFalse();
   }
 
   @Test
@@ -546,10 +546,10 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount)
         .transactionRef3("Test").build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isFalse();
   }
 
   @Test
@@ -557,10 +557,10 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    CsvTransaction csvTransaction2 = new CsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD,
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    GenericCsvTransaction genericCsvTransaction2 = new GenericCsvTransaction.Builder(transactionDate, TransactionType.MASTERCARD,
         debitAmount).build();
-    assertThat(csvTransaction1.equals(csvTransaction2)).isFalse();
+    assertThat(genericCsvTransaction1.equals(genericCsvTransaction2)).isFalse();
   }
 
   @Test
@@ -568,9 +568,9 @@ class CsvTransactionTest {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
-    CsvTransaction csvTransaction1 = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
-    int expectedHashCode = Objects.hashCode(csvTransaction1);
-    assertThat(csvTransaction1.hashCode())
+    GenericCsvTransaction genericCsvTransaction1 = new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build();
+    int expectedHashCode = Objects.hashCode(genericCsvTransaction1);
+    assertThat(genericCsvTransaction1.hashCode())
         .isNotZero()
         .isEqualByComparingTo(expectedHashCode);
   }
