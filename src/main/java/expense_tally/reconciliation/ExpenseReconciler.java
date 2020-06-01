@@ -1,6 +1,6 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.AbstractCsvTransaction;
 import expense_tally.csv_parser.TransactionType;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
 import expense_tally.expense_manager.transformation.PaymentMethod;
@@ -36,19 +36,19 @@ public final class ExpenseReconciler {
    * <p>This is a one way matching exercise. The reconciler iterates through each record in the CSV files to match
    * for at least a record in the database</p>
    *
-   * @param csvTransactions                  list of transactions in the CSV file
+   * @param abstractCsvTransactions                  list of transactions in the CSV file
    * @param expensesByAmountAndPaymentMethod a collection of the database record in the Expense Manager
    * @return the number of transaction that is not found in the CSV
    */
   public List<DiscrepantTransaction> reconcileBankData(
-      final List<CsvTransaction> csvTransactions,
+      final List<? extends AbstractCsvTransaction> abstractCsvTransactions,
       final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod) {
     /*
      * Taking context from stack overflow answer(https://stackoverflow.com/a/15210142/1522867), the correct way
      * (https://stackoverflow.com/a/15210142/1522867) in this case it's perfectly ok to throw
      * an unchecked exception like an IllegalArgumentException, which should not be caught.
      */
-    if (csvTransactions == null) {
+    if (abstractCsvTransactions == null) {
       throw new IllegalArgumentException(NULL_CSV_TRANSACTION_EXCEPTION_MSG);
     }
 
@@ -57,9 +57,9 @@ public final class ExpenseReconciler {
     }
 
     List<DiscrepantTransaction> discrepantTransactions = new ArrayList<>();
-    for (CsvTransaction csvTransaction : csvTransactions) {
-      if (!csvRecordHasMatchingTransaction(csvTransaction, expensesByAmountAndPaymentMethod)) {
-        DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(csvTransaction);
+    for (AbstractCsvTransaction abstractCsvTransaction : abstractCsvTransactions) {
+      if (!csvRecordHasMatchingTransaction(abstractCsvTransaction, expensesByAmountAndPaymentMethod)) {
+        DiscrepantTransaction discrepantTransaction = DiscrepantTransaction.from(abstractCsvTransaction);
         discrepantTransactions.add(discrepantTransaction);
       }
     }
@@ -128,33 +128,33 @@ public final class ExpenseReconciler {
     return noOfMatchingTransaction.get();
   }
 
-  private static boolean csvRecordHasMatchingTransaction(final CsvTransaction csvTransaction,
+  private static boolean csvRecordHasMatchingTransaction(final AbstractCsvTransaction abstractCsvTransaction,
                                                          final Map<Double, Map<PaymentMethod,
                                                              List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod) {
-    if (csvTransaction.getDebitAmount() == 0) {
+    if (abstractCsvTransaction.getDebitAmount() == 0) {
       LOGGER.atTrace().log("This is not a debit transaction");
       return true;
     }
-    double debitAmount = csvTransaction.getDebitAmount();
-    PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(csvTransaction.getTransactionType());
+    double debitAmount = abstractCsvTransaction.getDebitAmount();
+    PaymentMethod expensePaymentMethod = mapPaymentMethodFrom(abstractCsvTransaction.getTransactionType());
     if (expensePaymentMethod == null) {
-      LOGGER.atWarn().log("Found an unknown transaction type: {}", csvTransaction);
+      LOGGER.atWarn().log("Found an unknown transaction type: {}", abstractCsvTransaction);
       return true;
     }
     List<ExpenseManagerTransaction> possibleMatchingExpenses = expensesByAmountAndPaymentMethod
         .getOrDefault(debitAmount, Collections.emptyMap())
         .getOrDefault(expensePaymentMethod, Collections.emptyList());
-    LocalDate csvTransactionDate = csvTransaction.getTransactionDate();
+    LocalDate csvTransactionDate = abstractCsvTransaction.getTransactionDate();
     int matchingTransactionCount = calculateNumberOfMatchingTransactions(csvTransactionDate, possibleMatchingExpenses);
     switch (matchingTransactionCount) {
       case 0:
-        LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", csvTransaction);
+        LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", abstractCsvTransaction);
         return false;
       case 1:
         LOGGER.atTrace().log("Found a matching transaction");
         return true;
       default:
-        LOGGER.atInfo().log("Found more than 1 matching transaction for this: {}", csvTransaction);
+        LOGGER.atInfo().log("Found more than 1 matching transaction for this: {}", abstractCsvTransaction);
         return true;
     }
   }

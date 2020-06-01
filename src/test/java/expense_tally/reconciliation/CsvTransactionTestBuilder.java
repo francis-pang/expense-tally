@@ -1,13 +1,13 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.GenericCsvTransaction;
+import expense_tally.csv_parser.MonetaryAmountException;
 import expense_tally.csv_parser.TransactionType;
 
 import java.time.LocalDate;
 
 public class CsvTransactionTestBuilder {
   private LocalDate transactionDate = LocalDate.of(2009, 4, 24);
-  private String reference = "";
 
   private double debitAmount = 0.8;
   private double creditAmount = 0;
@@ -21,11 +21,6 @@ public class CsvTransactionTestBuilder {
 
   public CsvTransactionTestBuilder transactionDate(final int year, int month, int day) {
     this.transactionDate = LocalDate.of(year, month, day);
-    return this;
-  }
-
-  public CsvTransactionTestBuilder reference(String reference) {
-    this.reference = reference;
     return this;
   }
 
@@ -59,21 +54,18 @@ public class CsvTransactionTestBuilder {
     return this;
   }
 
-  public CsvTransaction build() {
-    return csvTransaction(this);
-  }
-
-  private CsvTransaction csvTransaction(CsvTransactionTestBuilder builder) {
-    CsvTransaction csvTransaction = CsvTransaction.of(
-        builder.transactionDate,
-        builder.type,
-        builder.debitAmount,
-        builder.creditAmount,
-        builder.transactionRef1,
-        builder.transactionRef2,
-        builder.transactionRef3
-    );
-    csvTransaction.setTransactionType(builder.type);
-    return csvTransaction;
+  public GenericCsvTransaction build() {
+    try {
+      GenericCsvTransaction genericCsvTransaction = new GenericCsvTransaction
+          .Builder(transactionDate, type, debitAmount)
+          .creditAmount(creditAmount)
+          .transactionRef1(transactionRef1)
+          .transactionRef2(transactionRef2)
+          .transactionRef3(transactionRef3)
+          .build();
+      return genericCsvTransaction;
+    } catch (MonetaryAmountException e) {
+      throw new IllegalStateException(e);
+    }
   }
 }

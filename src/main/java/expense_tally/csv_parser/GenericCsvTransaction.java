@@ -4,29 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
  * This class describe the raw format of a CSV transaction. This is what each line of CSV record in the DBS exported
  * transaction history looks like.
  */
-public class CsvTransaction {
-  private static final Logger LOGGER = LogManager.getLogger(CsvTransaction.class);
-  //Attributes
-  protected LocalDate transactionDate;
-  protected double debitAmount;
-  protected double creditAmount;
-  protected String transactionRef1;
-  protected String transactionRef2;
-  protected String transactionRef3;
-  protected TransactionType transactionType;
-
-  /**
-   * Creates a new, empty CSV transaction with default double value and null non-primitive object attributes.
-   */
-  protected CsvTransaction() {
-  }
+public final class GenericCsvTransaction extends AbstractCsvTransaction {
+  private static final Logger LOGGER = LogManager.getLogger(GenericCsvTransaction.class);
 
   /**
    * Create a new CSV transaction with all the given parameters.
@@ -42,96 +27,16 @@ public class CsvTransaction {
    * @param transactionRef3 transaction reference line 3, used to store additional label or information of the
    *                        transaction
    */
-  public static CsvTransaction of(LocalDate transactionDate,
-                                  TransactionType transactionType,
-                                  double debitAmount,
-                                  double creditAmount,
-                                  String transactionRef1,
-                                  String transactionRef2,
-                                  String transactionRef3) {
-
-    /*
-     * Having studied the builder design pattern, I find that the builder pattern is an overkill for constructing
-     * this simple object. Instead, I have just read an chapter off Effective Java (3rd edition) to understand that
-     * we can use static factory methods pattern.
-     */
-    CsvTransaction csvTransaction = new CsvTransaction();
-    csvTransaction.transactionDate = transactionDate;
-    csvTransaction.transactionType = transactionType;
-    csvTransaction.debitAmount = debitAmount;
-    csvTransaction.creditAmount = creditAmount;
-    csvTransaction.transactionRef1 = transactionRef1;
-    csvTransaction.transactionRef2 = transactionRef2;
-    csvTransaction.transactionRef3 = transactionRef3;
-    return csvTransaction;
-  }
-
-  /**
-   * Returns transaction date of this CSV transaction
-   *
-   * @return transaction date when the transaction is reconciled/ marked as completed by the bank
-   */
-  public LocalDate getTransactionDate() {
-    return transactionDate;
-  }
-
-  /**
-   * Returns the amount of money deducted from the bank account
-   *
-   * @return the amount of money deducted from the bank account
-   */
-  public double getDebitAmount() {
-    return debitAmount;
-  }
-
-  /**
-   * Returns the amount of money credited into the bank account
-   *
-   * @return the amount of money credited into the bank account
-   */
-  public double getCreditAmount() {
-    return creditAmount;
-  }
-
-  /**
-   * Returns the transaction reference line 1 of this transaction.
-   * <p>Transaction reference line 1 contains the transaction date for
-   * {@link MasterCard} transactions.</p>
-   *
-   * @return the transaction reference line 1 of this transaction.
-   */
-  public String getTransactionRef1() {
-    return transactionRef1;
-  }
-
-  /**
-   * Returns the transaction reference line 2 of this transaction
-   * <p>Transaction reference line 2 refers to the card number for
-   * {@link MasterCard} transactions. It represents the handwritten description
-   * in PayNow transaction.</p>
-   *
-   * @return the transaction reference line 2 of this transaction
-   */
-  public String getTransactionRef2() {
-    return transactionRef2;
-  }
-
-  /**
-   * Returns the transaction reference line 3 of this transaction
-   *
-   * @return the transaction reference line 3 of this transaction
-   */
-  public String getTransactionRef3() {
-    return transactionRef3;
-  }
-
-  /**
-   * Returns the type of transaction
-   *
-   * @return the type of transaction
-   */
-  public TransactionType getTransactionType() {
-    return transactionType;
+  private GenericCsvTransaction(LocalDate transactionDate, double debitAmount, double creditAmount,
+                                String transactionRef1, String transactionRef2, String transactionRef3,
+                                TransactionType transactionType) {
+    this.transactionDate = transactionDate;
+    this.debitAmount = debitAmount;
+    this.creditAmount = creditAmount;
+    this.transactionRef1 = transactionRef1;
+    this.transactionRef2 = transactionRef2;
+    this.transactionRef3 = transactionRef3;
+    this.transactionType = transactionType;
   }
 
   /**
@@ -145,39 +50,15 @@ public class CsvTransaction {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    CsvTransaction that = (CsvTransaction) o;
-    return Double.compare(that.debitAmount, debitAmount) == 0 &&
-        Double.compare(that.creditAmount, creditAmount) == 0 &&
-        Objects.equals(transactionDate, that.transactionDate) &&
-        Objects.equals(transactionRef1, that.transactionRef1) &&
-        Objects.equals(transactionRef2, that.transactionRef2) &&
-        Objects.equals(transactionRef3, that.transactionRef3) &&
-        transactionType == that.transactionType;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(transactionDate, debitAmount, creditAmount, transactionRef1, transactionRef2,
-        transactionRef3, transactionType);
-  }
-
-  @Override
   public String toString() {
-    return new StringJoiner(", ", CsvTransaction.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", GenericCsvTransaction.class.getSimpleName() + "[", "]")
         .add("transactionDate=" + transactionDate)
         .add("debitAmount=" + debitAmount)
         .add("creditAmount=" + creditAmount)
         .add("transactionRef1='" + transactionRef1 + "'")
         .add("transactionRef2='" + transactionRef2 + "'")
         .add("transactionRef3='" + transactionRef3 + "'")
-        .add("type=" + transactionType)
+        .add("transactionType=" + transactionType)
         .toString();
   }
 
@@ -197,7 +78,7 @@ public class CsvTransaction {
     private String transactionRef3 = "";
 
     /**
-     * Construct the base unit of the {@code CsvTransaction} builder
+     * Construct the base unit of the {@code GenericCsvTransaction} builder
      *
      * @param transactionDate the transaction date
      * @param transactionType the abbreviation of the type of transaction
@@ -293,24 +174,17 @@ public class CsvTransaction {
     }
 
     /**
-     * Returns an instance of {@code CsvTransaction} created from the fields set on this builder.
+     * Returns an instance of {@code GenericCsvTransaction} created from the fields set on this builder.
      *
-     * @return an instance of {@code CsvTransaction} created from the fields set on this builder.
+     * @return an instance of {@code GenericCsvTransaction} created from the fields set on this builder.
      * @throws MonetaryAmountException if both the debit and credit amount isn't fill up as non-zero value
      */
-    public CsvTransaction build() throws MonetaryAmountException {
+    public GenericCsvTransaction build() throws MonetaryAmountException {
       if (debitAmount > 0 && creditAmount > 0) {
         throw new MonetaryAmountException(POSITIVE_CREDIT_DEBIT_ERR_MSG);
       }
-      return CsvTransaction.of(
-          transactionDate,
-          transactionType,
-          debitAmount,
-          creditAmount,
-          transactionRef1,
-          transactionRef2,
-          transactionRef3
-      );
+      return new GenericCsvTransaction(transactionDate, debitAmount, creditAmount, transactionRef1, transactionRef2,
+          transactionRef3, transactionType);
     }
   }
 }

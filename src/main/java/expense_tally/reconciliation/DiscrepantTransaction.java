@@ -1,6 +1,7 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv_parser.CsvTransaction;
+import expense_tally.csv_parser.AbstractCsvTransaction;
+import expense_tally.csv_parser.GenericCsvTransaction;
 import expense_tally.csv_parser.TransactionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,17 +21,17 @@ public final class DiscrepantTransaction {
   private TransactionType type;
 
   /**
-   * Construct an instance from a {@link CsvTransaction}
+   * Construct an instance from a {@link GenericCsvTransaction}
    *
-   * @param csvTransaction the CSV transaction with discrepancy
-   * @return an instance constructed from {@link CsvTransaction}
+   * @param abstractCsvTransaction the CSV transaction with discrepancy
+   * @return an instance constructed from {@link GenericCsvTransaction}
    */
-  public static DiscrepantTransaction from(CsvTransaction csvTransaction) {
+  public static DiscrepantTransaction from(AbstractCsvTransaction abstractCsvTransaction) {
     DiscrepantTransaction transaction = new DiscrepantTransaction();
-    transaction.amount = extractAmount(csvTransaction);
-    transaction.description = extractDescription(csvTransaction);
-    transaction.time = csvTransaction.getTransactionDate();
-    transaction.type = csvTransaction.getTransactionType();
+    transaction.amount = extractAmount(abstractCsvTransaction);
+    transaction.description = extractDescription(abstractCsvTransaction);
+    transaction.time = abstractCsvTransaction.getTransactionDate();
+    transaction.type = abstractCsvTransaction.getTransactionType();
     return transaction;
   }
 
@@ -52,29 +53,29 @@ public final class DiscrepantTransaction {
 
   /**
    * Parse the
-   * @param csvTransaction
+   * @param abstractCsvTransaction
    * @return
    */
-  private static double extractAmount(CsvTransaction csvTransaction) {
-    if (csvTransaction.getDebitAmount() > 0) {
-      return csvTransaction.getDebitAmount();
-    } else if (csvTransaction.getCreditAmount() > 0) {
+  private static double extractAmount(AbstractCsvTransaction abstractCsvTransaction) {
+    if (abstractCsvTransaction.getDebitAmount() > 0) {
+      return abstractCsvTransaction.getDebitAmount();
+    } else if (abstractCsvTransaction.getCreditAmount() > 0) {
       LOGGER.atInfo().log("Found a discrepant transaction with credit amount. Credit: {}",
-          csvTransaction::getCreditAmount);
-      return csvTransaction.getCreditAmount();
+          abstractCsvTransaction::getCreditAmount);
+      return abstractCsvTransaction.getCreditAmount();
     } else {
       LOGGER.atInfo().log("Found a discrepant transaction with no credit or debit amount.");
       return 0.0;
     }
   }
 
-  private static String extractDescription(CsvTransaction csvTransaction) {
+  private static String extractDescription(AbstractCsvTransaction abstractCsvTransaction) {
     StringJoiner stringJoiner = new StringJoiner(" ");
-    String reference1 = csvTransaction.getTransactionRef1();
+    String reference1 = abstractCsvTransaction.getTransactionRef1();
     addReferenceToStringJoiner(stringJoiner, reference1);
-    String reference2 = csvTransaction.getTransactionRef2();
+    String reference2 = abstractCsvTransaction.getTransactionRef2();
     addReferenceToStringJoiner(stringJoiner, reference2);
-    String reference3 = csvTransaction.getTransactionRef3();
+    String reference3 = abstractCsvTransaction.getTransactionRef3();
     addReferenceToStringJoiner(stringJoiner, reference3);
     return stringJoiner.toString().trim();
   }

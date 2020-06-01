@@ -1,8 +1,8 @@
 package expense_tally.views.desktop.controllers;
 
+import expense_tally.csv_parser.AbstractCsvTransaction;
 import expense_tally.csv_parser.CsvParsable;
 import expense_tally.csv_parser.CsvParser;
-import expense_tally.csv_parser.CsvTransaction;
 import expense_tally.expense_manager.persistence.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReport;
@@ -99,9 +99,9 @@ public final class MainController implements Initializable {
 
     // Parse CSV file
     CsvParsable csvParsable = new CsvParser();
-    List<CsvTransaction> csvTransactions = null;
+    List<AbstractCsvTransaction> genericCsvTransactions = null;
     try {
-      csvTransactions = csvParsable.parseCsvFile(csvFilePath);
+      genericCsvTransactions = csvParsable.parseCsvFile(csvFilePath);
     } catch (IOException e) {
       String errorMessage = String.format("Unable to read from the csv file: %s", csvFilePath);
       LOGGER.atWarn().withThrowable(e).log(errorMessage);
@@ -128,7 +128,7 @@ public final class MainController implements Initializable {
 
     // Reconcile both data source
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();
-    List<DiscrepantTransaction> discrepantTransactions = expenseReconciler.reconcileBankData(csvTransactions,
+    List<DiscrepantTransaction> discrepantTransactions = expenseReconciler.reconcileBankData(genericCsvTransactions,
         expensesByAmountAndPaymentMethod);
 
     List<Transaction> tableViewTransactions = new ArrayList<>();
