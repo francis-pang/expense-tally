@@ -52,7 +52,7 @@ class CsvParserTest {
     csvFileWriter.write("09 Nov 2018,ICT, 148.88, 0,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
     csvFileWriter.close();
 
-    CsvTransaction expectedCsvTransaction = new CsvTransaction.Builder(
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
         LocalDate.of(2018, 11, 9),
         TransactionType.PAY_NOW,
         148.88)
@@ -66,7 +66,7 @@ class CsvParserTest {
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
-        .containsExactlyInAnyOrder(expectedCsvTransaction);
+        .containsExactlyInAnyOrder(expectedGenericCsvTransaction);
   }
 
   @Test
@@ -84,7 +84,7 @@ class CsvParserTest {
     csvFileWriter.write("09 Nov 2018,ICT, , 148.88,PayNow Transfer,To: YUEN HUI SHAN  VIVIEN,OTHR eAngBao for Vivien.,\n");
     csvFileWriter.close();
 
-    CsvTransaction expectedCsvTransaction = new CsvTransaction.Builder(
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
         LocalDate.of(2018, 11, 9),
         TransactionType.PAY_NOW,
         0.00)
@@ -98,7 +98,7 @@ class CsvParserTest {
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
-        .containsExactlyInAnyOrder(expectedCsvTransaction);
+        .containsExactlyInAnyOrder(expectedGenericCsvTransaction);
   }
 
   /*
@@ -110,7 +110,7 @@ class CsvParserTest {
     csvFileWriter.write("09 Nov 2018,ICT, 148.88,,,,\n");
     csvFileWriter.close();
 
-    CsvTransaction expectedCsvTransaction = new CsvTransaction.Builder(
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
         LocalDate.of(2018, 11, 9),
         TransactionType.FAST_PAYMENT,
         148.88)
@@ -124,7 +124,7 @@ class CsvParserTest {
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
-        .containsExactlyInAnyOrder(expectedCsvTransaction);
+        .containsExactlyInAnyOrder(expectedGenericCsvTransaction);
   }
 
   @Test
@@ -172,7 +172,7 @@ class CsvParserTest {
     csvFileWriter.write("19 Oct 2018,MST, 9.42, ,BUS/MRT 2431992        SI NG 10OCT,5548-2741-0014-1067,,\n");
     csvFileWriter.close();
 
-    CsvTransaction expectedCsvTransaction = new CsvTransaction.Builder(
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
         LocalDate.of(2018, 10, 10),
         TransactionType.MASTERCARD,
         9.42)
@@ -181,7 +181,7 @@ class CsvParserTest {
         .transactionRef2("5548-2741-0014-1067")
         .transactionRef3("")
         .build();
-    MasterCard expectedMaster = MasterCard.from(expectedCsvTransaction);
+    MasterCard expectedMaster = MasterCard.from(expectedGenericCsvTransaction);
 
     assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
@@ -197,7 +197,7 @@ class CsvParserTest {
     csvFileWriter.write("27 Oct 2018,BILL, 182.94, ,UOB -4265884034470665     : I-BANK,,,\n");
     csvFileWriter.close();
 
-    CsvTransaction expectedCsvTransaction = new CsvTransaction.Builder(
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
         LocalDate.of(2018, 10, 27),
         TransactionType.BILL_PAYMENT,
         182.94)
@@ -211,7 +211,7 @@ class CsvParserTest {
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
-        .containsExactlyInAnyOrder(expectedCsvTransaction);
+        .containsExactlyInAnyOrder(expectedGenericCsvTransaction);
   }
 
   @Test
@@ -231,7 +231,7 @@ class CsvParserTest {
     csvFileWriter.write("04 Oct 2018,MST, 10.16,,test ref 1 SI NG 10OCT,,test ref 3\n");
     csvFileWriter.close();
 
-    CsvTransaction expectedCsvTransaction = new CsvTransaction.Builder(
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
         LocalDate.of(2018, 10, 4),
         TransactionType.MASTERCARD,
         10.16)
@@ -241,7 +241,7 @@ class CsvParserTest {
         .transactionRef3("test ref 3")
         .build();
 
-    MasterCard expectedMaster = MasterCard.from(expectedCsvTransaction);
+    MasterCard expectedMaster = MasterCard.from(expectedGenericCsvTransaction);
 
     assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()

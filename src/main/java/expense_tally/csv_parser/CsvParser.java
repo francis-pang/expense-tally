@@ -22,7 +22,7 @@ import static expense_tally.csv_parser.CsvPosition.TRANSACTION_REF_3;
 /**
  * Parses a CSV file of bank transaction.
  *
- * <p>Each record in the CSV file is a CsvTransaction. The format of the CSV file is pre-defined in a fixed sequence as below:</p>
+ * <p>Each record in the CSV file is a GenericCsvTransaction. The format of the CSV file is pre-defined in a fixed sequence as below:</p>
  *
  * <ol>
  * <li>Transaction Date</li>
@@ -36,7 +36,7 @@ import static expense_tally.csv_parser.CsvPosition.TRANSACTION_REF_3;
  *
  * <p>Note that Transaction Ref1/2/3 are optional field. Empty field will be set to empty String.</p>
  *
- * @see CsvTransaction
+ * @see GenericCsvTransaction
  */
 public final class CsvParser implements CsvParsable {
   private static final Logger LOGGER = LogManager.getLogger(CsvParser.class);
@@ -48,7 +48,7 @@ public final class CsvParser implements CsvParsable {
   private static final double DEFAULT_AMOUNT = 0.00;
 
   @Override
-  public List<CsvTransaction> parseCsvFile(String filePath) throws IOException {
+  public List<AbstractCsvTransaction> parseCsvFile(String filePath) throws IOException {
     try (BufferedReader csvBufferedReader = new BufferedReader(new FileReader(filePath))) {
       return parseCsvTransactionFromBufferedReader(csvBufferedReader);
     } catch (IOException ex) {
@@ -57,32 +57,32 @@ public final class CsvParser implements CsvParsable {
     }
   }
 
-  private List<CsvTransaction> parseCsvTransactionFromBufferedReader(BufferedReader csvBufferedReader)
+  private List<AbstractCsvTransaction> parseCsvTransactionFromBufferedReader(BufferedReader csvBufferedReader)
       throws IOException {
-    List<CsvTransaction> csvTransactions = new ArrayList<>();
+    List<AbstractCsvTransaction> abstractCsvTransactions = new ArrayList<>();
     skipUntilHeaderLine(csvBufferedReader);
     String line = csvBufferedReader.readLine();
     while (line != null) { // Read until end of file
       if (!line.isBlank()) {
-        parseSingleTransaction(line, csvTransactions);
+        parseSingleTransaction(line, abstractCsvTransactions);
       }
       line = csvBufferedReader.readLine();
     }
-    return csvTransactions;
+    return abstractCsvTransactions;
   }
 
-  private void parseSingleTransaction(String line, List<CsvTransaction> csvTransactions) {
-    CsvTransaction csvTransaction = null;
+  private void parseSingleTransaction(String line, List<AbstractCsvTransaction> abstractCsvTransactions) {
+    GenericCsvTransaction genericCsvTransaction = null;
     try {
-      csvTransaction = parseSingleTransaction(line);
+      genericCsvTransaction = parseSingleTransaction(line);
     } catch (MonetaryAmountException e) {
       LOGGER.atError().withThrowable(e).log("Unable to parse transaction. line={}", line);
     }
-    if (csvTransaction == null) {
+    if (genericCsvTransaction == null) {
       return;
     }
-    csvTransaction = modifyBaseOnTransactionType(csvTransaction);
-    csvTransactions.add(csvTransaction);
+    AbstractCsvTransaction abstractCsvTransaction = modifyBaseOnTransactionType(genericCsvTransaction);
+    abstractCsvTransactions.add(abstractCsvTransaction);
   }
 
   private void skipUntilHeaderLine(BufferedReader bufferedReader) throws IOException {
@@ -97,11 +97,11 @@ public final class CsvParser implements CsvParsable {
    * Parse and process a line in the CSV file.
    *
    * @param csvLine a single line of csv with proper line ending, delimited by the comma character
-   * @return a CsvTransaction based on the line of csv. The sequence (position of each of the elements) of the csv
+   * @return a GenericCsvTransaction based on the line of csv. The sequence (position of each of the elements) of the csv
    * file is fixed. If it is of a transaction not meant for processing, null will be returned.
    * @throws MonetaryAmountException if both the debit and credit amount isn't fill up as non-zero value
    */
-  private CsvTransaction parseSingleTransaction(String csvLine) throws MonetaryAmountException {
+  private GenericCsvTransaction parseSingleTransaction(String csvLine) throws MonetaryAmountException {
     String[] csvElements = csvLine.split(CSV_DELIMITER);
     String reference = csvElements[REFERENCE.position];
     TransactionType transactionType = TransactionType.resolve(reference);
@@ -114,7 +114,8 @@ public final class CsvParser implements CsvParsable {
     LocalDate transactionDate = LocalDate.parse(csvElements[TRANSACTION_DATE.position],
         CSV_TRANSACTION_DATE_FORMATTER);
     double debitAmount = parseMonetaryAmount(csvElements[DEBIT_AMOUNT.position]);
-    CsvTransaction.Builder builder = new CsvTransaction.Builder(transactionDate, transactionType, debitAmount);
+    GenericCsvTransaction.Builder builder = new GenericCsvTransaction.Builder(transactionDate, transactionType,
+        debitAmount);
     if (csvElements.length >= 5) {
       double creditAmount = parseMonetaryAmount(csvElements[CREDIT_AMOUNT.position]);
       builder.creditAmount(creditAmount);
@@ -135,27 +136,27 @@ public final class CsvParser implements CsvParsable {
     return (amount.isBlank()) ? DEFAULT_AMOUNT : Double.parseDouble(amount);
   }
 
-  private CsvTransaction modifyBaseOnTransactionType(CsvTransaction csvTransaction) {
-    TransactionType transactionType = csvTransaction.getTransactionType();
+  private AbstractCsvTransaction modifyBaseOnTransactionType(GenericCsvTransaction genericCsvTransaction) {
+    TransactionType transactionType = genericCsvTransaction.getTransactionType();
     switch (transactionType) {
       case MASTERCARD:
         try {
-          return MasterCard.from(csvTransaction);
+          return MasterCard.from(genericCsvTransaction);
         } catch (RuntimeException runtimeException) {
           //FIXME: Mockito does not support mocking of static method, so this cannot be tested yet
           LOGGER.atWarn()
               .withThrowable(runtimeException)
-              .log("Unable to convert csv transaction to MasterCard transaction: {}", csvTransaction);
-          return csvTransaction;
+              .log("Unable to convert csv transaction to MasterCard transaction: {}", genericCsvTransaction);
+          return genericCsvTransaction;
         }
       case FAST_PAYMENT:
-        String ref1 = csvTransaction.getTransactionRef1();
+        String ref1 = genericCsvTransaction.getTransactionRef1();
         if (TransactionType.PAY_NOW.value().equals(ref1)) {
-          csvTransaction.setTransactionType(TransactionType.PAY_NOW);
+          genericCsvTransaction.setTransactionType(TransactionType.PAY_NOW);
         }
-        return csvTransaction;
+        return genericCsvTransaction;
       default:
-        return csvTransaction;
+        return genericCsvTransaction;
     }
   }
 }

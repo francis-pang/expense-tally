@@ -15,48 +15,50 @@ import java.util.StringJoiner;
  * is processed between the merchants and the card issuing banks. The payment can be of debit, credit or prepaid in
  * nature.
  *
- * @see CsvTransaction
+ * @see GenericCsvTransaction
  */
-public final class MasterCard extends CsvTransaction {
+public final class MasterCard extends AbstractCsvTransaction {
   private static final Logger LOGGER = LogManager.getLogger(MasterCard.class);
   private static final char SPACE_CHARACTER = ' ';
   private static final DateTimeFormatter REFERENCE_1_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMM");
   private static final String INVALID_REFERENCE_DATE_EXCEPTION_ERR_MSG = "Referenced date is not well formatted.";
   private static final String INVALID_CARD_NUMBER_ERR_MSG = "MasterCard number is invalid.";
-  private static final String NOT_MASTER_CARD_ERR_MSG = "CsvTransaction is not of MasterCard type.";
+  private static final String NOT_MASTER_CARD_ERR_MSG = "GenericCsvTransaction is not of MasterCard type.";
 
   private String cardNumber;
-
   /**
    * An empty constructor on the mastercard. The default cardNumber is a null String.
    */
   private MasterCard() {
-    super();
   }
 
-  public static MasterCard from(CsvTransaction csvTransaction) {
-    TransactionType transactionType = csvTransaction.getTransactionType();
+  /**
+   * Convert a generic csv transaction into a MasterCard transaction
+   * @param genericCsvTransaction generic csv transaction
+   * @return a converted generic csv transaction
+   * @throws IllegalArgumentException if genericCsvTransaction is not of Master card transaction type
+   */
+  public static MasterCard from(GenericCsvTransaction genericCsvTransaction) {
+    TransactionType transactionType = genericCsvTransaction.getTransactionType();
     if (transactionType == null || !transactionType.equals(TransactionType.MASTERCARD)) {
-      LOGGER.atWarn().log("This is not a MasterCard transaction: {}", csvTransaction);
+      LOGGER.atWarn().log("This is not a MasterCard transaction: {}", genericCsvTransaction);
       throw new IllegalArgumentException(NOT_MASTER_CARD_ERR_MSG);
     }
     MasterCard masterCard = new MasterCard();
-    masterCard.debitAmount = csvTransaction.getDebitAmount();
-    masterCard.creditAmount = csvTransaction.getCreditAmount();
-    masterCard.transactionRef1 = csvTransaction.getTransactionRef1();
-    masterCard.transactionRef3 = csvTransaction.getTransactionRef3();
-    masterCard.transactionType = TransactionType.MASTERCARD;
-    String ref1 = csvTransaction.getTransactionRef1();
+    masterCard.debitAmount = genericCsvTransaction.debitAmount;
+    masterCard.creditAmount = genericCsvTransaction.creditAmount;
+    String ref1 = genericCsvTransaction.getTransactionRef1();
     masterCard.transactionRef1 = ref1;
-    LocalDate transactionDate = csvTransaction.getTransactionDate();
-    masterCard.setTransactionDate(transactionDate, ref1);
-    String ref2 = csvTransaction.getTransactionRef2();
-    masterCard.transactionRef2 = ref2;
+    LocalDate transactionDate = genericCsvTransaction.getTransactionDate();
+    masterCard.transactionDate = computeTransactionDate(transactionDate, ref1);
+    String ref2 = genericCsvTransaction.getTransactionRef2();
     if (!ref2.isBlank()) {
-      masterCard.setCardNumber(ref2);
+      masterCard.setCardNumber(ref2.trim());
     } else {
-      LOGGER.atDebug().log("This MasterCard transaction doesn't record the card number. {}", csvTransaction);
+      LOGGER.atDebug().log("This MasterCard transaction doesn't record the card number. {}", genericCsvTransaction);
     }
+    masterCard.transactionRef3 = genericCsvTransaction.transactionRef3;
+    masterCard.transactionType = TransactionType.MASTERCARD;
     return masterCard;
   }
 
@@ -148,23 +150,29 @@ public final class MasterCard extends CsvTransaction {
     this.cardNumber = cardNumber;
   }
 
-  private void setTransactionDate(LocalDate transactionDate, String transactionRef1) {
+  private static LocalDate computeTransactionDate(LocalDate transactionDate, String transactionRef1) {
     try {
-      this.transactionDate = extractTransactionDate(transactionDate, transactionRef1);
+      transactionDate = extractTransactionDate(transactionDate, transactionRef1);
     } catch (InvalidReferenceDateException | RuntimeException e) {
       LOGGER.atWarn()
           .withThrowable(e)
           .log("Cannot retrieve transaction date {0} from MasterCard transaction reference 1 {1}. Setting to bank " +
               "transaction date.", transactionDate, transactionRef1);
-      this.transactionDate = transactionDate;
     }
+    return transactionDate;
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", MasterCard.class.getSimpleName() + "[", "]")
-        .add(super.toString())
-        .add("cardNumber=" + cardNumber)
+        .add("cardNumber='" + cardNumber + "'")
+        .add("transactionDate=" + transactionDate)
+        .add("debitAmount=" + debitAmount)
+        .add("creditAmount=" + creditAmount)
+        .add("transactionRef1='" + transactionRef1 + "'")
+        .add("transactionRef2='" + transactionRef2 + "'")
+        .add("transactionRef3='" + transactionRef3 + "'")
+        .add("transactionType=" + transactionType)
         .toString();
   }
 
@@ -173,11 +181,13 @@ public final class MasterCard extends CsvTransaction {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass() || !super.equals(o)) {
-      return false;
+    if (o != null && getClass() == o.getClass()) {
+      MasterCard that = (MasterCard) o;
+      return cardNumber.equals(that.cardNumber) && super.equals(that);
+    } else if (o instanceof AbstractCsvTransaction) {
+      return super.equals(o);
     }
-    MasterCard that = (MasterCard) o;
-    return cardNumber.equals(that.cardNumber);
+    return false;
   }
 
   @Override
