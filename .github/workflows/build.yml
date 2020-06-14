@@ -1,4 +1,4 @@
-name: build
+name: 'Default post-commit hook check'
 on:
   push:
     # Sequence of patterns matched against refs/heads
@@ -9,6 +9,7 @@ on:
   create:
 jobs:
   test:
+    name: 'Unit test'
     runs-on: 'ubuntu-20.04'
     steps:
       - name: 'Check out code'
@@ -22,6 +23,7 @@ jobs:
       - name: 'Test'
         run: mvn test --debug
   quality:
+    name: 'Static code analysis'
     runs-on: 'ubuntu-20.04'
     steps:
       - name: 'Check out code'

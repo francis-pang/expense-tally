@@ -1,10 +1,11 @@
-name: Maven release
+name: 'Master branch maven release'
 on:
   push:
     branches:
       - master
 jobs:
   quality:
+    name: 'Static code analysis'
     runs-on: 'ubuntu-20.04'
     steps:
       - name: 'Check out code'
@@ -24,7 +25,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   release:
+    name: 'Maven release'
     runs-on: 'ubuntu-20.04'
+    # Skip commit made by maven-release
+    if: "!contains(github.event.head_commit.message, 'maven-release-plugin')"
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v2
