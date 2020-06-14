@@ -1,11 +1,10 @@
 name: build
 on:
-  - push:
-      branches:
+  push:
+    branches:
       - '!master'
-  - pull_request
-  - tags
-  [push, pull_request, tags]
+  pull_request:
+  create:
 jobs:
   test:
     runs-on: 'ubuntu-20.04'

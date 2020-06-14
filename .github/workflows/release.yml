@@ -2,7 +2,7 @@ name: Maven release
 on:
   push:
     branches:
-    - master
+      - master
 jobs:
   quality:
     runs-on: 'ubuntu-20.04'
@@ -23,24 +23,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    release:
-      runs-on: 'ubuntu-20.04'
-        steps:
-          - name: 'Check out code'
-            uses: actions/checkout@v2
-            with:
-              # Disabling shallow clone is recommended for improving relevancy of reporting
-              fetch-depth: 0
-          - name: 'Set up JDK'
-            uses: actions/setup-java@v1
-            with:
-              java-version: '14.0.1' # The JDK version to make available on the path.
-              java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
-              architecture: x64 # (x64 or x86) - defaults to x64
-          - name: Maven release
-            uses: qcastel/github-actions-maven-release@master
-            with:
-              release-branch-name: "master"
-              git-release-bot-name: "release-bot"
-              git-release-bot-email: "release-bot@example.com"
-              access-token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+  release:
+    runs-on: 'ubuntu-20.04'
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v2
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v1
+        with:
+          java-version: '14.0.1' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
+      - name: Maven release
+        uses: qcastel/github-actions-maven-release@master
+        with:
+          release-branch-name: "master"
+          git-release-bot-name: "release-bot"
+          git-release-bot-email: "release-bot@example.com"
+          access-token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
