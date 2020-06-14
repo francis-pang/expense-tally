@@ -1,2 +1,13 @@
-- name: Apache Maven Build Automation for Java Project
-  uses: NishkarshRaj/Maven_Actions@0.1
+name: build
+on:
+  pull_request: null
+  push
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apache Maven Build Automation for Java Project
+      -  uses: NishkarshRaj/Maven_Actions@0.1
+         with:
+           java-version: 1.14
