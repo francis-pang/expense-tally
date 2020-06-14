@@ -1,6 +1,8 @@
 name: 'Master branch maven release'
 on:
   push:
+    branches:
+      - master
 jobs:
   quality:
     name: 'Static code analysis'
@@ -42,7 +44,7 @@ jobs:
       - name: Maven release
         uses: qcastel/github-actions-maven-release@v1.0.3
         with:
-          release-branch-name: "master"
-          git-release-bot-name: "release-bot"
-          git-release-bot-email: "release-bot@example.com"
+          release-branch-name: master
+          git-release-bot-name: release-bot
+          git-release-bot-email: 'release-bot@example.com'
           access-token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
