@@ -29,9 +29,9 @@ jobs:
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
       - name: 'Static code analysis'
-        run: mvn org.jacoco:jacoco-maven-plugin:prepare-agent package
+        run: mvn install
       - name: SonarCloud Scan
-        run: sonar:sonar
+        run: mvn clean verify sonar:sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
