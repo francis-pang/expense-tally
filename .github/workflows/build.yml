@@ -31,4 +31,7 @@ jobs:
       - name: 'Static code analysis'
         run: mvn org.jacoco:jacoco-maven-plugin:prepare-agent package
       - name: SonarCloud Scan
-        run: org.sonarsource.scanner.maven:sonar
+        run: sonar:sonar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
