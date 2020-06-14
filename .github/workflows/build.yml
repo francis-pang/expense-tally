@@ -1,16 +1,28 @@
 name: build
 on: [push, pull_request]
 jobs:
-  build:
+  test:
     runs-on: 'ubuntu-20.04'
     steps:
-      - name: Check out code
+      - name: 'Check out code'
         uses: actions/checkout@v2
-      - name: Set up JDK
+      - name: 'Set up JDK'
         uses: actions/setup-java@v1
         with:
           java-version: '14.0.1' # The JDK version to make available on the path.
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
-      - name: Test
+      - name: 'Test'
         run: mvn test --debug
+  quality:
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v2
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v1
+        with:
+          java-version: '14.0.1' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
+      - name: 'Static code analysis'
+        run: mvn org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
