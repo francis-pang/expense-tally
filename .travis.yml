@@ -29,7 +29,7 @@ jobs:
       # Only run for short-lived (non master) branch commit, or when there is a new tag commit
       if: ((type = push) AND (branch != master)) OR (type = pull_request) OR (tag IS present)
       script:
-        - mvn test
+        - mvn test --debug
     - stage: quality
       name: "Static code analysis"
       script:
