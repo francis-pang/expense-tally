@@ -1,0 +1,56 @@
+dist: focal
+language: java
+jdk:
+  - openjdk14
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_0e40c5863533_key -iv $encrypted_0e40c5863533_iv
+    -in deploy_key.enc -out ./deploy_key -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 ./deploy_key
+  - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+  - ssh-add ./deploy_key
+
+addons:
+  sonarcloud:
+    organization: boyshawn-github
+    token:
+      secure: D9gO4buKbRxZfMqBMumdh6XdqpkrdeVDsx86YXkXhgt9JqJOyHKT8fzhx2rfAXp+dFwfM7kwgcJkaaSrFuGljzWAJJrdwMF6wULfmRX6lyeA+F2lYRN9yBtzWGH8xOWv2IkwTjwEsagzlViz00faXMJcGckml66rENopeD/JyQ2ZrMxupXoj3KuaEJqwe6i0VVNpHztC+NKCwxS0OJOob66nb3LoSHlzVVHe6Ix6D6IgAK6TBd70AcZbJfmXVp3jgLzMoxJKkYpj18JfUF2cSE7I6zkw5T4kbKLT8ID/UsCQTCPbNM5baefrjAIezku4LYddgj62xX9yyaehm1wQPY38OEx2QhT+QZ6QHpdaTHAD2ZAvd1D2NMYGH3eUoZS3Ax3NFePNAaU/cz2qnktIEKHImqYa5U2jZwE/xds1+16A5bw+WKyIlZfXJVTmQftuHbZ5OZFUvv+D0ec7nSFpeJevGooA5/Y7hMvhEFF3IBGLJMJtqc0eHQINirOsaC84WFDcU0GW9mg43fYxBxIjo51TeyzWs5rszsiUI5LOhtbwkZ5MugCURGpAelbNazfyU6YGs15L1jTAvNQa42Z9kprsD2adQEjzcerq9EBpbLmuYm/aLYFs1JMP3bKqhqXrgkDqx4DkUemkUKIOkiYRPtk7LMH+kt2Gb3Vk4AgBjKM=
+
+stages:
+  - test
+  - quality
+  - release
+
+jobs:
+  include:
+    - stage: test
+      name: "Unit Tests"
+      # Only run for short-lived (non master) branch commit, or when there is a new tag commit
+      if: ((type = push) AND (branch != master)) OR (type = pull_request) OR (tag IS present)
+      script:
+        - mvn test --debug
+    - stage: quality
+      name: "Static code analysis"
+      script:
+        - git fetch --unshallow --no-tags origin +refs/heads/master:refs/remotes/origin/master
+        - mvn org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+    - stage: release
+      name: "Only for master: Prepare deliveries for release"
+      # require the branch name to be master (note for PRs this is the base branch name)
+      if: (type = push) AND (branch = master) AND (commit_message =~ /^(?!\[maven-release-plugin\] prepare).+/) AND tag IS blank
+      script:
+        - git checkout $TRAVIS_BRANCH
+        - mvn --batch-mode release:prepare
+        - mvn --batch-mode release:perform
+# Commit these stage off, they cannot be disable at the moment, so have to be commented. Will uncomment whenever there
+# is need to deploy
+#    - stage: install
+#      name: "Install the package into the local repository"
+#      script: mvn install
+#    - stage: deploy
+#      name: "Release to deployment, maven release"
+#      script: mvn --batch-mode release:prepare -Dresume=false release:perform -DreleaseVersion=5.1
+#    - stage: postDeploy
+#      name: "Perform update development of maven release"
+#      script: mvn release:update-versions -DdevelopmentVersion=5.2
