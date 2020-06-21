@@ -42,7 +42,7 @@ jobs:
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
       - name: Maven release
-        uses: qcastel/github-actions-maven-release@v1.8.0
+        uses: qcastel/github-actions-maven-release@master
         with:
           release-branch-name: master
           git-release-bot-name: release-bot
