@@ -22,8 +22,8 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git@github.com:boyshawn/expense-tally.git</connection>
-        <developerConnection>scm:git:git@github.com:boyshawn/expense-tally.git</developerConnection>
+        <connection>scm:git:git@github.com:francis-pang/expense-tally.git</connection>
+        <developerConnection>scm:git:git@github.com:francis-pang/expense-tally.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
