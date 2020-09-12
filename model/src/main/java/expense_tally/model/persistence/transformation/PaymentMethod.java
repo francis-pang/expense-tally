@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.transformation;
+package expense_tally.model.persistence.transformation;
 
 /**
  * Different type of payment method for {@link ExpenseManagerTransaction}

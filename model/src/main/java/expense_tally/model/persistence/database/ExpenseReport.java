@@ -1,4 +1,4 @@
-package expense_tally.persistence.database;
+package expense_tally.model.persistence.database;
 
 import java.util.Objects;
 

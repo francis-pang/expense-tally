@@ -1,6 +1,6 @@
 package expense_tally.expense_manager.persistence;
 
-import expense_tally.persistence.database.ExpenseReport;
+import expense_tally.model.persistence.database.ExpenseReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,7 +46,7 @@ public final class ExpenseReportReader implements ExpenseReadable {
    * @throws SQLException when there is an error accessing the database
    */
   private List<ExpenseReport> importDataFromDatabase() throws SQLException {
-    // Connect to expense_tally.persistence
+    // Connect to expense_tally.model.persistence
     try (Connection databaseConnection = databaseConnectable.connect()) {
       return importDataFromConnection(databaseConnection);
     } catch (SQLException ex) {

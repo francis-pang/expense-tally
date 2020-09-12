@@ -1,6 +1,5 @@
-package expense_tally.persistence.database;
+package expense_tally.model.persistence.database;
 
-import expense_tally.persistence.database.ExpenseReport;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

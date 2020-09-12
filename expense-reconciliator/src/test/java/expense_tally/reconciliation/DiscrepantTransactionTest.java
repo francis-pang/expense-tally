@@ -1,7 +1,7 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.TransactionType;
+import expense_tally.model.csv.GenericCsvTransaction;
+import expense_tally.model.csv.TransactionType;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;

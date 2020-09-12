@@ -1,6 +1,6 @@
 package expense_tally.expense_manager.transformation;
 
-import expense_tally.expense_manager.transformation.PaymentMethod;
+import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

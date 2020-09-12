@@ -1,4 +1,4 @@
-package expense_tally.csv;
+package expense_tally.model.csv;
 
 import java.util.StringJoiner;
 

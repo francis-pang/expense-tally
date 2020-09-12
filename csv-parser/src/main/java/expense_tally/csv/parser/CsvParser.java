@@ -1,10 +1,10 @@
 package expense_tally.csv.parser;
 
-import expense_tally.csv.AbstractCsvTransaction;
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.MasterCard;
-import expense_tally.csv.MonetaryAmountException;
-import expense_tally.csv.TransactionType;
+import expense_tally.model.csv.AbstractCsvTransaction;
+import expense_tally.model.csv.GenericCsvTransaction;
+import expense_tally.model.csv.MasterCard;
+import expense_tally.model.csv.MonetaryAmountException;
+import expense_tally.model.csv.TransactionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static expense_tally.model.csv.TransactionType.PAY_NOW;
+import static expense_tally.model.csv.TransactionType.resolve;
 import static expense_tally.csv.parser.CsvPosition.CREDIT_AMOUNT;
 import static expense_tally.csv.parser.CsvPosition.DEBIT_AMOUNT;
 import static expense_tally.csv.parser.CsvPosition.REFERENCE;
@@ -23,6 +25,7 @@ import static expense_tally.csv.parser.CsvPosition.TRANSACTION_DATE;
 import static expense_tally.csv.parser.CsvPosition.TRANSACTION_REF_1;
 import static expense_tally.csv.parser.CsvPosition.TRANSACTION_REF_2;
 import static expense_tally.csv.parser.CsvPosition.TRANSACTION_REF_3;
+
 
 /**
  * Parses a CSV file of bank transaction.
@@ -109,7 +112,7 @@ public final class CsvParser implements CsvParsable {
   private GenericCsvTransaction parseSingleTransaction(String csvLine) throws MonetaryAmountException {
     String[] csvElements = csvLine.split(CSV_DELIMITER);
     String reference = csvElements[REFERENCE.position];
-    TransactionType transactionType = TransactionType.resolve(reference);
+    TransactionType transactionType = resolve(reference);
     if (transactionType == null) {
       LOGGER.atInfo().log("Found a new transaction type: {}; csvLine: {}", reference, csvLine);
       return null;
@@ -144,7 +147,7 @@ public final class CsvParser implements CsvParsable {
   private AbstractCsvTransaction modifyBaseOnTransactionType(GenericCsvTransaction genericCsvTransaction) {
     TransactionType transactionType = genericCsvTransaction.getTransactionType();
     switch (transactionType) {
-      case TransactionType.MASTERCARD:
+      case MASTERCARD:
         try {
           return MasterCard.from(genericCsvTransaction);
         } catch (RuntimeException runtimeException) {
@@ -154,10 +157,10 @@ public final class CsvParser implements CsvParsable {
               .log("Unable to convert csv transaction to MasterCard transaction: {}", genericCsvTransaction);
           return genericCsvTransaction;
         }
-      case TransactionType.FAST_PAYMENT:
+      case FAST_PAYMENT:
         String ref1 = genericCsvTransaction.getTransactionRef1();
-        if (TransactionType.PAY_NOW.value().equals(ref1)) {
-          genericCsvTransaction.setTransactionType(TransactionType.PAY_NOW);
+        if (PAY_NOW.value().equals(ref1)) {
+          genericCsvTransaction.setTransactionType(PAY_NOW);
         }
         return genericCsvTransaction;
       default:

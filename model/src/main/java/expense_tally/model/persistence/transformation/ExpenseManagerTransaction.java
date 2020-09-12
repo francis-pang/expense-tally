@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.transformation;
+package expense_tally.model.persistence.transformation;
 
 import java.time.Instant;
 import java.util.Objects;

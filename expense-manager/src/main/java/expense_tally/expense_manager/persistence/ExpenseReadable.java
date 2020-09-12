@@ -1,7 +1,7 @@
 package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
-import expense_tally.persistence.database.ExpenseReport;
+import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+import expense_tally.model.persistence.database.ExpenseReport;
 
 import java.sql.SQLException;
 import java.util.List;

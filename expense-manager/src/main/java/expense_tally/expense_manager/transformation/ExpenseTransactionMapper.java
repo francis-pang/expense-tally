@@ -1,6 +1,10 @@
 package expense_tally.expense_manager.transformation;
 
-import expense_tally.persistence.database.ExpenseReport;
+import expense_tally.model.persistence.database.ExpenseReport;
+import expense_tally.model.persistence.transformation.ExpenseCategory;
+import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+import expense_tally.model.persistence.transformation.ExpenseSubCategory;
+import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

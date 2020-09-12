@@ -1,8 +1,8 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.MonetaryAmountException;
-import expense_tally.csv.TransactionType;
+import expense_tally.model.csv.GenericCsvTransaction;
+import expense_tally.model.csv.MonetaryAmountException;
+import expense_tally.model.csv.TransactionType;
 
 import java.time.LocalDate;
 

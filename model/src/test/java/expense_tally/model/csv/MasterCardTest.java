@@ -1,10 +1,6 @@
-package expense_tally.csv;
+package expense_tally.model.csv;
 
-import expense_tally.csv.AbstractCsvTransaction;
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.MasterCard;
-import expense_tally.csv.MonetaryAmountException;
-import expense_tally.csv.TransactionType;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +8,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MasterCardTest extends AbstractCsvTransaction {
 

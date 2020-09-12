@@ -1,15 +1,12 @@
-package expense_tally.csv;
+package expense_tally.model.csv;
 
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.MonetaryAmountException;
-import expense_tally.csv.TransactionType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Even though it is common that there is no need to test the model class. I have decided to test this model class

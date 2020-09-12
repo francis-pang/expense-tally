@@ -1,12 +1,12 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.TransactionType;
-import expense_tally.expense_manager.transformation.ExpenseCategory;
-import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
-import expense_tally.expense_manager.transformation.ExpenseSubCategory;
-import expense_tally.expense_manager.transformation.PaymentMethod;
-import expense_tally.utility.ExpnseMngrTrnsctnTestMapBuilder;
+import expense_tally.model.csv.GenericCsvTransaction;
+import expense_tally.model.csv.TransactionType;
+import expense_tally.model.persistence.transformation.ExpenseCategory;
+import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+import expense_tally.model.persistence.transformation.ExpenseSubCategory;
+import expense_tally.model.persistence.transformation.PaymentMethod;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

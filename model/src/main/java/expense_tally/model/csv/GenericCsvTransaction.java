@@ -1,4 +1,4 @@
-package expense_tally.csv;
+package expense_tally.model.csv;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,7 +1,5 @@
-package expense_tally.csv;
+package expense_tally.model.csv;
 
-import expense_tally.csv.PaymentCardValidator;
-import expense_tally.csv.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

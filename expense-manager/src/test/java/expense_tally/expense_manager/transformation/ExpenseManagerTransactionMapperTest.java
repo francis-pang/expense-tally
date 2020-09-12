@@ -1,11 +1,10 @@
 package expense_tally.expense_manager.transformation;
 
-import expense_tally.persistence.database.ExpenseReport;
-import expense_tally.expense_manager.transformation.ExpenseCategory;
-import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
-import expense_tally.expense_manager.transformation.ExpenseSubCategory;
-import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
-import expense_tally.expense_manager.transformation.PaymentMethod;
+import expense_tally.model.persistence.database.ExpenseReport;
+import expense_tally.model.persistence.transformation.ExpenseCategory;
+import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+import expense_tally.model.persistence.transformation.ExpenseSubCategory;
+import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -20,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.atIndex;
-import static org.assertj.core.api.Assertions.entry;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class ExpenseManagerTransactionMapperTest {

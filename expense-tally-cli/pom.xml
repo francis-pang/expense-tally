@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>tally.expense</groupId>
-            <artifactId>expense-tally</artifactId>
+            <artifactId>expense-tally-model</artifactId>
             <version>42-SNAPSHOT</version>
         </dependency>
         <dependency>

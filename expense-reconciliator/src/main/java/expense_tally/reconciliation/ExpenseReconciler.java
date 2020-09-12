@@ -1,9 +1,9 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv.AbstractCsvTransaction;
-import expense_tally.csv.TransactionType;
-import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;
-import expense_tally.expense_manager.transformation.PaymentMethod;
+import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+import expense_tally.model.persistence.transformation.PaymentMethod;
+import expense_tally.model.csv.AbstractCsvTransaction;
+import expense_tally.model.csv.TransactionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

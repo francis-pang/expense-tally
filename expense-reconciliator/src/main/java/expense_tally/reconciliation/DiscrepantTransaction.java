@@ -1,8 +1,8 @@
 package expense_tally.reconciliation;
 
-import expense_tally.csv.AbstractCsvTransaction;
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.TransactionType;
+import expense_tally.model.csv.AbstractCsvTransaction;
+import expense_tally.model.csv.GenericCsvTransaction;
+import expense_tally.model.csv.TransactionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,13 +1,13 @@
 package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.persistence.DatabaseConnectable;
-import expense_tally.persistence.database.ExpenseReport;
-import expense_tally.expense_manager.persistence.ExpenseReportReader;
+import expense_tally.model.persistence.database.ExpenseReport;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 

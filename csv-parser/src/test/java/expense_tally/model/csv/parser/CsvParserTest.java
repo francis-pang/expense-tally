@@ -1,9 +1,10 @@
-package expense_tally.csv.parser;
+package expense_tally.model.csv.parser;
 
-import expense_tally.csv.GenericCsvTransaction;
-import expense_tally.csv.MasterCard;
-import expense_tally.csv.MonetaryAmountException;
-import expense_tally.csv.TransactionType;
+import expense_tally.csv.parser.CsvParser;
+import expense_tally.model.csv.GenericCsvTransaction;
+import expense_tally.model.csv.MasterCard;
+import expense_tally.model.csv.MonetaryAmountException;
+import expense_tally.model.csv.TransactionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
