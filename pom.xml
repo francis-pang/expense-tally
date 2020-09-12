@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>expense-tally</groupId>
+    <groupId>tally.expense</groupId>
     <artifactId>expense-tally</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>42-SNAPSHOT</version>
+    <modules>
+        <module>csv-parser</module>
+        <module>model</module>
+        <module>expense-manager</module>
+        <module>expense-reconciliator</module>
+        <module>expense-tally-cli</module>
+        <module>expense-tally-desktop</module>
+    </modules>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -12,6 +20,7 @@
         <javaCompilerVersion>1.14</javaCompilerVersion>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>boyshawn_expense-tally</sonar.projectKey>
+        <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
         <sonar.login>f3e43ff4f0692fcd97fc41da1a7f890c79a86b5b</sonar.login>
         <sonar.organization>boyshawn-github</sonar.organization>
         <maven.developmentVersion>0-SNAPSHOT</maven.developmentVersion>
