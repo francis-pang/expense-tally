@@ -11,7 +11,6 @@
         <module>expense-manager</module>
         <module>expense-reconciliator</module>
         <module>expense-tally-cli</module>
-        <module>expense-tally-desktop</module>
     </modules>
     <name>expense-tally</name>
     <url>http://maven.apache.org</url>
@@ -109,25 +108,7 @@
             <version>3.17.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <scope>compile</scope>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-            <version>14.0.1</version>
-        </dependency>
-        <dependency>
-            <scope>compile</scope>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>14.0.1</version>
-        </dependency>
-        <dependency>
-            <scope>compile</scope>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>14.0.1</version>
-        </dependency>
-    </dependencies>
+   </dependencies>
 
     <build>
         <plugins>
@@ -343,15 +324,6 @@
                         <phase>none</phase>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- Required this for the GUI project -->
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.4</version>
-                <configuration>
-                    <mainClass>expense_tally.views.desktop.DesktopClient</mainClass>
-                </configuration>
             </plugin>
         </plugins>
     </build>
