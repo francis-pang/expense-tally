@@ -3,7 +3,7 @@
     <parent>
         <artifactId>expense-tally</artifactId>
         <groupId>tally.expense</groupId>
-        <version>42</version>
+        <version>43-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,22 +13,22 @@
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>expense-tally-model</artifactId>
-            <version>42</version>
+            <version>43-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>csv-parser</artifactId>
-            <version>42</version>
+            <version>43-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>expense-manager</artifactId>
-            <version>42</version>
+            <version>43-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>expense-reconciliator</artifactId>
-            <version>42</version>
+            <version>43-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
