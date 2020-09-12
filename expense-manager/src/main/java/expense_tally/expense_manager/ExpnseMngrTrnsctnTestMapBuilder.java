@@ -1,4 +1,4 @@
-package expense_tally;
+package expense_tally.expense_manager;
 
 import expense_tally.expense_manager.transformation.ExpenseCategory;
 import expense_tally.expense_manager.transformation.ExpenseManagerTransaction;

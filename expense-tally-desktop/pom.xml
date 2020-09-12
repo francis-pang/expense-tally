@@ -15,18 +15,22 @@
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>expense-tally</artifactId>
+            <version>42-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>csv-parser</artifactId>
+            <version>42-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>expense-manager</artifactId>
+            <version>42-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>tally.expense</groupId>
             <artifactId>expense-reconciliator</artifactId>
+            <version>42-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

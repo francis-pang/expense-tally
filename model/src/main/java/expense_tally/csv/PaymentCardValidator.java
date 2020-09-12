@@ -1,7 +1,5 @@
 package expense_tally.csv;
 
-import expense_tally.csv.TransactionType;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
