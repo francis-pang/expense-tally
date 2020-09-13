@@ -3,12 +3,12 @@
     <parent>
         <groupId>tally.expense</groupId>
         <artifactId>expense-tally</artifactId>
-        <version>44</version>
+        <version>45-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>expense-tally-model</artifactId>
-    <version>44</version>
+    <version>45-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
