@@ -4,7 +4,6 @@ import expense_tally.csv.parser.CsvParser;
 import expense_tally.expense_manager.persistence.ExpenseReportReader;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -19,13 +18,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseAccountantTest {
@@ -62,7 +55,7 @@ class ExpenseAccountantTest {
 
   @Test
   void constructor_nullCsvParser() throws SQLException, IOException {
-    Assertions.assertThatThrownBy(() -> new ExpenseAccountant(null, mockExpenseReportReader, mockExpenseTransactionMapper,
+    assertThatThrownBy(() -> new ExpenseAccountant(null, mockExpenseReportReader, mockExpenseTransactionMapper,
         mockExpenseReconciler))
         .isInstanceOf(NullPointerException.class)
         .hasNoCause();
@@ -70,7 +63,7 @@ class ExpenseAccountantTest {
 
   @Test
   void constructor_nullExpenseReadable() throws SQLException, IOException {
-    Assertions.assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, null, mockExpenseTransactionMapper,
+    assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, null, mockExpenseTransactionMapper,
         mockExpenseReconciler))
         .isInstanceOf(NullPointerException.class)
         .hasNoCause();
@@ -78,7 +71,7 @@ class ExpenseAccountantTest {
 
   @Test
   void constructor_nullExpenseReconciler() throws SQLException, IOException {
-    Assertions.assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, mockExpenseReportReader, null,
+    assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, mockExpenseReportReader, null,
         mockExpenseReconciler))
         .isInstanceOf(NullPointerException.class)
         .hasNoCause();
@@ -87,7 +80,7 @@ class ExpenseAccountantTest {
   @Test
   void constructor_nullExpenseTransactionMapper() throws SQLException, IOException {
     String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db"};
-    Assertions.assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, mockExpenseReportReader,
+    assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, mockExpenseReportReader,
         mockExpenseTransactionMapper,null))
         .isInstanceOf(NullPointerException.class)
         .hasNoCause();
@@ -96,7 +89,7 @@ class ExpenseAccountantTest {
   @Test
   void reconcileData_csvParsableError() throws SQLException, IOException {
     Mockito.when(mockCsvParser.parseCsvFile("./some.csv")).thenThrow(new BufferOverflowException());
-    Assertions.assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
         .isInstanceOf(BufferOverflowException.class)
         .hasNoCause();
     verifyNoInteractions(mockExpenseReconciler);
@@ -107,7 +100,7 @@ class ExpenseAccountantTest {
     Mockito.when(mockCsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenThrow(new SQLException("test sql exception"));
     String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db"};
-    Assertions.assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
         .isInstanceOf(SQLException.class)
         .hasMessage("test sql exception");
     Mockito.verify(mockExpenseTransactionMapper, Mockito.never()).mapExpenseReportsToMap(ArgumentMatchers.anyList());
@@ -122,7 +115,7 @@ class ExpenseAccountantTest {
         .thenReturn(Collections.emptyMap());
     Mockito.when(mockExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
         .thenThrow(new IllegalStateException("test illegal state exception"));
-    Assertions.assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
         .isInstanceOf(IllegalStateException.class)
         .hasMessage("test illegal state exception");
   }
@@ -133,7 +126,7 @@ class ExpenseAccountantTest {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
     Mockito.when(mockExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
         .thenThrow(new RuntimeException("test runtime exception"));
-    Assertions.assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
         .isInstanceOf(RuntimeException.class)
         .hasMessage("test runtime exception");
     verifyNoInteractions(mockExpenseReconciler);

@@ -49,7 +49,15 @@ public final class ExpenseTransactionMapper {
       List<ExpenseReport> expenseReports) {
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (ExpenseReport expenseReport : expenseReports) {
-      ExpenseManagerTransaction expenseManagerTransaction = mapAExpenseReport(expenseReport);
+      ExpenseManagerTransaction expenseManagerTransaction;
+      try {
+        expenseManagerTransaction = mapAExpenseReport(expenseReport);
+      } catch (RuntimeException runtimeException) {
+        LOGGER.atWarn()
+            .withThrowable(runtimeException)
+            .log("Unable to parse expense report entry. expenseReport={}", expenseReport);
+        continue;
+      }
       Double transactionAmount = (expenseManagerTransaction.getReferenceAmount() > 0)
           ? expenseManagerTransaction.getReferenceAmount()
           : expenseManagerTransaction.getAmount();
@@ -61,20 +69,6 @@ public final class ExpenseTransactionMapper {
       expenseManagerTransactionList.add(expenseManagerTransaction);
     }
     return expensesByAmountAndPaymentMethod;
-  }
-
-  /**
-   * Return a list of {@link ExpenseManagerTransaction} mapped from a list of {@link ExpenseReport}.
-   *
-   * @param expenseReports the list of expense reports
-   * @return a list of {@link ExpenseManagerTransaction}
-   */
-  public static List<ExpenseManagerTransaction> mapExpenseReportsToList(List<ExpenseReport> expenseReports) {
-    List<ExpenseManagerTransaction> expenseManagerTransactions = new ArrayList<>();
-    for (ExpenseReport expenseReport : expenseReports) {
-      expenseManagerTransactions.add(mapAExpenseReport(expenseReport));
-    }
-    return expenseManagerTransactions;
   }
 
   /**
@@ -95,8 +89,8 @@ public final class ExpenseTransactionMapper {
     Instant expendedTime = Instant.ofEpochMilli(expendedTimeInSecondSinceEpoch); //This time is in UTC
     String paymentMethodString = expenseReport.getPaymentMethod();
     PaymentMethod paymentMethod = PaymentMethod.resolve(paymentMethodString);
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
-        expenseCategory, expenseSubCategory, paymentMethod, description, expendedTime);
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount, expenseCategory,
+        expenseSubCategory, paymentMethod, description, expendedTime);
     String referenceNumber = expenseReport.getReferenceNumber();
     double referenceAmount = (referenceNumber.isBlank()) ? ZERO_AMOUNT : parseReferenceAmount(referenceNumber);
     expenseManagerTransaction.setReferenceAmount(referenceAmount);

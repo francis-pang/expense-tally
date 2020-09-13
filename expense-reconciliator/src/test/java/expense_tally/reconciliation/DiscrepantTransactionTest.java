@@ -2,13 +2,13 @@ package expense_tally.reconciliation;
 
 import expense_tally.model.csv.GenericCsvTransaction;
 import expense_tally.model.csv.TransactionType;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DiscrepantTransactionTest {
 
@@ -16,7 +16,7 @@ class DiscrepantTransactionTest {
   void from_null() {
     // We explicitly do not guard against NPE here because null object shouldn't be passed in the first place, and we
     // do not know how to handle that as well
-    Assertions.assertThatThrownBy(() -> DiscrepantTransaction.from(null))
+    assertThatThrownBy(() -> DiscrepantTransaction.from(null))
         .isInstanceOf(NullPointerException.class);
   }
 

@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.transformation;
+package expense_tally.model.persistence.database;
 
 import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.junit.jupiter.api.Test;
@@ -30,5 +30,12 @@ class PaymentMethodTest {
   void resolve_emptyString() {
     assertThat(PaymentMethod.resolve(""))
         .isNull();
+  }
+
+  @Test
+  void value_cash() {
+    assertThat(PaymentMethod.CASH.value())
+        .isNotNull()
+        .isEqualTo("Cash");
   }
 }

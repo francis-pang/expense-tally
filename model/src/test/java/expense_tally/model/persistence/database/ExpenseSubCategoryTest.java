@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.transformation;
+package expense_tally.model.persistence.database;
 
 import expense_tally.model.persistence.transformation.ExpenseSubCategory;
 import org.junit.jupiter.api.Test;

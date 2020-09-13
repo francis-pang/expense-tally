@@ -1,8 +1,5 @@
 package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.persistence.DatabaseConnectable;
-import expense_tally.expense_manager.persistence.SqlLiteConnection;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -13,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class SqlLiteConnectionTest {
@@ -37,7 +35,7 @@ class SqlLiteConnectionTest {
   @Test
   void connect_connectionFail() throws SQLException {
     Mockito.when(spyDatabaseConnectable.connect()).thenThrow(SQLException.class);
-    Assertions.assertThatThrownBy(() -> spyDatabaseConnectable.connect())
+    assertThatThrownBy(() -> spyDatabaseConnectable.connect())
         .isInstanceOf(SQLException.class);
   }
 }
