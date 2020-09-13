@@ -1,6 +1,5 @@
 package expense_tally.model.csv;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MasterCardTest extends AbstractCsvTransaction {
 
@@ -177,7 +177,7 @@ class MasterCardTest extends AbstractCsvTransaction {
         .transactionRef1("TAPAS SI NG 20DEC")
         .transactionRef2("5632-4172-5981-4347")
         .build();
-    Assertions.assertThatThrownBy(() -> MasterCard.from(testGenericCsvTransaction))
+    assertThatThrownBy(() -> MasterCard.from(testGenericCsvTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("MasterCard number is invalid.");
   }
@@ -190,7 +190,7 @@ class MasterCardTest extends AbstractCsvTransaction {
         .transactionRef1("TAPAS SI NG 20DEC")
         .transactionRef2("5632-4172-5981-4347")
         .build();
-    Assertions.assertThatThrownBy(() -> MasterCard.from(testGenericCsvTransaction))
+    assertThatThrownBy(() -> MasterCard.from(testGenericCsvTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("GenericCsvTransaction is not of MasterCard type.");
   }
@@ -202,7 +202,7 @@ class MasterCardTest extends AbstractCsvTransaction {
         .transactionRef1("TAPAS SI NG 20DEC")
         .transactionRef2("5632-4172-5981-4347")
         .build();
-    Assertions.assertThatThrownBy(() -> MasterCard.from(testGenericCsvTransaction))
+    assertThatThrownBy(() -> MasterCard.from(testGenericCsvTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("GenericCsvTransaction is not of MasterCard type.");
   }

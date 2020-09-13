@@ -5,9 +5,15 @@ import expense_tally.expense_manager.persistence.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReportReader;
 import expense_tally.expense_manager.persistence.SqlLiteConnection;
+import expense_tally.expense_manager.persistence.SqliteSessionFactoryBuilder;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
 import expense_tally.views.AppParameter;
+import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.TransactionFactory;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,12 +37,18 @@ public final class CommandLineRunner {
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();
     ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
     CommandParser commandParser = new CommandParser();
+    PooledDataSourceFactory pooledDataSourceFactory = new PooledDataSourceFactory();
+    TransactionFactory transactionFactory = new JdbcTransactionFactory();
+    SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+    Configuration configuration = new Configuration();
 
     try {
       Map<AppParameter, String> optionValues = commandParser.parseCommandArgs(args);
       String databaseFileName = optionValues.get(AppParameter.DATABASE_PATH);
       DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFileName);
-      ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable);
+      SqliteSessionFactoryBuilder sqliteSessionFactoryBuilder = new SqliteSessionFactoryBuilder(pooledDataSourceFactory,
+          transactionFactory, sqlSessionFactoryBuilder, configuration);
+      ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable, sqliteSessionFactoryBuilder);
       ExpenseAccountant expenseAccountant = new ExpenseAccountant(csvParser, expenseReadable,
           expenseTransactionMapper, expenseReconciler);
       expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));

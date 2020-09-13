@@ -1,12 +1,12 @@
 package expense_tally.model.csv;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Even though it is common that there is no need to test the model class. I have decided to test this model class
@@ -47,7 +47,7 @@ class GenericCsvTransactionTest {
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;
 
-    Assertions.assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("transactionDate cannot be null.");
   }
@@ -114,7 +114,7 @@ class GenericCsvTransactionTest {
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = -5.00;
 
-    Assertions.assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Debit amount cannot be negative.");
   }
@@ -156,7 +156,7 @@ class GenericCsvTransactionTest {
     double debitAmount = 0;
     double creditAmount = -4.50;
 
-    Assertions.assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount)
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount)
         .creditAmount(creditAmount)
         .build())
         .isInstanceOf(IllegalArgumentException.class)
@@ -431,7 +431,7 @@ class GenericCsvTransactionTest {
     double debitAmount = 5.00;
     double creditAmount = 4.50;
 
-    Assertions.assertThatThrownBy(() ->
+    assertThatThrownBy(() ->
         new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).creditAmount(creditAmount).build())
         .isInstanceOf(MonetaryAmountException.class)
         .hasMessage("Debit and credit cannot be co-exist at same time.");

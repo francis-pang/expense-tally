@@ -1,7 +1,10 @@
-package expense_tally.expense_manager.transformation;
+package expense_tally.model.persistence.database;
 
 import expense_tally.model.persistence.transformation.ExpenseCategory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,5 +27,23 @@ class ExpenseCategoryTest {
     assertThat(ExpenseCategory.FOOD.value())
         .isNotBlank()
         .isEqualTo("Food");
+  }
+
+  @ParameterizedTest
+  @EnumSource(names = {
+      "ENTERTAINMENT",
+      "FOOD",
+      "AESTHETIC",
+      "TRANSPORT",
+      "LOANS",
+      "HOUSEHOLD",
+      "HEALTH_CARE",
+      "PERSONAL",
+      "VACATION",
+      "UNCATEGORIZED"
+  })
+  void value_TestAllValues(ExpenseCategory expenseCategory) {
+    assertThat(expenseCategory)
+        .isInstanceOf(ExpenseCategory.class);
   }
 }
