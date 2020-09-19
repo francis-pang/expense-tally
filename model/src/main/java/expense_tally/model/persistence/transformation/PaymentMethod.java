@@ -6,7 +6,8 @@ package expense_tally.model.persistence.transformation;
 public enum PaymentMethod {
   CASH("Cash"),
   CREDIT_CARD("Credit Card"),
-  DEBIT_CARD("Debit 5548-2741-0014-1067"),
+  DBS_DEBIT_CARD("Debit 5548-2741-0014-1067"),
+  YOUTRIP_DEBIT_CARD("Debit 5162-4000-1897-6709"),
   ELECTRONIC_TRANSFER("Electronic Transfer"),
   GIRO("Giro"),
   GRAY_PAY("Grab Pay"),

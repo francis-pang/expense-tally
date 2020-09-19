@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ExpnseMngrTrnsctnTestMapBuilder {
   private Double amount = 0.8;
-  private PaymentMethod paymentMethod = PaymentMethod.DEBIT_CARD;
+  private PaymentMethod paymentMethod = PaymentMethod.DBS_DEBIT_CARD;
   private Double referenceAmount = 0.0;
   private ExpenseCategory category = ExpenseCategory.ENTERTAINMENT;
   private ExpenseSubCategory subcategory = ExpenseSubCategory.ALCOHOL_AND_RESTAURANT;
