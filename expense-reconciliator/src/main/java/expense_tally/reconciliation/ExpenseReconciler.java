@@ -90,7 +90,7 @@ public final class ExpenseReconciler {
     }
     switch (transactionType) {
       case MASTERCARD:
-        return PaymentMethod.DEBIT_CARD;
+        return PaymentMethod.DBS_DEBIT_CARD;
       case NETS:
       case POINT_OF_SALE:
         return PaymentMethod.NETS;
