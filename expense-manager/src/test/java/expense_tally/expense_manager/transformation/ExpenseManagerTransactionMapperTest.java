@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class ExpenseManagerTransactionMapperTest {
@@ -74,224 +75,6 @@ class ExpenseManagerTransactionMapperTest {
     return expenseManagerTransaction;
   }
 
-  /**
-   * 1. Empty list
-   * 2. Null list
-   * 3. List with 1 elements
-   * 4. List with more than 1 elements, maybe 3. Among the elements, we will have varying test cases
-   * 5. List with 1 element, blank reference
-   */
-
-  /*
-   * Test Case: Take in an empty expense reports
-   * Expected Output: The mapped expense transactions is empty
-   */
-  @Test
-  void mapExpenseReportsToList_emptyExpenseReports() {
-    List<ExpenseReport> testingExpenseReports = new ArrayList<>();
-    assertThat(ExpenseTransactionMapper.mapExpenseReportsToList(testingExpenseReports)).isEmpty();
-  }
-
-  /*
-   * Test Case: Take in an null expense reports
-   * Expected Output: An NullPointerException will occur
-   */
-  @Test
-  void mapExpenseReportsToList_nullExpenseReports() {
-    Assertions.assertThatThrownBy(() -> {
-      ExpenseTransactionMapper.mapExpenseReportsToList(null);
-    }).isInstanceOf(NullPointerException.class);
-  }
-
-  /*
-   * Test Case: Take in one expense reports, and all the reference doesn't match any enum
-   * Expected Output: A list containing of 1 expense transaction will be returned
-   */
-  @Test
-  void mapExpenseReportsToList_oneExpenseReport(SoftAssertions softly) {
-    // Create test data
-    List<ExpenseReport> testingExpenseReports = new ArrayList<>();
-    testingExpenseReports.add(constructExpenseReport(
-        1,
-        "Test Account",
-        1.78,
-        "Vacation",
-        "Airplane/ Train",
-        "Credit Card",
-        "Description",
-        "2019-05-20T20:54:03.00Z",
-        "2019-05-20T20:54:03.00Z",
-        0,
-        "Clear",
-        "Property",
-        "Property2",
-        "Property3",
-        "Property4",
-        "Property5",
-        "1.45",
-        "ExpenseTag"
-    ));
-
-    List<ExpenseManagerTransaction> actualExpenseManagerTransactions =
-        ExpenseTransactionMapper.mapExpenseReportsToList(testingExpenseReports);
-    softly.assertThat(actualExpenseManagerTransactions).hasSize(1);
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("amount").contains(1.78, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("category").contains(ExpenseCategory.VACATION, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("subcategory").contains(ExpenseSubCategory.AIRPLANE_TRAIN, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("paymentMethod").contains(PaymentMethod.CREDIT_CARD, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("description").contains("Description", Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expendedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("referenceAmount").contains(0.0, Assertions.atIndex(0));
-    softly.assertAll();
-  }
-
-  /*
-   * Test Case: Take in one expense reports, and all the reference doesn't match any enum
-   * Expected Output: A list containing of multiple expense transaction will be returned, and all of them matches
-   * what we expect
-   */
-  @Test
-  void mapExpenseReportsToList_multiple(SoftAssertions softly) {
-    // Create test data
-    List<ExpenseReport> testingExpenseReports = new ArrayList<>();
-    testingExpenseReports.add(constructExpenseReport(
-        1,
-        "Test Account",
-        6.8,
-        "Food",
-        "Food court/ Fast food",
-        "Credit Card",
-        "Dinner. Single bowl salad. Happy Tummy",
-        "2019-05-20T20:54:03.00Z",
-        "2019-05-20T20:54:03.00Z",
-        0,
-        "Clear",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-    ));
-
-    testingExpenseReports.add(constructExpenseReport(
-        1, //Same ID, to show that ID doesn't matter
-        "Test Account",
-        944,
-        "Personal",
-        "Karaoke/ Party",
-        "Electronic Transfer",
-        "Monthly allowed expenditure",
-        "2018-01-31T16:00:00.00Z",
-        "2019-05-20T20:54:03.00Z",
-        7,
-        "Clear",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-    ));
-
-    testingExpenseReports.add(constructExpenseReport(
-        3,
-        "Test Account",
-        5.2,
-        "Aesthetic",
-        "Clothing",
-        "NETS",
-        "Ice 2.5 kg",
-        "2018-01-31T16:00:00.00Z",
-        "2019-05-20T20:54:03.00Z",
-        0,
-        "Clear",
-        "",
-        "2018-01-16-18-02-00-906.jpg",
-        "",
-        "",
-        "",
-        "",
-        "1 PCS"
-    ));
-
-    List<ExpenseManagerTransaction> actualExpenseManagerTransactions =
-        ExpenseTransactionMapper.mapExpenseReportsToList(testingExpenseReports);
-    softly.assertThat(actualExpenseManagerTransactions).hasSize(3);
-    //TODO: can be refactored in this way: https://github.com/joel-costigliola/assertj-examples/blob/master/assertions-examples/src/test/java/org/assertj/examples/MapAssertionsExamples.java
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("amount").contains(6.8, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("category").contains(ExpenseCategory.FOOD, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("subcategory").contains(ExpenseSubCategory.FOOD_COURT_AND_FAST_FOOD, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("paymentMethod").contains(PaymentMethod.CREDIT_CARD, Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("description").contains("Dinner. Single bowl salad. Happy Tummy", Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expendedTime").contains(Instant.parse("2019-05-20T20:54:03.00Z"), Assertions.atIndex(0));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("referenceAmount").contains(0.0, Assertions.atIndex(0));
-
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("amount").contains(944.0, Assertions.atIndex(1));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("category").contains(ExpenseCategory.PERSONAL, Assertions.atIndex(1));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("subcategory").contains(ExpenseSubCategory.KARAOKE_PARTY, Assertions.atIndex(1));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("paymentMethod").contains(PaymentMethod.ELECTRONIC_TRANSFER, Assertions.atIndex(1));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("description").contains("Monthly allowed expenditure", Assertions.atIndex(1));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expendedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), Assertions.atIndex(1));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("referenceAmount").contains(7.0, Assertions.atIndex(1));
-
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("amount").contains(5.2, Assertions.atIndex(2));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("category").contains(ExpenseCategory.AESTHETIC, Assertions.atIndex(2));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("subcategory").contains(ExpenseSubCategory.CLOTHING, Assertions.atIndex(2));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("paymentMethod").contains(PaymentMethod.NETS, Assertions.atIndex(2));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("description").contains("Ice 2.5 kg", Assertions.atIndex(2));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("expendedTime").contains(Instant.parse("2018-01-31T16:00:00.00Z"), Assertions.atIndex(2));
-    softly.assertThat(actualExpenseManagerTransactions)
-        .extracting("referenceAmount").contains(0.0, Assertions.atIndex(2));
-
-    softly.assertAll();
-  }
-
-  /*
-   * Test Case: Take in one expense reports, and there is nothing declared inside the object
-   * Expected Output: NullPointerException will occur
-   */
-  @Test
-  void mapExpenseReportsToList_listWithoutAnyCsv() {
-    // Create test data
-    List<ExpenseReport> testingExpenseReports = new ArrayList<>();
-    ExpenseReport emptyExpenseReport = new ExpenseReport();
-    testingExpenseReports.add(emptyExpenseReport);
-
-    Assertions.assertThatThrownBy(() -> {
-      ExpenseTransactionMapper.mapExpenseReportsToList(null);
-    }).isInstanceOf(NullPointerException.class);
-  }
-
   /*
    * Test Case: Take in an expense reports
    * Expected Output: A empty map will be produced
@@ -301,7 +84,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
 
-    Assertions.assertThat(expenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports)).isEmpty();
+    assertThat(expenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports)).isEmpty();
   }
 
   /*
@@ -310,9 +93,8 @@ class ExpenseManagerTransactionMapperTest {
    */
   @Test
   void mapExpenseReportsToMap_nullExpenseReports() {
-    Assertions.assertThatThrownBy(() -> {
-      expenseTransactionMapper.mapExpenseReportsToMap(null);
-    }).isInstanceOf(NullPointerException.class);
+    assertThatThrownBy(() -> expenseTransactionMapper.mapExpenseReportsToMap(null))
+        .isInstanceOf(NullPointerException.class);
   }
 
   /*
@@ -516,4 +298,76 @@ class ExpenseManagerTransactionMapperTest {
         Assertions.entry(3.0, expectedExpensesByGrabPay));
     softly.assertAll();
   }
+
+  @Test
+  void mapExpenseReportsToMap_oneExpenseReportHasError(SoftAssertions softly) {
+    // Create test data
+    List<ExpenseReport> testingExpenseReports = new ArrayList<>();
+    testingExpenseReports.add(constructExpenseReport(
+        1,
+        "Test Account",
+        1.78,
+        "Entertainment",
+        "Breakfast",
+        "Grab Pay",
+        "Description",
+        "2019-05-20T20:54:03.00Z",
+        "2019-05-20T20:54:03.00Z",
+        0,
+        "Clear",
+        "Property",
+        "Property2",
+        "Property3",
+        "Property4",
+        "Property5",
+        "1.45",
+        "ExpenseTag"
+    ));
+
+    testingExpenseReports.add(constructExpenseReport(
+        1,
+        "Test Account",
+        1.78,
+        "",
+        "Breakfast",
+        "Grab Pay",
+        "Description",
+        "2019-05-20T20:54:03.00Z",
+        "2019-05-20T20:54:03.00Z",
+        0,
+        "Clear",
+        "Property",
+        "Property2",
+        "Property3",
+        "Property4",
+        "Property5",
+        "1.45",
+        "ExpenseTag"
+    ));
+
+    // Expected data
+    List<ExpenseManagerTransaction> expectedExpenseManagerTransactionList = new ArrayList<>();
+    expectedExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
+        1.78,
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.BREAKFAST,
+        PaymentMethod.GRAY_PAY,
+        "Description",
+        "2019-05-20T20:54:03.00Z",
+        0
+    ));
+    Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
+        expenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+    softly.assertThat(actualExpenseManagerMap).isNotEmpty();
+    softly.assertThat(actualExpenseManagerMap).hasSize(1);
+    softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);
+    softly.assertThat(actualExpenseManagerMap.get(1.78)).containsOnlyKeys(PaymentMethod.GRAY_PAY);
+
+    Map<PaymentMethod, List<ExpenseManagerTransaction>> expectedExpensesPaymentMethod = new HashMap<>();
+    expectedExpensesPaymentMethod.put(PaymentMethod.GRAY_PAY, expectedExpenseManagerTransactionList);
+
+    softly.assertThat(actualExpenseManagerMap).containsExactly(Assertions.entry(1.78, expectedExpensesPaymentMethod));
+    softly.assertAll();
+  }
+
 }

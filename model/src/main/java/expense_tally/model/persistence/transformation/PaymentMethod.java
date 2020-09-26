@@ -42,4 +42,8 @@ public enum PaymentMethod {
     }
     return null;
   }
+
+  public String value() {
+    return value;
+  }
 }
