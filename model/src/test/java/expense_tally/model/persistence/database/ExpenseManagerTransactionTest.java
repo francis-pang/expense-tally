@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.transformation;
+package expense_tally.model.persistence.database;
 
 import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ExpenseManagerTransactionTest {
   @Test

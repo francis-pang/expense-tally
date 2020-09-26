@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.tuple;
 
 class ExpenseReconcilerTest {
   private ExpenseReconciler expenseReconciler;
@@ -110,7 +109,7 @@ class ExpenseReconcilerTest {
         .transactionType(TransactionType.BILL_PAYMENT)
         .build()
     );
-    Assertions.assertThatThrownBy(() -> {
+    assertThatThrownBy(() -> {
       expenseReconciler.reconcileBankData(testGenericCsvTransactions, null);
     })
         .isInstanceOf(IllegalArgumentException.class)
@@ -128,7 +127,7 @@ class ExpenseReconcilerTest {
   void reconcileBankData_nullCsvTransaction() {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod
         = new ExpnseMngrTrnsctnTestMapBuilder(0).build();
-    Assertions.assertThatThrownBy(() -> expenseReconciler.reconcileBankData(null, expensesByAmountAndPaymentMethod))
+    assertThatThrownBy(() -> expenseReconciler.reconcileBankData(null, expensesByAmountAndPaymentMethod))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Null reference is not an accepted csvTransactions value.");
   }

@@ -1,6 +1,7 @@
 package expense_tally.model.persistence.database;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * This class models the database schema of a transaction stored in the Expense Manager application. All the
@@ -164,5 +165,29 @@ public final class ExpenseReport {
   @Override
   public int hashCode() {
     return Objects.hash(id, account, amount, category, subcategory, paymentMethod, description, expensedTime, modificationTime, referenceNumber, status, property1, property2, property3, property4, property5, tax, expenseTag);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ExpenseReport.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("account='" + account + "'")
+        .add("amount='" + amount + "'")
+        .add("category='" + category + "'")
+        .add("subcategory='" + subcategory + "'")
+        .add("paymentMethod='" + paymentMethod + "'")
+        .add("description='" + description + "'")
+        .add("expensedTime=" + expensedTime)
+        .add("modificationTime=" + modificationTime)
+        .add("referenceNumber='" + referenceNumber + "'")
+        .add("status='" + status + "'")
+        .add("property1='" + property1 + "'")
+        .add("property2='" + property2 + "'")
+        .add("property3='" + property3 + "'")
+        .add("property4='" + property4 + "'")
+        .add("property5='" + property5 + "'")
+        .add("tax='" + tax + "'")
+        .add("expenseTag='" + expenseTag + "'")
+        .toString();
   }
 }

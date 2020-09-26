@@ -1,6 +1,5 @@
-package expense_tally.model.csv.parser;
+package expense_tally.csv.parser;
 
-import expense_tally.csv.parser.CsvParser;
 import expense_tally.model.csv.GenericCsvTransaction;
 import expense_tally.model.csv.MasterCard;
 import expense_tally.model.csv.MonetaryAmountException;

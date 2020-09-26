@@ -1,7 +1,10 @@
 package expense_tally.expense_manager.persistence;
 
+import expense_tally.expense_manager.mapper.ExpenseReportMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
-import org.assertj.core.api.Assertions;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,25 +15,27 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseReportReaderTest {
-  @Mock
-  ResultSet mockResultSet;
   @Spy
   private DatabaseConnectable spyDatabaseConnectable;
   @Mock
   private Connection mockConnection;
   @Mock
-  private Statement mockStatement;
+  private ExpenseReportMapper mockExpenseReportMapper;
+  @Mock
+  private SqliteSessionFactoryBuilder mockSqliteSessionBuilder;
+  @Mock
+  private SqlSessionFactory mockSessionFactory;
+  @Mock
+  private SqlSession mockSqlSession;
   @InjectMocks
   private ExpenseReportReader expenseReportReader;
 
@@ -39,35 +44,38 @@ class ExpenseReportReaderTest {
    */
   @Test
   void getExpenseTransactions_retrieve1Record() throws SQLException {
-    Mockito.when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
-    Mockito.when(mockConnection.createStatement()).thenReturn(mockStatement);
-    Mockito.when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
-
+    List<ExpenseReport> expectedExpenseReports = new ArrayList<>();
     /*
      * Following the practice of writing good test from https://github
      * .com/mockito/mockito/wiki/How-to-write-good-tests, this mock follows the principles of "Avoid coding a
      * tautology". We explicitly write the value so that we do not duplicate the logic between the tests and the code.
      */
-    Mockito.when(mockResultSet.next()).thenReturn(true).thenReturn(false);
-    Mockito.when(mockResultSet.getInt("_id")).thenReturn(1);
-    Mockito.when(mockResultSet.getString("account")).thenReturn("2016");
-    Mockito.when(mockResultSet.getString("amount")).thenReturn("20");
-    Mockito.when(mockResultSet.getString("category")).thenReturn("Entertainment");
-    Mockito.when(mockResultSet.getString("subcategory")).thenReturn("Alcohol/ Restaurant");
-    Mockito.when(mockResultSet.getString("payment_method")).thenReturn("Cash");
-    Mockito.when(mockResultSet.getString("description")).thenReturn("Lunch. Mala Hui cui Guan. Shared with Sal," +
-        " Lisa, Rick.");
-    Mockito.when(mockResultSet.getLong("expensed")).thenReturn(Long.valueOf("1459489440000"));
-    Mockito.when(mockResultSet.getLong("modified")).thenReturn(Long.valueOf("1459816738453"));
-    Mockito.when(mockResultSet.getString("reference_number")).thenReturn("");
-    Mockito.when(mockResultSet.getString("status")).thenReturn("Cleared");
-    Mockito.when(mockResultSet.getString("property")).thenReturn("");
-    Mockito.when(mockResultSet.getString("property2")).thenReturn("2016-04-01-13-44-00-573.jpg");
-    Mockito.when(mockResultSet.getString("property3")).thenReturn("");
-    Mockito.when(mockResultSet.getString("property4")).thenReturn("");
-    Mockito.when(mockResultSet.getString("property5")).thenReturn("");
-    Mockito.when(mockResultSet.getString("tax")).thenReturn("");
-    Mockito.when(mockResultSet.getString("expense_tag")).thenReturn("");
+    ExpenseReport expectedExpenseReport1 = new ExpenseReport();
+    expectedExpenseReport1.setId(1);
+    expectedExpenseReport1.setAmount("20");
+    expectedExpenseReport1.setAccount("2016");
+    expectedExpenseReport1.setCategory("Entertainment");
+    expectedExpenseReport1.setSubcategory("Alcohol/ Restaurant");
+    expectedExpenseReport1.setPaymentMethod("Cash");
+    expectedExpenseReport1.setDescription("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
+    expectedExpenseReport1.setExpensedTime(Long.valueOf("1459489440000"));
+    expectedExpenseReport1.setModificationTime(Long.valueOf("1459816738453"));
+    expectedExpenseReport1.setReferenceNumber("");
+    expectedExpenseReport1.setStatus("Cleared");
+    expectedExpenseReport1.setProperty1("");
+    expectedExpenseReport1.setProperty2("2016-04-01-13-44-00-573.jpg");
+    expectedExpenseReport1.setProperty3("");
+    expectedExpenseReport1.setProperty4("");
+    expectedExpenseReport1.setProperty5("");
+    expectedExpenseReport1.setTax("");
+    expectedExpenseReport1.setExpenseTag("");
+    expectedExpenseReports.add(expectedExpenseReport1);
+
+    Mockito.when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
+    Mockito.when(mockSqliteSessionBuilder.createSqliteSessionFactory()).thenReturn(mockSessionFactory);
+    Mockito.when(mockSessionFactory.openSession(ExecutorType.REUSE, mockConnection)).thenReturn(mockSqlSession);
+    Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
+    Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(expectedExpenseReports);
 
     List<ExpenseReport> actualExpenseReportList = expenseReportReader.getExpenseTransactions();
 
@@ -85,11 +93,14 @@ class ExpenseReportReaderTest {
 
   @Test
   void getExpenseTransactions_noRecord() throws SQLException {
-    Mockito.when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
-    Mockito.when(mockConnection.createStatement()).thenReturn(mockStatement);
+    List<ExpenseReport> expenseReports = new ArrayList<>();
 
-    Mockito.when(mockStatement.executeQuery("SELECT * FROM expense_report")).thenReturn(mockResultSet);
-    Mockito.when(mockResultSet.next()).thenReturn(false);
+    Mockito.when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
+    Mockito.when(spyDatabaseConnectable.connect()).thenReturn(mockConnection);
+    Mockito.when(mockSqliteSessionBuilder.createSqliteSessionFactory()).thenReturn(mockSessionFactory);
+    Mockito.when(mockSessionFactory.openSession(ExecutorType.REUSE, mockConnection)).thenReturn(mockSqlSession);
+    Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
+    Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(expenseReports);
 
     assertThat(expenseReportReader.getExpenseTransactions()).hasSize(0);
   }
@@ -97,7 +108,7 @@ class ExpenseReportReaderTest {
   @Test
   void getExpenseTransactions_SqlError() throws SQLException {
     Mockito.when(spyDatabaseConnectable.connect()).thenThrow(new SQLException("test SQLException"));
-    Assertions.assertThatThrownBy(() -> expenseReportReader.getExpenseTransactions())
+    assertThatThrownBy(() -> expenseReportReader.getExpenseTransactions())
         .isInstanceOf(SQLException.class)
         .hasMessage("test SQLException");
   }
