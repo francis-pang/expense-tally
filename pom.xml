@@ -4,7 +4,7 @@
     <groupId>tally.expense</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>pom</packaging>
-    <version>48-SNAPSHOT</version>
+    <version>48</version>
     <modules>
         <module>csv-parser</module>
         <module>model</module>
@@ -32,7 +32,7 @@
     <scm>
         <connection>scm:git:git@github.com:francis-pang/expense-tally.git</connection>
         <developerConnection>scm:git:https://github.com/francis-pang/expense-tally.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>expense-tally-48</tag>
     </scm>
 
     <dependencies>
