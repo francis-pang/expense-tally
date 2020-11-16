@@ -303,6 +303,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <goals>deploy</goals>
+                </configuration>
             </plugin>
             <!-- This will fix the issue of The code being documented uses modules but the packages defined in https://docs.oracle.com/javase/13/docs/api/ are in the unnamed module. -->
             <plugin>
@@ -322,6 +325,21 @@
                     <execution>
                         <id>default-deploy</id>
                         <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Used to sign the components with the following configuration.-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
