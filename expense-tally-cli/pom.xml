@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.francis-pang</groupId>
-            <artifactId>csv-parser</artifactId>
+            <artifactId>expense-tally-csv-parser</artifactId>
             <version>49-SNAPSHOT</version>
         </dependency>
         <dependency>
