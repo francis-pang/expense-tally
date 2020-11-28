@@ -339,13 +339,22 @@
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
-            <!-- This will fix the issue of The code being documented uses modules but the packages defined in https://docs.oracle.com/javase/13/docs/api/ are in the unnamed module. -->
+            <!-- This will fix the issue of The code being documented uses modules but the packages defined in
+            https://docs.oracle.com/javase/13/docs/api/ are in the unnamed module. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <source>8</source>
+                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                 </configuration>
             </plugin>
             <!-- skip the deployment portion -->
