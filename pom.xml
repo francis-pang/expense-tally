@@ -38,8 +38,8 @@
         </developer>
     </developers>
     <properties>
-        <javaVersion>14</javaVersion>
-        <javaCompilerVersion>1.14</javaCompilerVersion>
+        <javaVersion>15</javaVersion>
+        <javaCompilerVersion>1.15</javaCompilerVersion>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.projectKey>boyshawn_expense-tally</sonar.projectKey>
         <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
@@ -65,6 +65,10 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <dependencies>
@@ -336,6 +340,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
@@ -357,17 +364,28 @@
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                 </configuration>
             </plugin>
+            <!-- Generate the source jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- skip the deployment portion -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>3.0.0-M1</version>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <!-- Used to sign the components with the following configuration.-->
             <plugin>
@@ -384,7 +402,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--configure Maven to deploy to the OSSRH Nexus Repository Manager with the Nexus Staging Maven plugin -->
+            <!--Deploy to the OSSRH Nexus Repository Manager with the Nexus Staging Maven plugin -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -393,7 +411,7 @@
                 <configuration>
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
         </plugins>
