@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>expense-tally</artifactId>
-        <groupId>tally.expense</groupId>
+        <groupId>com.github.francis-pang</groupId>
         <version>49-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -11,22 +11,22 @@
 
     <dependencies>
         <dependency>
-            <groupId>tally.expense</groupId>
+            <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-tally-model</artifactId>
             <version>49-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>tally.expense</groupId>
+            <groupId>com.github.francis-pang</groupId>
             <artifactId>csv-parser</artifactId>
             <version>49-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>tally.expense</groupId>
+            <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-manager</artifactId>
             <version>49-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>tally.expense</groupId>
+            <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-reconciliator</artifactId>
             <version>49-SNAPSHOT</version>
         </dependency>
