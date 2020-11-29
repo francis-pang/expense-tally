@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>expense-reconciliator</artifactId>
+    <artifactId>expense-tally-reconciliator</artifactId>
 
     <dependencies>
         <dependency>
