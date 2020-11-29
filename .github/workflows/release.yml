@@ -64,4 +64,5 @@ jobs:
         env:
           MAVEN_USERNAME: 2euEqXYt
           MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ''
 
