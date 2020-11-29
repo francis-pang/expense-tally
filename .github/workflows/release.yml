@@ -53,8 +53,11 @@ jobs:
         run: git config user.email "boyshawn@hotmail.com" && git config --global user.name "francis-pang"
       - name: 'Prepare release'
         run: mvn --batch-mode release:prepare -Dmaven.javadoc.skip=true -DskipTests
+      - name: 'Update password in settings.xml'
+        run: sed --in-place 's/REPLACE_PASSWORD/${{ secrets.NEXUS_PASSWORD }}/' $GITHUB_WORKSPACE/settings.xml
       - name: 'Actual release'
         run: mvn --batch-mode release:perform -Dmaven.javadoc.skip=true -DskipTests --settings $GITHUB_WORKSPACE/settings.xml
+
   deploy:
     name: 'Deploy release version to nexus repository'
     runs-on: 'ubuntu-20.04'
