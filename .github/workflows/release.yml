@@ -19,15 +19,18 @@ jobs:
           java-version: '15.0.1' # The JDK version to make available on the path.
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
-      - name: 'Import GPG key'
-        uses: crazy-max/ghaction-import-gpg@master
-        with:
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_USERNAME # env variable for username in deploy
+          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Value of the GPG private key to import
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
       - name: 'SonarCloud Scan'
         run: mvn clean verify sonar:sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          MAVEN_USERNAME: 2euEqXYt
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ''
   release:
     name: 'Maven release'
     runs-on: 'ubuntu-20.04'
@@ -45,16 +48,20 @@ jobs:
           java-version: '15.0.1' # The JDK version to make available on the path.
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
-      - name: 'Import GPG key'
-        uses: crazy-max/ghaction-import-gpg@master
-        with:
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_USERNAME # env variable for username in deploy
+          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Value of the GPG private key to import
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
       - name: 'Configure git commit'
         run: git config user.email "boyshawn@hotmail.com" && git config --global user.name "francis-pang"
       - name: 'Prepare release'
         run: mvn --batch-mode release:prepare -Dmaven.javadoc.skip=true -DskipTests
-      - name: 'Update password in settings.xml'
-        run: sed --in-place 's/REPLACE_PASSWORD/${{ secrets.NEXUS_PASSWORD }}/' $GITHUB_WORKSPACE/settings.xml
+        env:
+          MAVEN_GPG_PASSPHRASE: ''
       - name: 'Actual release'
-        run: mvn --batch-mode release:perform -Dmaven.javadoc.skip=true -DskipTests --settings $GITHUB_WORKSPACE/settings.xml
+        run: mvn --batch-mode release:perform -Dmaven.javadoc.skip=true -DskipTests
+        env:
+          MAVEN_USERNAME: 2euEqXYt
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
 
