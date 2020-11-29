@@ -9,8 +9,8 @@
         <module>csv-parser</module>
         <module>model</module>
         <module>expense-manager</module>
-        <module>expense-reconciliator</module>
-        <module>expense-tally-cli</module>
+        <module>reconciliator</module>
+        <module>cli</module>
     </modules>
 
     <!-- Application information -->

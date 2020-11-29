@@ -3,32 +3,32 @@
     <parent>
         <artifactId>expense-tally</artifactId>
         <groupId>com.github.francis-pang</groupId>
-        <version>45-SNAPSHOT</version>
+        <version>57-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>expense-tally-desktop</artifactId>
+    <artifactId>expense-tally-cli</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-tally-model</artifactId>
-            <version>45-SNAPSHOT</version>
+            <version>57-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.francis-pang</groupId>
-            <artifactId>csv-parser</artifactId>
-            <version>45-SNAPSHOT</version>
+            <artifactId>expense-tally-csv-parser</artifactId>
+            <version>57-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.francis-pang</groupId>
-            <artifactId>expense-manager</artifactId>
-            <version>45-SNAPSHOT</version>
+            <artifactId>expense-tally-expense-manager</artifactId>
+            <version>57-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.francis-pang</groupId>
-            <artifactId>expense-reconciliator</artifactId>
-            <version>45-SNAPSHOT</version>
+            <artifactId>expense-tally-reconciliator</artifactId>
+            <version>57-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
