@@ -58,28 +58,3 @@ jobs:
       - name: 'Actual release'
         run: mvn --batch-mode release:perform -Dmaven.javadoc.skip=true -DskipTests --settings $GITHUB_WORKSPACE/settings.xml
 
-  deploy:
-    name: 'Deploy release version to nexus repository'
-    runs-on: 'ubuntu-20.04'
-    if: "contains(github.event.head_commit.message, 'prepare release expense-tally')"
-    steps:
-      - name: 'Check out code'
-        uses: actions/checkout@v2
-        with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting
-          fetch-depth: 0
-      - name: 'Set up JDK'
-        uses: actions/setup-java@master
-        with:
-          java-version: '15.0.1' # The JDK version to make available on the path.
-          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
-          architecture: x64 # (x64 or x86) - defaults to x64
-      - name: 'Import GPG key'
-        uses: crazy-max/ghaction-import-gpg@master
-        with:
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-      - name: 'Update password in settings.xml'
-        run: sed --in-place 's/REPLACE_PASSWORD/${{ secrets.NEXUS_PASSWORD }}/' $GITHUB_WORKSPACE/settings.xml
-      - name: 'Deploy'
-        run: mvn deploy -DskipTests --settings $GITHUB_WORKSPACE/settings.xml
-
