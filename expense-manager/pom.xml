@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.github.francis-pang</groupId>
         <artifactId>expense-tally</artifactId>
-        <version>55-SNAPSHOT</version>
+        <version>55</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-tally-model</artifactId>
-            <version>55-SNAPSHOT</version>
+            <version>55</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
