@@ -180,7 +180,7 @@
       </activation>
       <properties>
         <gpg.executable>gpg</gpg.executable>
-        <gpg.keyname>581AF766DB2E4D2E34BD25F8BAE9B627D937C421</gpg.keyname>
+        <gpg.keyname>A04DD4BA4707C7AE14C1A2F116038F95ED5E4136</gpg.keyname>
       </properties>
       <!--Enable snapshots for the built in central repo to direct -->
       <!--all requests to nexus via the mirror -->
