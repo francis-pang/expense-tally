@@ -30,7 +30,7 @@ public final class ExpenseManagerTransaction {
    * @see ExpenseCategory
    * @see ExpenseSubCategory
    * @return a new instance of {@link ExpenseManagerTransaction}
-   * @hrows IllegalArgumentException when any of the enum class is null, or an blank description is provided
+   * @throws IllegalArgumentException when any of the enum class is null, or an blank description is provided
    */
   public static ExpenseManagerTransaction create(double amount, ExpenseCategory category,
                                                  ExpenseSubCategory subCategory,
