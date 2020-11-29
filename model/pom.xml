@@ -3,12 +3,12 @@
     <parent>
         <groupId>com.github.francis-pang</groupId>
         <artifactId>expense-tally</artifactId>
-        <version>56-SNAPSHOT</version>
+        <version>56</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>expense-tally-model</artifactId>
-    <version>56-SNAPSHOT</version>
+    <version>56</version>
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
