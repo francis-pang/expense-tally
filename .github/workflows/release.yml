@@ -54,7 +54,7 @@ jobs:
       - name: 'Prepare release'
         run: mvn --batch-mode release:prepare -Dmaven.javadoc.skip=true -DskipTests
       - name: 'Actual release'
-        run: mvn --batch-mode release:perform -Dmaven.javadoc.skip=true -DskipTests
+        run: mvn --batch-mode release:perform -Dmaven.javadoc.skip=true -DskipTests --settings $GITHUB_WORKSPACE/settings.xml
   deploy:
     name: 'Deploy release version to nexus repository'
     runs-on: 'ubuntu-20.04'
