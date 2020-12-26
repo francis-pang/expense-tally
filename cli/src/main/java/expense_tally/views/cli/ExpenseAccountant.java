@@ -26,14 +26,11 @@ import java.util.Objects;
 public final class ExpenseAccountant {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseAccountant.class);
   private final ExpenseReadable expenseReadable;
-  private final ExpenseTransactionMapper expenseTransactionMapper;
   private final ExpenseReconciler expenseReconciler;
 
   public ExpenseAccountant(ExpenseReadable expenseReadable,
-                           ExpenseTransactionMapper expenseTransactionMapper,
                            ExpenseReconciler expenseReconciler) {
     this.expenseReadable = Objects.requireNonNull(expenseReadable);
-    this.expenseTransactionMapper = Objects.requireNonNull(expenseTransactionMapper);
     this.expenseReconciler = Objects.requireNonNull(expenseReconciler);
   }
 
@@ -54,7 +51,7 @@ public final class ExpenseAccountant {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod;
     try {
       List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
-      expensesByAmountAndPaymentMethod = expenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
+      expensesByAmountAndPaymentMethod = ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
     } catch (SQLException ex) {
       LOGGER
           .atError()

@@ -33,7 +33,6 @@ public final class CommandLineRunner {
     final int DATABASE_ERR_CODE = 3;
 
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();
-    ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
     CommandParser commandParser = new CommandParser();
     PooledDataSourceFactory pooledDataSourceFactory = new PooledDataSourceFactory();
     TransactionFactory transactionFactory = new JdbcTransactionFactory();
@@ -47,8 +46,7 @@ public final class CommandLineRunner {
       SqliteSessionFactoryBuilder sqliteSessionFactoryBuilder = new SqliteSessionFactoryBuilder(pooledDataSourceFactory,
           transactionFactory, sqlSessionFactoryBuilder, configuration);
       ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable, sqliteSessionFactoryBuilder);
-      ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReadable,
-          expenseTransactionMapper, expenseReconciler);
+      ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReadable, expenseReconciler);
       expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));
     } catch (IOException ioException) {
       LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");

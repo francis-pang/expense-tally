@@ -32,10 +32,13 @@ import java.util.Map;
 public final class ExpenseTransactionMapper {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
 
-  private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
+  private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d]+";
   private static final double ZERO_AMOUNT = 0.0;
 
-  public ExpenseTransactionMapper() { // Default implementation
+  /**
+   * Private constructor to avoid creation of object
+   */
+  private ExpenseTransactionMapper() {
   }
 
   /**
@@ -45,7 +48,7 @@ public final class ExpenseTransactionMapper {
    * @param expenseReports the list of expense reports
    * @return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment method.
    */
-  public Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
+  public static Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
       List<ExpenseReport> expenseReports) {
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (ExpenseReport expenseReport : expenseReports) {
