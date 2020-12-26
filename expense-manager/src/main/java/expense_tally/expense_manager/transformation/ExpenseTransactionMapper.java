@@ -32,7 +32,7 @@ import java.util.Map;
 public final class ExpenseTransactionMapper {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
 
-  private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d]+";
+  private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
   private static final double ZERO_AMOUNT = 0.0;
 
   /**
@@ -65,10 +65,10 @@ public final class ExpenseTransactionMapper {
           ? expenseManagerTransaction.getReferenceAmount()
           : expenseManagerTransaction.getAmount();
       PaymentMethod paymentMethod = expenseManagerTransaction.getPaymentMethod();
-      Map<PaymentMethod, List<ExpenseManagerTransaction>> expenseTransactionsByPaymentMethod
-          = expensesByAmountAndPaymentMethod.compute(transactionAmount, (k, v) -> (v == null) ? new HashMap<>() : v);
+      Map<PaymentMethod, List<ExpenseManagerTransaction>> expenseTransactionsByPaymentMethod =
+          expensesByAmountAndPaymentMethod.computeIfAbsent(transactionAmount, k -> new HashMap<>());
       List<ExpenseManagerTransaction> expenseManagerTransactionList =
-          expenseTransactionsByPaymentMethod.compute(paymentMethod, (k, v) -> (v == null) ? new ArrayList<>() : v);
+          expenseTransactionsByPaymentMethod.computeIfAbsent(paymentMethod, k -> new ArrayList<>());
       expenseManagerTransactionList.add(expenseManagerTransaction);
     }
     return expensesByAmountAndPaymentMethod;
