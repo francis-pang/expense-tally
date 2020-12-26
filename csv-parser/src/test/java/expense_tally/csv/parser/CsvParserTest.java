@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -190,6 +192,35 @@ class CsvParserTest {
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
         .containsExactlyInAnyOrder(expectedMaster);
+  }
+
+  @Test
+  void parseCsvFile_invalidMasterCardTransaction() throws IOException, MonetaryAmountException {
+    csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction " +
+        "Ref2,Transaction Ref3" + System.lineSeparator());
+    csvFileWriter.write(System.lineSeparator());
+    csvFileWriter.write("19 Oct 2018,MST, 9.42, ,BUS/MRT 2431992        SI NG 10OCT,5548-2741-0014-1067,," + System.lineSeparator());
+    csvFileWriter.close();
+
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
+        LocalDate.of(2018, 10, 19),
+        TransactionType.MASTERCARD,
+        9.42)
+        .creditAmount(0.00)
+        .transactionRef1("BUS/MRT 2431992        SI NG 10OCT")
+        .transactionRef2("5548-2741-0014-1067")
+        .transactionRef3("")
+        .build();
+
+    try (MockedStatic<MasterCard> mockedMasterCard = Mockito.mockStatic(MasterCard.class)) {
+      mockedMasterCard.when(() -> MasterCard.from(Mockito.any(GenericCsvTransaction.class))).thenThrow(new IllegalArgumentException("Test " +
+          "Mastercard error"));
+      assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
+          .isNotNull()
+          .hasSize(1)
+          .usingRecursiveFieldByFieldElementComparator()
+          .containsExactlyInAnyOrder(expectedGenericCsvTransaction);
+    }
   }
 
   @Test

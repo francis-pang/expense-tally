@@ -146,7 +146,6 @@ public class CsvParser {
         try {
           return MasterCard.from(genericCsvTransaction);
         } catch (RuntimeException runtimeException) {
-          //FIXME: Mockito does not support mocking of static method, so this cannot be tested yet
           LOGGER.atWarn()
               .withThrowable(runtimeException)
               .log("Unable to convert csv transaction to MasterCard transaction: {}", genericCsvTransaction);
