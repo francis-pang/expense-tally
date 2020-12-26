@@ -1,6 +1,10 @@
 package expense_tally.csv.parser;
 
-import expense_tally.model.csv.*;
+import expense_tally.model.csv.AbstractCsvTransaction;
+import expense_tally.model.csv.GenericCsvTransaction;
+import expense_tally.model.csv.MasterCard;
+import expense_tally.model.csv.MonetaryAmountException;
+import expense_tally.model.csv.TransactionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +16,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static expense_tally.csv.parser.CsvPosition.*;
+import static expense_tally.csv.parser.CsvPosition.CREDIT_AMOUNT;
+import static expense_tally.csv.parser.CsvPosition.DEBIT_AMOUNT;
+import static expense_tally.csv.parser.CsvPosition.REFERENCE;
+import static expense_tally.csv.parser.CsvPosition.TRANSACTION_DATE;
+import static expense_tally.csv.parser.CsvPosition.TRANSACTION_REF_1;
+import static expense_tally.csv.parser.CsvPosition.TRANSACTION_REF_2;
+import static expense_tally.csv.parser.CsvPosition.TRANSACTION_REF_3;
 import static expense_tally.model.csv.TransactionType.PAY_NOW;
 import static expense_tally.model.csv.TransactionType.resolve;
 

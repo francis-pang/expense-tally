@@ -1,6 +1,5 @@
 package expense_tally.views.cli;
 
-import expense_tally.csv.parser.CsvParser;
 import expense_tally.expense_manager.persistence.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReportReader;
