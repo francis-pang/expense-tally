@@ -33,7 +33,6 @@ public final class CommandLineRunner {
     final int CSV_FILE_PARSING_ERR_CODE = 2;
     final int DATABASE_ERR_CODE = 3;
 
-    CsvParser csvParser = new CsvParser();
     ExpenseReconciler expenseReconciler = new ExpenseReconciler();
     ExpenseTransactionMapper expenseTransactionMapper = new ExpenseTransactionMapper();
     CommandParser commandParser = new CommandParser();
@@ -49,7 +48,7 @@ public final class CommandLineRunner {
       SqliteSessionFactoryBuilder sqliteSessionFactoryBuilder = new SqliteSessionFactoryBuilder(pooledDataSourceFactory,
           transactionFactory, sqlSessionFactoryBuilder, configuration);
       ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable, sqliteSessionFactoryBuilder);
-      ExpenseAccountant expenseAccountant = new ExpenseAccountant(csvParser, expenseReadable,
+      ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReadable,
           expenseTransactionMapper, expenseReconciler);
       expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));
     } catch (IOException ioException) {
