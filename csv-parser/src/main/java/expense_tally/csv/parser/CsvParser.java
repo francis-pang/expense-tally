@@ -35,6 +35,9 @@ public class CsvParser {
   private static final String CSV_DELIMITER = ",";
   private static final double DEFAULT_AMOUNT = 0.00;
 
+  private CsvParser() {
+  }
+
   // TODO: Refactor to read from a buffer stream so that there isn't a need to unit test the part of reading from a file
   /**
    * Read the content of a CSV file in the pre-defined format from the file with the directory <i>filePath</i>.
