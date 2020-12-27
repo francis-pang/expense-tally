@@ -30,14 +30,13 @@ public final class CommandLineRunner {
     final int CSV_FILE_PARSING_ERR_CODE = 2;
     final int DATABASE_ERR_CODE = 3;
 
-    CommandParser commandParser = new CommandParser();
     PooledDataSourceFactory pooledDataSourceFactory = new PooledDataSourceFactory();
     TransactionFactory transactionFactory = new JdbcTransactionFactory();
     SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
     Configuration configuration = new Configuration();
 
     try {
-      Map<AppParameter, String> optionValues = commandParser.parseCommandArgs(args);
+      Map<AppParameter, String> optionValues = CommandParser.parseCommandArgs(args);
       String databaseFileName = optionValues.get(AppParameter.DATABASE_PATH);
       DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFileName);
       SqliteSessionFactoryBuilder sqliteSessionFactoryBuilder = new SqliteSessionFactoryBuilder(pooledDataSourceFactory,
