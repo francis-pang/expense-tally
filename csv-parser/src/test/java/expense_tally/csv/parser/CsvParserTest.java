@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,14 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CsvParserTest {
-  private static CsvParser csvParser;
   private static Path currentRelativePath;
   private File csvFile;
   private FileWriter csvFileWriter;
 
   @BeforeAll
   static void setUpOnce() {
-    csvParser = new CsvParser();
     currentRelativePath = Paths.get("");
   }
 
@@ -66,7 +66,7 @@ class CsvParserTest {
         .transactionRef3("OTHR eAngBao for Vivien.")
         .build();
 
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
@@ -77,7 +77,7 @@ class CsvParserTest {
   void parseCsvFile_parseHeaderWithNoRow() throws IOException {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.close();
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(0);
   }
@@ -98,7 +98,7 @@ class CsvParserTest {
         .transactionRef3("OTHR eAngBao for Vivien.")
         .build();
 
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
@@ -124,7 +124,7 @@ class CsvParserTest {
         .transactionRef3("")
         .build();
 
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
@@ -135,7 +135,7 @@ class CsvParserTest {
   void parseCsvFile_oneRowDataNoHeader() throws IOException {
     csvFileWriter.write("09 Nov 2018,ICT, 148.88, ,,,\n");
     csvFileWriter.close();
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(0);
   }
@@ -149,7 +149,7 @@ class CsvParserTest {
     csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction Ref2,Transaction Ref3\n");
     csvFileWriter.write("25 Oct 2018,AWL, 20.00, ,00141067,DTL ROCHOR,,,\n");
     csvFileWriter.close();
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(0);
   }
@@ -164,7 +164,7 @@ class CsvParserTest {
     csvFileWriter.write("\n");
     csvFileWriter.write("08 Oct 2018,QCDM, 20000.00, ,,,,\n");
     csvFileWriter.close();
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(0);
   }
@@ -187,11 +187,40 @@ class CsvParserTest {
         .build();
     MasterCard expectedMaster = MasterCard.from(expectedGenericCsvTransaction);
 
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
         .containsExactlyInAnyOrder(expectedMaster);
+  }
+
+  @Test
+  void parseCsvFile_invalidMasterCardTransaction() throws IOException, MonetaryAmountException {
+    csvFileWriter.write("Transaction Date,TransactionType,Debit Amount,Credit Amount,Transaction Ref1,Transaction " +
+        "Ref2,Transaction Ref3" + System.lineSeparator());
+    csvFileWriter.write(System.lineSeparator());
+    csvFileWriter.write("19 Oct 2018,MST, 9.42, ,BUS/MRT 2431992        SI NG 10OCT,5548-2741-0014-1067,," + System.lineSeparator());
+    csvFileWriter.close();
+
+    GenericCsvTransaction expectedGenericCsvTransaction = new GenericCsvTransaction.Builder(
+        LocalDate.of(2018, 10, 19),
+        TransactionType.MASTERCARD,
+        9.42)
+        .creditAmount(0.00)
+        .transactionRef1("BUS/MRT 2431992        SI NG 10OCT")
+        .transactionRef2("5548-2741-0014-1067")
+        .transactionRef3("")
+        .build();
+
+    try (MockedStatic<MasterCard> mockedMasterCard = Mockito.mockStatic(MasterCard.class)) {
+      mockedMasterCard.when(() -> MasterCard.from(Mockito.any(GenericCsvTransaction.class))).thenThrow(new IllegalArgumentException("Test " +
+          "Mastercard error"));
+      assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
+          .isNotNull()
+          .hasSize(1)
+          .usingRecursiveFieldByFieldElementComparator()
+          .containsExactlyInAnyOrder(expectedGenericCsvTransaction);
+    }
   }
 
   @Test
@@ -211,7 +240,7 @@ class CsvParserTest {
         .transactionRef3("")
         .build();
 
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
@@ -220,7 +249,7 @@ class CsvParserTest {
 
   @Test
   void parseCsvFile_ioException() {
-    assertThatThrownBy(() -> csvParser.parseCsvFile("invalidfile.csv"))
+    assertThatThrownBy(() -> CsvParser.parseCsvFile("invalidfile.csv"))
         .isInstanceOf(IOException.class);
   }
 
@@ -247,7 +276,7 @@ class CsvParserTest {
 
     MasterCard expectedMaster = MasterCard.from(expectedGenericCsvTransaction);
 
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(1)
         .usingRecursiveFieldByFieldElementComparator()
@@ -265,7 +294,7 @@ class CsvParserTest {
     csvFileWriter.write("04 Oct 2018,MST, 10.16, 15.6,test ref 1 SI NG 10OCT,,test ref 3\n");
     csvFileWriter.close();
 
-    assertThat(csvParser.parseCsvFile(csvFile.getAbsolutePath()))
+    assertThat(CsvParser.parseCsvFile(csvFile.getAbsolutePath()))
         .isNotNull()
         .hasSize(0);
   }
