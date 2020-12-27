@@ -33,6 +33,7 @@ public final class ExpenseAccountant {
 
   /**
    * Reconciles the data from CSV file against the transaction records in the Expense Manager application
+   * @param csvFilename filename of the comma-separated value file
    * @throws IOException if there is error to read the CSV file
    * @throws SQLException if there is error to access the database record in Expense Manager
    */
