@@ -150,18 +150,24 @@ public final class ExpenseReconciler {
     LocalDate csvTransactionDate = abstractCsvTransaction.getTransactionDate();
     int matchingTransactionCount = calculateNumberOfMatchingTransactions(csvTransactionDate, possibleMatchingExpenses);
     return switch (matchingTransactionCount) {
-      case 0 -> {
-        LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", abstractCsvTransaction);
-        yield false;
-      }
-      case 1 -> {
-        LOGGER.atTrace().log("Found a matching transaction");
-        yield true;
-      }
-      default -> {
-        LOGGER.atInfo().log("Found more than 1 matching transaction for this: {}", abstractCsvTransaction);
-        yield true;
-      }
+      case 0 -> handleMissingCsvTransaction(abstractCsvTransaction);
+      case 1 -> handleExactMatchCsvTransaction();
+      default -> handleMultipleMatchingTransaction(abstractCsvTransaction);
     };
+  }
+
+  private static boolean handleMissingCsvTransaction(AbstractCsvTransaction abstractCsvTransaction) {
+    LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", abstractCsvTransaction);
+    return false;
+  }
+
+  private static boolean handleExactMatchCsvTransaction() {
+    LOGGER.atTrace().log("Found a matching transaction");
+    return true;
+  }
+
+  private static boolean handleMultipleMatchingTransaction(AbstractCsvTransaction abstractCsvTransaction) {
+    LOGGER.atInfo().log("Found more than 1 matching transaction for this: {}", abstractCsvTransaction);
+    return true;
   }
 }
