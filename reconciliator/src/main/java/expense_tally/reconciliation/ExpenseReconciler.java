@@ -28,7 +28,10 @@ public final class ExpenseReconciler {
   private static final String NULL_CSV_TRANSACTION_EXCEPTION_MSG = "Null reference is not an accepted csvTransactions value.";
   private static final String NULL_EXPENSE_TRANSACTION_MAP_EXCEPTION_MSG = "Null reference is not an accepted expenseTransactionMap value.";
 
-  public ExpenseReconciler() { //Default implementation
+  /**
+   * Private default constructor so that no one can create an object based on this class
+   */
+  private ExpenseReconciler() {
   }
 
   /**
@@ -38,9 +41,9 @@ public final class ExpenseReconciler {
    *
    * @param abstractCsvTransactions                  list of transactions in the CSV file
    * @param expensesByAmountAndPaymentMethod a collection of the database record in the Expense Manager
-   * @return the number of transaction that is not found in the CSV
+   * @return the list of transaction that is not found in the CSV
    */
-  public List<DiscrepantTransaction> reconcileBankData(
+  public static List<DiscrepantTransaction> reconcileBankData(
       final List<? extends AbstractCsvTransaction> abstractCsvTransactions,
       final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod) {
     /*
@@ -146,16 +149,19 @@ public final class ExpenseReconciler {
         .getOrDefault(expensePaymentMethod, Collections.emptyList());
     LocalDate csvTransactionDate = abstractCsvTransaction.getTransactionDate();
     int matchingTransactionCount = calculateNumberOfMatchingTransactions(csvTransactionDate, possibleMatchingExpenses);
-    switch (matchingTransactionCount) {
-      case 0:
+    return switch (matchingTransactionCount) {
+      case 0 -> {
         LOGGER.atInfo().log("Transaction in the CSV file does not exist in Expense Manager: {}", abstractCsvTransaction);
-        return false;
-      case 1:
+        yield false;
+      }
+      case 1 -> {
         LOGGER.atTrace().log("Found a matching transaction");
-        return true;
-      default:
+        yield true;
+      }
+      default -> {
         LOGGER.atInfo().log("Found more than 1 matching transaction for this: {}", abstractCsvTransaction);
-        return true;
-    }
+        yield true;
+      }
+    };
   }
 }

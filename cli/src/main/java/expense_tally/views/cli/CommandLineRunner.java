@@ -5,8 +5,6 @@ import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReportReader;
 import expense_tally.expense_manager.persistence.SqlLiteConnection;
 import expense_tally.expense_manager.persistence.SqliteSessionFactoryBuilder;
-import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
-import expense_tally.reconciliation.ExpenseReconciler;
 import expense_tally.views.AppParameter;
 import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.apache.ibatis.session.Configuration;
@@ -32,7 +30,6 @@ public final class CommandLineRunner {
     final int CSV_FILE_PARSING_ERR_CODE = 2;
     final int DATABASE_ERR_CODE = 3;
 
-    ExpenseReconciler expenseReconciler = new ExpenseReconciler();
     CommandParser commandParser = new CommandParser();
     PooledDataSourceFactory pooledDataSourceFactory = new PooledDataSourceFactory();
     TransactionFactory transactionFactory = new JdbcTransactionFactory();
@@ -46,7 +43,7 @@ public final class CommandLineRunner {
       SqliteSessionFactoryBuilder sqliteSessionFactoryBuilder = new SqliteSessionFactoryBuilder(pooledDataSourceFactory,
           transactionFactory, sqlSessionFactoryBuilder, configuration);
       ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable, sqliteSessionFactoryBuilder);
-      ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReadable, expenseReconciler);
+      ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReadable);
       expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));
     } catch (IOException ioException) {
       LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");

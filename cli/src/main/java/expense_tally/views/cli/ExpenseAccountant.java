@@ -26,12 +26,9 @@ import java.util.Objects;
 public final class ExpenseAccountant {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseAccountant.class);
   private final ExpenseReadable expenseReadable;
-  private final ExpenseReconciler expenseReconciler;
 
-  public ExpenseAccountant(ExpenseReadable expenseReadable,
-                           ExpenseReconciler expenseReconciler) {
+  public ExpenseAccountant(ExpenseReadable expenseReadable) {
     this.expenseReadable = Objects.requireNonNull(expenseReadable);
-    this.expenseReconciler = Objects.requireNonNull(expenseReconciler);
   }
 
   /**
@@ -59,6 +56,6 @@ public final class ExpenseAccountant {
           .log("Problem accessing the database.");
       throw ex;
     }
-    expenseReconciler.reconcileBankData(bankTransactions, expensesByAmountAndPaymentMethod);
+    ExpenseReconciler.reconcileBankData(bankTransactions, expensesByAmountAndPaymentMethod);
   }
 }

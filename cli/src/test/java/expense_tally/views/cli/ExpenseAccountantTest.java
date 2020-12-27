@@ -6,7 +6,6 @@ import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -19,7 +18,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseAccountantTest {
@@ -29,8 +27,6 @@ class ExpenseAccountantTest {
   // specify expectations on them, and verify those expectations."
   @Mock
   private ExpenseReportReader mockExpenseReportReader;
-  @Mock
-  private ExpenseReconciler mockExpenseReconciler;
   @InjectMocks
   private ExpenseAccountant expenseAccountant;
 
@@ -38,32 +34,25 @@ class ExpenseAccountantTest {
   @Test
   void reconcileData_noError() throws SQLException, IOException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
-    Mockito.when(mockExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
-        .thenReturn(Collections.emptyList());
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
       try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
                Mockito.mockStatic(ExpenseTransactionMapper.class)) {
         mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
             .thenReturn(Collections.emptyMap());
-        expenseAccountant.reconcileData("./some.csv");
-
+        try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
+          mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
+              .thenReturn(Collections.emptyList());
+          expenseAccountant.reconcileData("./some.csv");
+        }
       }
     }
     Mockito.verify(mockExpenseReportReader, Mockito.times(1)).getExpenseTransactions();
-    Mockito.verify(mockExpenseReconciler, Mockito.times(1)).reconcileBankData(Collections.emptyList(), Collections.emptyMap());
   }
 
   @Test
   void constructor_nullExpenseReadable() {
-    assertThatThrownBy(() -> new ExpenseAccountant(null, mockExpenseReconciler))
-        .isInstanceOf(NullPointerException.class)
-        .hasNoCause();
-  }
-
-  @Test
-  void constructor_nullExpenseReconciler() {
-    assertThatThrownBy(() -> new ExpenseAccountant(mockExpenseReportReader, null))
+    assertThatThrownBy(() -> new ExpenseAccountant(null))
         .isInstanceOf(NullPointerException.class)
         .hasNoCause();
   }
@@ -76,7 +65,6 @@ class ExpenseAccountantTest {
           .isInstanceOf(BufferOverflowException.class)
           .hasNoCause();
     }
-    verifyNoInteractions(mockExpenseReconciler);
   }
 
   @Test
@@ -89,23 +77,24 @@ class ExpenseAccountantTest {
           .isInstanceOf(SQLException.class)
           .hasMessage("test sql exception");
     }
-    Mockito.verify(mockExpenseReconciler, Mockito.never()).reconcileBankData(ArgumentMatchers.anyList(), ArgumentMatchers.anyMap());
   }
 
   @Test
   void reconcileData_expenseReconcilerError() throws SQLException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
-    Mockito.when(mockExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
-        .thenThrow(new IllegalStateException("test illegal state exception"));
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
       try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
                Mockito.mockStatic(ExpenseTransactionMapper.class)) {
         mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
             .thenReturn(Collections.emptyMap());
-        assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("test illegal state exception");
+        try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
+          mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
+              .thenThrow(new IllegalStateException("test illegal state exception"));
+          assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+              .isInstanceOf(IllegalStateException.class)
+              .hasMessage("test illegal state exception");
+        }
       }
     }
   }
@@ -124,6 +113,5 @@ class ExpenseAccountantTest {
             .hasMessage("test runtime exception");
       }
     }
-    verifyNoInteractions(mockExpenseReconciler);
   }
 }
