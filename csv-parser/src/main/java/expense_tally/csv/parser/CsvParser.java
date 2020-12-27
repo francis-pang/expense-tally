@@ -26,6 +26,25 @@ import static expense_tally.csv.parser.CsvPosition.TRANSACTION_REF_3;
 import static expense_tally.model.csv.TransactionType.PAY_NOW;
 import static expense_tally.model.csv.TransactionType.resolve;
 
+/**
+ * Parses a CSV file of bank transaction.
+ *
+ * <p>Each record in the CSV file is a GenericCsvTransaction. The format of the CSV file is pre-defined in a fixed sequence as below:</p>
+ *
+ * <ol>
+ * <li>Transaction Date</li>
+ * <li>TransactionType</li>
+ * <li>Debit Amount</li>
+ * <li>Credit Amount</li>
+ * <li>Transaction Ref1</li>
+ * <li>Transaction Ref2</li>
+ * <li>Transaction Ref3</li>
+ * </ol>
+ *
+ * <p>Note that Transaction Ref1/2/3 are optional field. Empty field will be set to empty String.</p>
+ *
+ * @see GenericCsvTransaction
+ */
 public class CsvParser {
   private static final Logger LOGGER = LogManager.getLogger(CsvParser.class);
   private static final String CSV_HEADER_LINE = "Transaction Date";
