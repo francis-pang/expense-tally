@@ -2,7 +2,6 @@ package expense_tally.views.cli;
 
 import expense_tally.views.AppParameter;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -11,23 +10,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CommandParserTest {
-  private CommandParser commandParser;
-
-  @BeforeEach
-  void setUp() {
-    commandParser = new CommandParser();
-  }
-
   @Test
   void parseCommandArgs_null() {
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(null))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(null))
         .isInstanceOf(NullPointerException.class);
   }
 
   @Test
   void parseCommandArgs_emptyArray() {
     String[] testArgs = new String[]{};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Need to provide both CSV and database path.");
   }
@@ -35,7 +27,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_1element() {
     String[] testArgs = new String[]{"csv-filepath"};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to find value for a key.");
   }
@@ -43,7 +35,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_1ValidParameter() {
     String[] testArgs = new String[]{"csv-filepath=./some.csv"};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Need to provide both CSV and database path.");
   }
@@ -55,7 +47,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_allValidParametersWithEquals() {
     String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db"};
-    Map<AppParameter, String> appParameterMap = commandParser.parseCommandArgs(testArgs);
+    Map<AppParameter, String> appParameterMap = CommandParser.parseCommandArgs(testArgs);
     SoftAssertions softAssertions = new SoftAssertions();
     assertThat(appParameterMap).isNotNull();
     softAssertions.assertThat(appParameterMap).extractingByKey(AppParameter.CSV_PATH).isEqualTo("./some.csv");
@@ -66,7 +58,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_optionWithoutValue() {
     String[] testArgs = new String[]{"csv-filepath", ""};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to process empty value for option csv-filepath");
   }
@@ -77,7 +69,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_allValidParametersWithoutEquals() {
     String[] testArgs = new String[]{"csv-filepath", "./some.csv", "database-filepath", "./database.db"};
-    Map<AppParameter, String> appParameterMap = commandParser.parseCommandArgs(testArgs);
+    Map<AppParameter, String> appParameterMap = CommandParser.parseCommandArgs(testArgs);
     SoftAssertions softAssertions = new SoftAssertions();
     assertThat(appParameterMap).isNotNull();
     softAssertions.assertThat(appParameterMap).extractingByKey(AppParameter.CSV_PATH).isEqualTo("./some.csv");
@@ -92,7 +84,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_allValidParametersWithoutEqualsAndSpace() {
     String[] testArgs = new String[]{"csv-filepath", "./some.csv", "database-filepath", "./database.db"};
-    Map<AppParameter, String> appParameterMap = commandParser.parseCommandArgs(testArgs);
+    Map<AppParameter, String> appParameterMap = CommandParser.parseCommandArgs(testArgs);
     SoftAssertions softAssertions = new SoftAssertions();
     assertThat(appParameterMap).isNotNull();
     softAssertions.assertThat(appParameterMap).extractingByKey(AppParameter.CSV_PATH).isEqualTo("./some.csv");
@@ -106,7 +98,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_allValidParametersMixedFormat() {
     String[] testArgs = new String[]{"csv-filepath", "./some.csv", "database-filepath=./database.db"};
-    Map<AppParameter, String> appParameterMap = commandParser.parseCommandArgs(testArgs);
+    Map<AppParameter, String> appParameterMap = CommandParser.parseCommandArgs(testArgs);
     assertThat(appParameterMap).isNotNull();
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(appParameterMap).extractingByKey(AppParameter.CSV_PATH).isEqualTo("./some.csv");
@@ -120,7 +112,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_allValidParametersUnknownExtraParameter() {
     String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db", "extra=something"};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to recognised option extra=something");
   }
@@ -128,7 +120,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_allValidParametersOneMisspelt() {
     String[] testArgs = new String[]{"cv-filepath", "./some.csv", "database-filepath=./database.db"};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("appParameter is invalid.");
   }
@@ -139,7 +131,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_missingValueAfterEquals() {
     String[] testArgs = new String[]{"csv-filepath", "=", "./some.csv", "database-filepath", "="};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to find value for a key.");
   }
@@ -150,7 +142,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_emptyValueString() {
     String[] testArgs = new String[]{"csv-filepath", "=", "./some.csv", "database-filepath", "=", ""};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to process empty value for option database-filepath");
   }
@@ -161,7 +153,7 @@ class CommandParserTest {
   @Test
   void parseCommandArgs_missingValueAsBlankSpace() {
     String[] testArgs = new String[]{"csv-filepath", "=", "./some.csv", "database-filepath", "=", "    "};
-    assertThatThrownBy(() -> commandParser.parseCommandArgs(testArgs))
+    assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to process empty value for option database-filepath");
   }

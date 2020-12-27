@@ -10,7 +10,10 @@ import java.util.Map;
 public final class CommandParser {
   private static final Logger LOGGER = LogManager.getLogger(CommandParser.class);
 
-  public CommandParser() { //Default implementation
+  /**
+   * Private default constructor to avoid creating new object based on this class
+   */
+  private CommandParser() { //Default implementation
   }
 
   /**
@@ -18,7 +21,7 @@ public final class CommandParser {
    * @param args command line arguments
    * @throws IllegalArgumentException if the arguments provided is malformed or missing compulsory field
    */
-  public Map<AppParameter, String> parseCommandArgs(String[] args) {
+  public static Map<AppParameter, String> parseCommandArgs(String[] args) {
     final String EQUAL_SEPARATOR = "=";
     Map<AppParameter, String> optionValues = new EnumMap<>(AppParameter.class);
     // Expect to received --database-filepath = XXXX --csv-filepath= XXXX
@@ -60,7 +63,7 @@ public final class CommandParser {
     return optionValues;
   }
 
-  private boolean haveAllCompulsoryFieldsFilled(Map<AppParameter, String> optionValues) {
+  private static boolean haveAllCompulsoryFieldsFilled(Map<AppParameter, String> optionValues) {
     for (AppParameter appParameter : AppParameter.values()) {
       if (appParameter.isCompulsory() && !optionValues.containsKey(appParameter)) {
         return false;
@@ -69,7 +72,7 @@ public final class CommandParser {
     return true;
   }
 
-  private String getStringFromArray(String[] args, int position, String key) {
+  private static String getStringFromArray(String[] args, int position, String key) {
     if (position == args.length) {
       LOGGER.atError().log("Unable to find value for key {}", key);
       throw new IllegalArgumentException("Unable to find value for a key.");
@@ -83,7 +86,7 @@ public final class CommandParser {
    * @param optionString string containing the option and its associated value
    * @return the extracted key-value pair of the command line option if exists, else returns null
    */
-  private AppParameterValuePair extractOptionKeyValuePair(String optionString) {
+  private static AppParameterValuePair extractOptionKeyValuePair(String optionString) {
     final char EQUAL_SIGN = '=';
     int indexOfEqualsSign = optionString.indexOf(EQUAL_SIGN);
     String key = optionString.substring(0, indexOfEqualsSign);
@@ -100,7 +103,10 @@ public final class CommandParser {
     private AppParameter key;
     private String value;
 
-    public AppParameterValuePair() {// Default implementation
+    /**
+     * Private default constructor to avoid creating new object based on this class
+     */
+    private AppParameterValuePair() {
     }
 
     /**

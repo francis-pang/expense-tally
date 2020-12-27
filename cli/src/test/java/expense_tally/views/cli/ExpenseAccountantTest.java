@@ -6,9 +6,9 @@ import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseAccountantTest {
@@ -26,109 +25,93 @@ class ExpenseAccountantTest {
   // Hence it is hard to verify on the result/ outcome. in this case, I will follow the answer seen in
   // https://stackoverflow.com/a/1607713/1522867 to "to use mocking framework that will create the mocks on the fly,
   // specify expectations on them, and verify those expectations."
-
-  @Mock
-  private CsvParser mockCsvParser;
   @Mock
   private ExpenseReportReader mockExpenseReportReader;
-  @Mock
-  private ExpenseTransactionMapper mockExpenseTransactionMapper;
-  @Mock
-  private ExpenseReconciler mockExpenseReconciler;
   @InjectMocks
   private ExpenseAccountant expenseAccountant;
 
 
   @Test
   void reconcileData_noError() throws SQLException, IOException {
-    Mockito.when(mockCsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
-    Mockito.when(mockExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
-        .thenReturn(Collections.emptyMap());
-    Mockito.when(mockExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
-        .thenReturn(Collections.emptyList());
-    expenseAccountant.reconcileData("./some.csv");
+    try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
+      mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
+      try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
+               Mockito.mockStatic(ExpenseTransactionMapper.class)) {
+        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
+            .thenReturn(Collections.emptyMap());
+        try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
+          mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
+              .thenReturn(Collections.emptyList());
+          expenseAccountant.reconcileData("./some.csv");
+        }
+      }
+    }
     Mockito.verify(mockExpenseReportReader, Mockito.times(1)).getExpenseTransactions();
-    Mockito.verify(mockExpenseTransactionMapper, Mockito.times(1)).mapExpenseReportsToMap(Collections.emptyList());
-    Mockito.verify(mockExpenseReconciler, Mockito.times(1)).reconcileBankData(Collections.emptyList(), Collections.emptyMap());
   }
 
   @Test
-  void constructor_nullCsvParser() throws SQLException, IOException {
-    assertThatThrownBy(() -> new ExpenseAccountant(null, mockExpenseReportReader, mockExpenseTransactionMapper,
-        mockExpenseReconciler))
+  void constructor_nullExpenseReadable() {
+    assertThatThrownBy(() -> new ExpenseAccountant(null))
         .isInstanceOf(NullPointerException.class)
         .hasNoCause();
   }
 
   @Test
-  void constructor_nullExpenseReadable() throws SQLException, IOException {
-    assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, null, mockExpenseTransactionMapper,
-        mockExpenseReconciler))
-        .isInstanceOf(NullPointerException.class)
-        .hasNoCause();
+  void reconcileData_csvParsableError() {
+    try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
+      mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenThrow(new BufferOverflowException());
+      assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+          .isInstanceOf(BufferOverflowException.class)
+          .hasNoCause();
+    }
   }
 
   @Test
-  void constructor_nullExpenseReconciler() throws SQLException, IOException {
-    assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, mockExpenseReportReader, null,
-        mockExpenseReconciler))
-        .isInstanceOf(NullPointerException.class)
-        .hasNoCause();
-  }
-
-  @Test
-  void constructor_nullExpenseTransactionMapper() throws SQLException, IOException {
-    String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db"};
-    assertThatThrownBy(() -> new ExpenseAccountant(mockCsvParser, mockExpenseReportReader,
-        mockExpenseTransactionMapper,null))
-        .isInstanceOf(NullPointerException.class)
-        .hasNoCause();
-  }
-
-  @Test
-  void reconcileData_csvParsableError() throws SQLException, IOException {
-    Mockito.when(mockCsvParser.parseCsvFile("./some.csv")).thenThrow(new BufferOverflowException());
-    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
-        .isInstanceOf(BufferOverflowException.class)
-        .hasNoCause();
-    verifyNoInteractions(mockExpenseReconciler);
-  }
-
-  @Test
-  void reconcileData_expenseReadableError() throws SQLException, IOException {
-    Mockito.when(mockCsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
+  void reconcileData_expenseReadableError() throws SQLException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenThrow(new SQLException("test sql exception"));
     String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db"};
-    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
-        .isInstanceOf(SQLException.class)
-        .hasMessage("test sql exception");
-    Mockito.verify(mockExpenseTransactionMapper, Mockito.never()).mapExpenseReportsToMap(ArgumentMatchers.anyList());
-    Mockito.verify(mockExpenseReconciler, Mockito.never()).reconcileBankData(ArgumentMatchers.anyList(), ArgumentMatchers.anyMap());
+    try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
+      mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
+      assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+          .isInstanceOf(SQLException.class)
+          .hasMessage("test sql exception");
+    }
   }
 
   @Test
-  void reconcileData_expenseReconcilerError() throws SQLException, IOException {
-    Mockito.when(mockCsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
+  void reconcileData_expenseReconcilerError() throws SQLException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
-    Mockito.when(mockExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
-        .thenReturn(Collections.emptyMap());
-    Mockito.when(mockExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
-        .thenThrow(new IllegalStateException("test illegal state exception"));
-    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("test illegal state exception");
+    try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
+      mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
+      try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
+               Mockito.mockStatic(ExpenseTransactionMapper.class)) {
+        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
+            .thenReturn(Collections.emptyMap());
+        try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
+          mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
+              .thenThrow(new IllegalStateException("test illegal state exception"));
+          assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+              .isInstanceOf(IllegalStateException.class)
+              .hasMessage("test illegal state exception");
+        }
+      }
+    }
   }
 
   @Test
-  void reconcileData_expenseTransactionMapperError() throws SQLException, IOException {
-    Mockito.when(mockCsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
+  void reconcileData_expenseTransactionMapperError() throws SQLException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
-    Mockito.when(mockExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
-        .thenThrow(new RuntimeException("test runtime exception"));
-    assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
-        .isInstanceOf(RuntimeException.class)
-        .hasMessage("test runtime exception");
-    verifyNoInteractions(mockExpenseReconciler);
+    try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
+      mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
+      try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
+               Mockito.mockStatic(ExpenseTransactionMapper.class)) {
+        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
+            .thenThrow(new RuntimeException("test runtime exception"));
+        assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessage("test runtime exception");
+      }
+    }
   }
 }
