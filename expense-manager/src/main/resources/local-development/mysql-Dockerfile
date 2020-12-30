@@ -19,3 +19,8 @@ ENV MYSQL_DATABASE=expense-manager
 # are required for a user to be created.
 ENV MYSQL_USER=expensetally
 ENV MYSQL_PASSWORD=Password1
+
+RUN apt-get update;
+RUN apt-get --verbose-versions --assume-yes dist-upgrade;
+RUN apt-get --assume-yes autoremove;
+RUN apt-get --assume-yes autoclean;

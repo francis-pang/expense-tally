@@ -7,7 +7,8 @@
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
 
 # Overview #
-This application will aim to reconcile the past transaction history against my expense tracker application
+This application will aim to reconcilate the past transaction history against my expense tracker application
+>>>>>>> Add a docker container to run a local instance of MySQL database server for local development
 
 The command line version of the application needs to be provided 2 information before it is able to execute. They are:
 
@@ -21,7 +22,7 @@ The application accepts the parameters in 3 different formats:
 2. option = XXXX
 3. option XXXX
 
-Any other format of input is not accepted, and will result in system error. 
+Any other format of input is unacceptable, and will result in system error. 
 
 # Architecture Diagram #
 ![Expense Tally Architecture Diagram](docs/architecture-diagram.svg)
@@ -35,6 +36,20 @@ application against the bank provided data. Below is a brief overview of the typ
    an update to the server database.
 3. User enters a URL to view all the discrepant transaction entries. He can resolve those discrepant entries, and the 
    database file in Dropbox will be updated.
+
+# Database #
+Due to the requirement, there is a Docker file inside the _expense-tally-expense-manager_ module. This Docker file define all the necessary ingredient to set up a new database server used by the _expense-tally-expense-manager_ module to persist SQLite exported data file. Developer/ operator can use the following command to run the created Docker image:
+```Shell
+# Run this at the root directory
+# This set the following option:
+# -d detached
+# --name name of the container
+# -p  Use the -p flag to explicitly map a single port or range of ports. The port number inside the container (where 
+# the service listens) does not need to match the port number exposed on the outside of the container (where clients 
+# connect).
+docker container run -d=true --name=em-db -p 3306:3306/tcp expense-tally/em-db:latest
+mysql --host=172.27.53.120 --port=3306 --user=expensetally --database=expense-manager --password
+```
 
 # Coding Standard #
 * The javadocs in this project are inspired by the guidelines in 
