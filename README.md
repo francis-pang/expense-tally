@@ -34,7 +34,7 @@ Due to the requirement, there is a Docker file inside the _expense-tally-expense
 # the service listens) does not need to match the port number exposed on the outside of the container (where clients 
 # connect).
 docker container run -d=true --name=em-db -p 3306:3306/tcp expense-tally/em-db:latest
-mysql --host=172.27.53.120 --port=3306 --user=expensetally --database=expense-manager --password
+mysql --host=172.27.53.120 --port=3306 --user=expensetally --database=expense_manager --password
 ```
 
 **Note**

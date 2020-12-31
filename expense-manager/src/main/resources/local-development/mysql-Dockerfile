@@ -12,7 +12,7 @@ ENV MYSQL_ROOT_PASSWORD=Password1
 # This variable is optional and allows you to specify the name of a database to be created on image startup. If a user/
 # password was supplied (see below) then that user will be granted superuser access (corresponding to GRANT ALL) to this
 # database.
-ENV MYSQL_DATABASE=expense-manager
+ENV MYSQL_DATABASE=expense_manager
 
 # These variables are optional, used in conjunction to create a new user and to set that user's password. This user will
 # be granted superuser permissions (see above) for the database specified by the MYSQL_DATABASE variable. Both variables
@@ -20,7 +20,13 @@ ENV MYSQL_DATABASE=expense-manager
 ENV MYSQL_USER=expensetally
 ENV MYSQL_PASSWORD=Password1
 
-RUN apt-get update;
+RUN apt update;
+RUN apt install apt-utils --assume-yes;
 RUN apt-get --verbose-versions --assume-yes dist-upgrade;
 RUN apt-get --assume-yes autoremove;
 RUN apt-get --assume-yes autoclean;
+
+# Add the content of the sql-scripts/ directory to your image
+# All scripts in docker-entrypoint-initdb.d/ are automatically
+# executed during container startup
+COPY expense_manager.sql /docker-entrypoint-initdb.d/
