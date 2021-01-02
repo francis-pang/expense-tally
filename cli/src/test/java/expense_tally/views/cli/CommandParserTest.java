@@ -1,6 +1,7 @@
 package expense_tally.views.cli;
 
 import expense_tally.views.AppParameter;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +58,7 @@ class CommandParserTest {
 
   @Test
   void parseCommandArgs_optionWithoutValue() {
-    String[] testArgs = new String[]{"csv-filepath", ""};
+    String[] testArgs = new String[]{"csv-filepath", StringUtils.EMPTY};
     assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to process empty value for option csv-filepath");
@@ -141,7 +142,8 @@ class CommandParserTest {
    */
   @Test
   void parseCommandArgs_emptyValueString() {
-    String[] testArgs = new String[]{"csv-filepath", "=", "./some.csv", "database-filepath", "=", ""};
+    String[] testArgs = new String[]{"csv-filepath", "=", "./some.csv", "database-filepath", "=",
+            StringUtils.EMPTY};
     assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Unable to process empty value for option database-filepath");

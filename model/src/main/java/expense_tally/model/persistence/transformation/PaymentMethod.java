@@ -32,7 +32,7 @@ public enum PaymentMethod {
    * @return the payment method represented by this <i>value</i>
    */
   public static PaymentMethod resolve(String paymentMethodStr) {
-    if (paymentMethodStr == null || "".equals(paymentMethodStr.trim())) {
+    if (paymentMethodStr == null || paymentMethodStr.isBlank()) {
       return null;
     }
     for (PaymentMethod paymentMethod : values()) {

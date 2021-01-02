@@ -1,5 +1,6 @@
 package expense_tally.model.csv;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,7 +95,7 @@ public final class MasterCard extends AbstractCsvTransaction {
   }
 
   private static MonthDay toMonthDayFromPartialDate(final String date) throws InvalidReferenceDateException {
-    /**
+    /*
      * There is a null check in the program flow. This is dead code, because there is only 1 caller at the time of
      * writing, and the caller isn't going pass an null date. However, rather than removing the check for 100% code
      * coverage, I choose to leave it here for defensive coding purpose. Refers to discussion on
@@ -133,7 +134,7 @@ public final class MasterCard extends AbstractCsvTransaction {
     String trimmedString = string.trim();
     int positionOfLastSpace = trimmedString.lastIndexOf(SPACE_CHARACTER);
     if (positionOfLastSpace == -1) {
-      return "";
+      return StringUtils.EMPTY;
     }
     return trimmedString.substring(positionOfLastSpace + 1);
   }
@@ -156,7 +157,7 @@ public final class MasterCard extends AbstractCsvTransaction {
     } catch (InvalidReferenceDateException | RuntimeException e) {
       LOGGER.atWarn()
           .withThrowable(e)
-          .log("Cannot retrieve transaction date {0} from MasterCard transaction reference 1 {1}. Setting to bank " +
+          .log("Cannot retrieve transaction date {} from MasterCard transaction reference 1 {}. Setting to bank " +
               "transaction date.", transactionDate, transactionRef1);
     }
     return transactionDate;
