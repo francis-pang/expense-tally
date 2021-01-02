@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AppStringConstantTest {
-
     @Test
     void resolve_value() {
         assertThat(AppStringConstant.resolve("NULL"))
