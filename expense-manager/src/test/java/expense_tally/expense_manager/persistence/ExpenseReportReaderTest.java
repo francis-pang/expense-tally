@@ -113,7 +113,7 @@ class ExpenseReportReaderTest {
     Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(Collections.emptyList());
     assertThat(expenseReportReader.getExpenseTransactions())
             .isNotNull()
-            .hasSize(0);
+            .isEmpty();
   }
 
   @Test
