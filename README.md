@@ -8,7 +8,6 @@
 
 # Overview #
 This application will aim to reconcilate the past transaction history against my expense tracker application
->>>>>>> Add a docker container to run a local instance of MySQL database server for local development
 
 The command line version of the application needs to be provided 2 information before it is able to execute. They are:
 
@@ -38,7 +37,9 @@ application against the bank provided data. Below is a brief overview of the typ
    database file in Dropbox will be updated.
 
 # Database #
-Due to the requirement, there is a Docker file inside the _expense-tally-expense-manager_ module. This Docker file define all the necessary ingredient to set up a new database server used by the _expense-tally-expense-manager_ module to persist SQLite exported data file. Developer/ operator can use the following command to run the created Docker image:
+Due to the requirement, there is a Docker file inside the _expense-tally-expense-manager_ module. This Docker file 
+define all the necessary ingredient to set up a new database server used by the _expense-tally-expense-manager_ module 
+to persist SQLite exported data file. Developer/ operator can use the following command to run the created Docker image:
 ```Shell
 # Run this at the root directory
 # This set the following option:
