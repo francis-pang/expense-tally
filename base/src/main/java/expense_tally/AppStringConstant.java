@@ -23,7 +23,7 @@ public enum AppStringConstant {
    * Return {@link AppStringConstant} that represent this string
    * @param value String value of the {@link AppStringConstant}
    * @return {@link AppStringConstant} that represent this string
-   * @throws IllegalAccessException if value is null or empty.
+   * @throws IllegalArgumentException if value is null or empty.
    */
   public static AppStringConstant resolve(String value) {
     if (value == null || value.isBlank()) {
