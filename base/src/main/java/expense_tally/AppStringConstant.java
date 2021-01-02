@@ -25,9 +25,9 @@ public enum AppStringConstant {
    * @return {@link AppStringConstant} that represent this string
    * @throws IllegalAccessException if value is null or empty.
    */
-  public static AppStringConstant resolve(String value) throws IllegalAccessException {
+  public static AppStringConstant resolve(String value) {
     if (value == null || value.isBlank()) {
-      throw new IllegalAccessException("value cannot be null or empty");
+      throw new IllegalArgumentException("value cannot be null or empty");
     }
     for (AppStringConstant appStringConstant : values()) {
       if (appStringConstant.value.contentEquals(value)) {
