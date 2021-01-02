@@ -1,5 +1,7 @@
 package expense_tally.model.csv;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +28,7 @@ public final class PaymentCardValidator {
    * @return true if payment card number is valid, or else return false
    */
   public static boolean isPaymentCardValid(String cardNumber, TransactionType transactionType) {
-    String trimmedCardNumber = cardNumber.replace("-", "");
+    String trimmedCardNumber = cardNumber.replace("-", StringUtils.EMPTY);
     if (trimmedCardNumber.length() != MASTER_CARD_LENGTH) {
       return false;
     }

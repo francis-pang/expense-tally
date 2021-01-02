@@ -6,8 +6,9 @@
     <packaging>pom</packaging>
     <version>63-SNAPSHOT</version>
     <modules>
-        <module>csv-parser</module>
+        <module>base</module>
         <module>model</module>
+        <module>csv-parser</module>
         <module>expense-manager</module>
         <module>reconciliator</module>
         <module>cli</module>
