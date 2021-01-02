@@ -2,6 +2,7 @@ package expense_tally.expense_manager.persistence;
 
 import expense_tally.expense_manager.mapper.ExpenseReportMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
+import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -60,8 +61,8 @@ class ExpenseReportReaderTest {
     expectedExpenseReport1.setSubcategory("Alcohol/ Restaurant");
     expectedExpenseReport1.setPaymentMethod("Cash");
     expectedExpenseReport1.setDescription("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
-    expectedExpenseReport1.setExpensedTime(Long.valueOf("1459489440000"));
-    expectedExpenseReport1.setModificationTime(Long.valueOf("1459816738453"));
+    expectedExpenseReport1.setExpensedTime(Long.parseLong("1459489440000"));
+    expectedExpenseReport1.setModificationTime(Long.parseLong("1459816738453"));
     expectedExpenseReport1.setReferenceNumber("");
     expectedExpenseReport1.setStatus("Cleared");
     expectedExpenseReport1.setProperty1("");
@@ -146,8 +147,8 @@ class ExpenseReportReaderTest {
     expectedExpenseReport1.setSubcategory("Alcohol/ Restaurant");
     expectedExpenseReport1.setPaymentMethod("Cash");
     expectedExpenseReport1.setDescription("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
-    expectedExpenseReport1.setExpensedTime(Long.valueOf("1459489440000"));
-    expectedExpenseReport1.setModificationTime(Long.valueOf("1459816738453"));
+    expectedExpenseReport1.setExpensedTime(Long.parseLong("1459489440000"));
+    expectedExpenseReport1.setModificationTime(Long.parseLong("1459816738453"));
     expectedExpenseReport1.setReferenceNumber("");
     expectedExpenseReport1.setStatus("Cleared");
     expectedExpenseReport1.setProperty1("");
@@ -167,8 +168,8 @@ class ExpenseReportReaderTest {
     expectedExpenseReport2.setSubcategory("Alcohol/ Restaurant");
     expectedExpenseReport2.setPaymentMethod("Cash");
     expectedExpenseReport2.setDescription("Lunch. Mala Hui cui Guan. Shared with Sal, Lisa, Rick.");
-    expectedExpenseReport2.setExpensedTime(Long.valueOf("1459489440000"));
-    expectedExpenseReport2.setModificationTime(Long.valueOf("1459816738453"));
+    expectedExpenseReport2.setExpensedTime(Long.parseLong("1459489440000"));
+    expectedExpenseReport2.setModificationTime(Long.parseLong("1459816738453"));
     expectedExpenseReport2.setReferenceNumber("");
     expectedExpenseReport2.setStatus("Cleared");
     expectedExpenseReport2.setProperty1("");
@@ -199,5 +200,22 @@ class ExpenseReportReaderTest {
     softAssertions.assertThat(actualExpenseReportList)
             .containsExactlyInAnyOrder(expectedExpenseReport1, expectedExpenseReport2);
     softAssertions.assertAll();
+  }
+
+  @Test
+  void getExpenseTransaction_bindingException() throws SQLException, IOException {
+    Connection mockConnection = Mockito.mock(Connection.class);
+    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
+    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
+    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(Mockito.anyString()))
+            .thenReturn(mockSqlSessionFactory);
+    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
+    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.REUSE, mockConnection)).thenReturn(mockSqlSession);
+    Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class))
+            .thenThrow(new BindingException("Unable to find ExpenseReportMapper class in mapping registry"));
+
+    assertThatThrownBy(() -> expenseReportReader.getExpenseTransactions())
+            .isInstanceOf(BindingException.class)
+            .hasMessage("Unable to find ExpenseReportMapper class in mapping registry");
   }
 }
