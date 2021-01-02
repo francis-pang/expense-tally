@@ -26,7 +26,15 @@ Any other format of input is not accepted, and will result in system error.
 # Architecture Diagram #
 ![Expense Tally Architecture Diagram](docs/architecture-diagram.svg)
 
-There are a few processes that expense tally serves to fulfill the need to reconcile the data inside the Expense Manager application against the bank data
+There are a few processes that expense tally serves to fulfill the need to reconcile the data inside the Expense Manager
+application against the bank provided data. Below is a brief overview of the typical user process:
+
+1. User downloads the comma-separated values file from the bank website. He will upload the file to the S3 bucket. This 
+   will trigger the parsing of the file, and perform a expense reconciliation.
+2. User update the Android app Expense Manager, then the corresponding database file is updated on Dropbox. This trigger 
+   an update to the server database.
+3. User enters a URL to view all the discrepant transaction entries. He can resolve those discrepant entries, and the 
+   database file in Dropbox will be updated.
 
 # Coding Standard #
 * The javadocs in this project are inspired by the guidelines in 
