@@ -1,5 +1,6 @@
 package expense_tally.expense_manager.persistence;
 
+import expense_tally.expense_manager.persistence.sqlite.SqlLiteConnection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
