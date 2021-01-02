@@ -1,5 +1,6 @@
 package expense_tally.expense_manager.persistence;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -49,7 +50,7 @@ class DatabaseSessionFactoryBuilderTest {
 
   @Test
   void buildSessionFactory_emptyEnvironmentId() {
-    assertThatThrownBy(() -> databaseSessionFactoryBuilder.buildSessionFactory(null))
+    assertThatThrownBy(() -> databaseSessionFactoryBuilder.buildSessionFactory(StringUtils.EMPTY))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Environment ID cannot be empty");
   }
