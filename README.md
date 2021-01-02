@@ -6,7 +6,8 @@
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=coverage)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
 [![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
 
-This application will aim to reconcilate the past transaction history against my expense tracker application
+# Overview
+This application will aim to reconcile the past transaction history against my expense tracker application
 
 The command line version of the application needs to be provided 2 information before it is able to execute. They are:
 
@@ -21,6 +22,9 @@ The application accepts the parameters in 3 different formats:
 3. option XXXX
 
 Any other format of input is not accepted, and will result in system error. 
+
+# Architecture Diagram
+![Expense Tally Architecture Diagram](docs/architecture-diagram.svg)
 
 **Note**
 * The javadocs in this project are inspired by the guidelines in [Liferay Portal Advanced Javadoc Guidelines](https://github.com/liferay/liferay-portal/blob/master/readme/ADVANCED_JAVADOC_GUIDELINES.markdown).
