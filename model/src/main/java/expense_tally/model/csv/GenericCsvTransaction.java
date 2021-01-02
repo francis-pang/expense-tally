@@ -1,5 +1,6 @@
 package expense_tally.model.csv;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,10 +68,9 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
     private static final String NEGATIVE_DEBIT_ERR_MSG = "Debit amount cannot be negative.";
     private static final String NEGATIVE_CREDIT_ERR_MSG = "Credit amount cannot be negative.";
     private static final String POSITIVE_CREDIT_DEBIT_ERR_MSG = "Debit and credit cannot be co-exist at same time.";
-    private static final String NULL_EMPTY_STRING_POST_FIX_MSG = " is null or blank, not making any changes.";
 
     private LocalDate transactionDate;
-    private TransactionType transactionType;
+    private final TransactionType transactionType;
     private double debitAmount;
     private double creditAmount = 0.00;
     private String transactionRef1 = "";
@@ -132,7 +132,8 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
       // reflection is error prone and computationally expensive. Hence I have decided to deny the DRY principal and
       // duplicate the setter code.
       if (transactionRef1 == null || transactionRef1.isBlank()) {
-        LOGGER.atTrace().log("transactionRef1 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
+        LOGGER.atTrace().log("transactionRef1:\"{}\"",
+                StringUtils.defaultString(transactionRef1, expense_tally.AppStringConstant.NULL.value()));
         return this;
       }
       this.transactionRef1 = transactionRef1;
@@ -149,7 +150,8 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
      */
     public Builder transactionRef2(String transactionRef2) {
       if (transactionRef2 == null || transactionRef2.isBlank()) {
-        LOGGER.atTrace().log("transactionRef2 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
+        LOGGER.atTrace().log("transactionRef2: \"{}\"",
+                StringUtils.defaultString(transactionRef2, expense_tally.AppStringConstant.NULL.value()));
         return this;
       }
       this.transactionRef2 = transactionRef2;
@@ -166,7 +168,8 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
      */
     public Builder transactionRef3(String transactionRef3) {
       if (transactionRef3 == null || transactionRef3.isBlank()) {
-        LOGGER.atTrace().log("transactionRef3 {}", NULL_EMPTY_STRING_POST_FIX_MSG);
+        LOGGER.atTrace().log("transactionRef3 :\"{}\"",
+                StringUtils.defaultString(transactionRef3, expense_tally.AppStringConstant.NULL.value()));
         return this;
       }
       this.transactionRef3 = transactionRef3;
