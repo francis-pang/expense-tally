@@ -142,7 +142,7 @@ class CommandParserTest {
    */
   @Test
   void parseCommandArgs_emptyValueString() {
-    String[] testArgs = new String[]{"csv-filepath", "=", "./some.csv", "--database-filepath", "=",
+    String[] testArgs = new String[]{"csv-filepath", "=", "./some.csv", "database-filepath", "=",
             StringUtils.EMPTY};
     assertThatThrownBy(() -> CommandParser.parseCommandArgs(testArgs))
         .isInstanceOf(IllegalArgumentException.class)
