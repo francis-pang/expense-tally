@@ -28,6 +28,12 @@ class AppStringConstantTest {
     }
 
     @Test
+    void resolve_nonEnumString() {
+        assertThat(AppStringConstant.resolve("Rubbish"))
+                .isNull();
+    }
+
+    @Test
     void value() {
         assertThat(AppStringConstant.NULL.value())
                 .isNotNull()
