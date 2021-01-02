@@ -73,9 +73,9 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
     private final TransactionType transactionType;
     private double debitAmount;
     private double creditAmount = 0.00;
-    private String transactionRef1 = "";
-    private String transactionRef2 = "";
-    private String transactionRef3 = "";
+    private String transactionRef1 = StringUtils.EMPTY;
+    private String transactionRef2 = StringUtils.EMPTY;
+    private String transactionRef3 = StringUtils.EMPTY;
 
     /**
      * Construct the base unit of the {@code GenericCsvTransaction} builder

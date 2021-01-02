@@ -5,6 +5,7 @@ import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
 import expense_tally.model.persistence.transformation.ExpenseSubCategory;
 import expense_tally.model.persistence.transformation.PaymentMethod;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -101,7 +102,8 @@ public final class ExpenseTransactionMapper {
   }
 
   private static double parseReferenceAmount(final String referenceAmountString) {
-    String cleansedReferenceAmountString = referenceAmountString.replaceAll(REFERENCE_AMOUNT_NUMBER_FORMAT, "");
+    String cleansedReferenceAmountString = referenceAmountString.replaceAll(REFERENCE_AMOUNT_NUMBER_FORMAT,
+            StringUtils.EMPTY);
     double referenceAmount = Double.parseDouble(cleansedReferenceAmountString);
     LOGGER.atTrace().log("Converted a reference amount string {} to {}", referenceAmountString, referenceAmount);
     return referenceAmount;
