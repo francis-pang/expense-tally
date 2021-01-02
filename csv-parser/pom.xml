@@ -13,7 +13,7 @@
         <dependency>
             <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-tally-model</artifactId>
-            <version>62-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
