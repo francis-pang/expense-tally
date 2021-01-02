@@ -1,4 +1,6 @@
-package expense_tally.expense_manager.persistence;
+package expense_tally.expense_manager.persistence.sqlite;
+
+import expense_tally.expense_manager.persistence.DatabaseConnectable;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

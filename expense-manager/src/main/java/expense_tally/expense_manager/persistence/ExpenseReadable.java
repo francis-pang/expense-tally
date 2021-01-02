@@ -3,6 +3,7 @@ package expense_tally.expense_manager.persistence;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,5 +22,5 @@ public interface ExpenseReadable {
    * @return a list of {@code ExpenseTransaction} from the data source
    * @throws SQLException when there is problem reading from the database
    */
-  public List<ExpenseReport> getExpenseTransactions() throws SQLException;
+  List<ExpenseReport> getExpenseTransactions() throws SQLException, IOException;
 }

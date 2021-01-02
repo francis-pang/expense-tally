@@ -68,7 +68,7 @@ class ExpenseAccountantTest {
   }
 
   @Test
-  void reconcileData_expenseReadableError() throws SQLException {
+  void reconcileData_expenseReadableError() throws SQLException, IOException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenThrow(new SQLException("test sql exception"));
     String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db"};
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
@@ -80,7 +80,7 @@ class ExpenseAccountantTest {
   }
 
   @Test
-  void reconcileData_expenseReconcilerError() throws SQLException {
+  void reconcileData_expenseReconcilerError() throws SQLException, IOException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
@@ -100,7 +100,7 @@ class ExpenseAccountantTest {
   }
 
   @Test
-  void reconcileData_expenseTransactionMapperError() throws SQLException {
+  void reconcileData_expenseTransactionMapperError() throws SQLException, IOException {
     Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
