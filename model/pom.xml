@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.github.francis-pang</groupId>
         <artifactId>expense-tally</artifactId>
-        <version>62-SNAPSHOT</version>
+        <version>62</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
