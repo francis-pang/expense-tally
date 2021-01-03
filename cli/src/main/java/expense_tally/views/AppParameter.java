@@ -4,12 +4,12 @@ package expense_tally.views;
  * This enum defines all the parameters used to pass into the application via the command line tool.
  */
 public enum AppParameter {
-  DATABASE_PATH("database-filepath", true),
-  CSV_PATH("csv-filepath", true)
+  DATABASE_PATH("--database-filepath", true),
+  CSV_PATH("--csv-filepath", true)
   ;
 
-  private String value;
-  private boolean isCompulsory;
+  private final String value;
+  private final boolean isCompulsory;
 
   AppParameter(String value, boolean isCompulsory) {
     this.value = value;
