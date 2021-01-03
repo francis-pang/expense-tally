@@ -70,8 +70,11 @@ public final class ExpenseReportReader implements ExpenseReadable {
     SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
     try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.REUSE, databaseConnection)) {
       ExpenseReportMapper expenseReportMapper = sqlSession.getMapper(ExpenseReportMapper.class);
-      List<ExpenseReport> expenseReports = expenseReportMapper.getAllExpenseReports();
-      return expenseReports;
+      return expenseReportMapper.getAllExpenseReports();
+    } catch (RuntimeException runtimeException) {
+      LOGGER.atError().withThrowable(runtimeException).log("Unable to retrieve expense report from database. " +
+              "environment ID: \"{}\", scheme: \"{}\"", environmentId, databaseConnection.getSchema());
+      throw runtimeException;
     }
   }
 }

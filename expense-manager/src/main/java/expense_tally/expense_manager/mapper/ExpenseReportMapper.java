@@ -1,6 +1,7 @@
 package expense_tally.expense_manager.mapper;
 
 import expense_tally.model.persistence.database.ExpenseReport;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -8,7 +9,7 @@ import org.apache.ibatis.type.JdbcType;
 
 import java.util.List;
 
-
+@Mapper
 public interface ExpenseReportMapper {
   @Results(id = "allExpenseReports",
       value = {
