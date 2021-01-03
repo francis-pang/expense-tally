@@ -15,7 +15,9 @@
             <transactionManager type="JDBC" />
             <!-- UNPOOLED DataSource opens and closes a connection each time it is requested. This is Slower. Good
             choice for applications that don't require the performance of immediately available connections. -->
-            <dataSource type="UNPOOLED" />
+            <dataSource type="UNPOOLED">
+                <property name="driver" value="org.sqlite.JDBC"/>
+            </dataSource>
         </environment>
     </environments>
     <databaseIdProvider type="DB_VENDOR">
