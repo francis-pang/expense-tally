@@ -1,6 +1,7 @@
 package expense_tally.views.cli;
 
 import expense_tally.views.AppParameter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -132,6 +133,10 @@ public final class CommandParser {
     static AppParameterValuePair create(String appParameter, String value) {
       AppParameter key = AppParameter.resolve(appParameter);
       if (key == null) {
+        String safeAppParameter = StringUtils.defaultString(appParameter, expense_tally.AppStringConstant.NULL.value());
+        String safeValue = StringUtils.defaultString(value, expense_tally.AppStringConstant.NULL.value());
+        LOGGER.atFatal().log("No application parameter found. appParameter:\"{}\", value:\"{}\"",
+                safeAppParameter, safeValue);
         throw new IllegalArgumentException("appParameter is invalid.");
       }
       AppParameterValuePair appParameterValuePair = new AppParameterValuePair();
