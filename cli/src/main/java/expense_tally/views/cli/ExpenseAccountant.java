@@ -1,7 +1,9 @@
 package expense_tally.views.cli;
 
 import expense_tally.csv.parser.CsvParser;
-import expense_tally.expense_manager.persistence.ExpenseReadable;
+import expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper;
+import expense_tally.expense_manager.persistence.ExpenseReportReadable;
+import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.model.csv.AbstractCsvTransaction;
 import expense_tally.model.persistence.database.ExpenseReport;
@@ -25,10 +27,17 @@ import java.util.Objects;
  */
 public final class ExpenseAccountant {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseAccountant.class);
-  private final ExpenseReadable expenseReadable;
+  private final ExpenseReportReadable expenseReportReadable;
+  private final ExpenseUpdatable expenseUpdatable;
 
-  public ExpenseAccountant(ExpenseReadable expenseReadable) {
-    this.expenseReadable = Objects.requireNonNull(expenseReadable);
+  public ExpenseAccountant(ExpenseReportReadable expenseReportReadable) {
+    this.expenseReportReadable = Objects.requireNonNull(expenseReportReadable);
+    this.expenseUpdatable = null;
+  }
+
+  public ExpenseAccountant(ExpenseReportReadable expenseReportReadable, ExpenseUpdatable expenseUpdatable) {
+    this.expenseReportReadable = expenseReportReadable;
+    this.expenseUpdatable = expenseUpdatable;
   }
 
   /**
@@ -48,8 +57,16 @@ public final class ExpenseAccountant {
     }
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod;
     try {
-      List<ExpenseReport> expenseReports = expenseReadable.getExpenseTransactions();
-      expensesByAmountAndPaymentMethod = ExpenseTransactionMapper.mapExpenseReportsToMap(expenseReports);
+      List<ExpenseReport> expenseReports = expenseReportReadable.getExpenseTransactions();
+      List<ExpenseManagerTransaction> expenseManagerTransactions =
+          ExpenseTransactionMapper.mapExpenseReports(expenseReports);
+      if (expenseUpdatable != null) {
+        for (ExpenseManagerTransaction expenseManagerTransaction : expenseManagerTransactions) {
+          expenseUpdatable.add(expenseManagerTransaction);
+        }
+      }
+      expensesByAmountAndPaymentMethod =
+          ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
     } catch (SQLException ex) {
       LOGGER
           .atError()

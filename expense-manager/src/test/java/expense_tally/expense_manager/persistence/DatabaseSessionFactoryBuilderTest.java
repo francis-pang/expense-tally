@@ -1,5 +1,6 @@
 package expense_tally.expense_manager.persistence;
 
+import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;

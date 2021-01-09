@@ -1,6 +1,9 @@
 package expense_tally.expense_manager.persistence;
 
 import expense_tally.expense_manager.mapper.ExpenseReportMapper;
+import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
+import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
+import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
 import expense_tally.model.persistence.database.ExpenseReport;
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.session.ExecutorType;
@@ -25,19 +28,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
-class ExpenseReportReaderTest {
+class ExpenseReportDatabaseReaderTest {
   @Mock
   private DatabaseConnectable mockDatabaseConnectable;
 
   @Mock
   private DatabaseSessionFactoryBuilder mockDatabaseSessionFactoryBuilder;
 
-  private ExpenseReportReader expenseReportReader;
+  private ExpenseReportDatabaseReader expenseReportDatabaseReader;
 
   // This is needed instead of using @InjectMocks because String cannot be mocked.
   @BeforeEach
   void setUp() {
-    expenseReportReader = new ExpenseReportReader(mockDatabaseConnectable, mockDatabaseSessionFactoryBuilder,
+    expenseReportDatabaseReader = new ExpenseReportDatabaseReader(mockDatabaseConnectable, mockDatabaseSessionFactoryBuilder,
             "testId");
   }
 
@@ -85,7 +88,7 @@ class ExpenseReportReaderTest {
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
     Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(expectedExpenseReports);
 
-    List<ExpenseReport> actualExpenseReportList = expenseReportReader.getExpenseTransactions();
+    List<ExpenseReport> actualExpenseReportList = expenseReportDatabaseReader.getExpenseTransactions();
 
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(actualExpenseReportList).hasSize(1);
@@ -111,7 +114,7 @@ class ExpenseReportReaderTest {
     ExpenseReportMapper mockExpenseReportMapper = Mockito.mock(ExpenseReportMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
     Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(Collections.emptyList());
-    assertThat(expenseReportReader.getExpenseTransactions())
+    assertThat(expenseReportDatabaseReader.getExpenseTransactions())
             .isNotNull()
             .isEmpty();
   }
@@ -121,7 +124,7 @@ class ExpenseReportReaderTest {
     Connection mockConnection = Mockito.mock(Connection.class);
     Mockito.when(mockDatabaseConnectable.connect())
             .thenThrow(new SQLException("New SQL error"));
-    assertThatThrownBy(() -> expenseReportReader.getExpenseTransactions())
+    assertThatThrownBy(() -> expenseReportDatabaseReader.getExpenseTransactions())
         .isInstanceOf(SQLException.class)
         .hasMessage("New SQL error");
   }
@@ -130,7 +133,7 @@ class ExpenseReportReaderTest {
   void getExpenseTransaction_IOException() throws IOException {
     Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(Mockito.anyString()))
             .thenThrow(new IOException("test IOException"));
-    assertThatThrownBy(() -> expenseReportReader.getExpenseTransactions())
+    assertThatThrownBy(() -> expenseReportDatabaseReader.getExpenseTransactions())
             .isInstanceOf(IOException.class)
             .hasMessage("test IOException");
   }
@@ -192,7 +195,7 @@ class ExpenseReportReaderTest {
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
     Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(expectedExpenseReports);
 
-    List<ExpenseReport> actualExpenseReportList = expenseReportReader.getExpenseTransactions();
+    List<ExpenseReport> actualExpenseReportList = expenseReportDatabaseReader.getExpenseTransactions();
 
     SoftAssertions softAssertions = new SoftAssertions();
     softAssertions.assertThat(actualExpenseReportList).isNotNull();
@@ -214,7 +217,7 @@ class ExpenseReportReaderTest {
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class))
             .thenThrow(new BindingException("Unable to find ExpenseReportMapper class in mapping registry"));
 
-    assertThatThrownBy(() -> expenseReportReader.getExpenseTransactions())
+    assertThatThrownBy(() -> expenseReportDatabaseReader.getExpenseTransactions())
             .isInstanceOf(BindingException.class)
             .hasMessage("Unable to find ExpenseReportMapper class in mapping registry");
   }

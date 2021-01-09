@@ -8,7 +8,6 @@ import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -77,7 +76,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
 
-    assertThat(ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports)).isEmpty();
+    assertThat(ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports)).isEmpty();
   }
 
   /*
@@ -121,7 +120,7 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(1);
     softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);
@@ -268,7 +267,7 @@ class ExpenseManagerTransactionMapperTest {
     ));
 
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(2);
 
@@ -340,7 +339,7 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(1);
     softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);

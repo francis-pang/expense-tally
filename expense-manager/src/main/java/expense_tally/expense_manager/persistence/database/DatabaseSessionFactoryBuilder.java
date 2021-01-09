@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.persistence;
+package expense_tally.expense_manager.persistence.database;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.io.Resources;
