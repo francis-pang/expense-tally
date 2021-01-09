@@ -1,6 +1,7 @@
-package expense_tally.expense_manager.persistence;
+package expense_tally.expense_manager.persistence.database;
 
 import expense_tally.expense_manager.mapper.ExpenseReportMapper;
+import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.model.persistence.database.ExpenseReport;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -26,16 +27,16 @@ import java.util.List;
  *     This is because I want to abstract away the knowledge of myBatis dependency from the caller.
  * </p>
  */
-public final class ExpenseReportReader implements ExpenseReadable {
-  private static final Logger LOGGER = LogManager.getLogger(ExpenseReportReader.class);
+public final class ExpenseReportDatabaseReader implements ExpenseReportReadable {
+  private static final Logger LOGGER = LogManager.getLogger(ExpenseReportDatabaseReader.class);
 
   private final DatabaseConnectable databaseConnectable;
   private final DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder;
   private final String environmentId;
 
-  public ExpenseReportReader(DatabaseConnectable databaseConnectable,
-                             DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder,
-                             String environmentId) {
+  public ExpenseReportDatabaseReader(DatabaseConnectable databaseConnectable,
+                                     DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder,
+                                     String environmentId) {
     this.databaseConnectable = databaseConnectable;
     this.databaseSessionFactoryBuilder = databaseSessionFactoryBuilder;
     this.environmentId = environmentId;

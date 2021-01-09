@@ -1,12 +1,14 @@
 package expense_tally.views.cli;
 
-import expense_tally.expense_manager.mapper.ExpenseReportMapper;
-import expense_tally.expense_manager.persistence.DatabaseConnectable;
-import expense_tally.expense_manager.persistence.DatabaseSessionFactoryBuilder;
-import expense_tally.expense_manager.persistence.ExpenseReadable;
-import expense_tally.expense_manager.persistence.ExpenseReportReader;
-import expense_tally.expense_manager.persistence.mysql.MySqlConnection;
-import expense_tally.expense_manager.persistence.sqlite.SqlLiteConnection;
+import expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper;
+import expense_tally.expense_manager.persistence.ExpenseUpdatable;
+import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
+import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
+import expense_tally.expense_manager.persistence.ExpenseReportReadable;
+import expense_tally.expense_manager.persistence.database.ExpenseManagerTransactionDatabaseProxy;
+import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
+import expense_tally.expense_manager.persistence.database.mysql.MySqlConnection;
+import expense_tally.expense_manager.persistence.database.sqlite.SqlLiteConnection;
 import expense_tally.views.AppParameter;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -28,6 +30,7 @@ import java.util.Map;
 public final class CommandLineRunner {
   private static final Logger LOGGER = LogManager.getLogger(CommandLineRunner.class);
   private static final String SQLITE_ENVIRONMENT_ID = "file_sqlite";
+  private static final String MYSQL_ENVIRONMENT_ID = "mysql";
 
   public static void main(String[] args) {
     final int CSV_FILE_PARSING_ERR_CODE = 2;
@@ -36,12 +39,24 @@ public final class CommandLineRunner {
       Map<AppParameter, String> optionValues = CommandParser.parseCommandArgs(args);
       String databaseFileName = optionValues.get(AppParameter.DATABASE_PATH);
       DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFileName);
-      SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-      DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder =
-              new DatabaseSessionFactoryBuilder(sqlSessionFactoryBuilder);
-      ExpenseReadable expenseReadable = new ExpenseReportReader(databaseConnectable, databaseSessionFactoryBuilder,
-              SQLITE_ENVIRONMENT_ID);
-      ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReadable);
+      SqlSessionFactoryBuilder sqliteSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+      DatabaseSessionFactoryBuilder sqlLiteDatabaseSessionFactoryBuilder =
+              new DatabaseSessionFactoryBuilder(sqliteSessionFactoryBuilder);
+      ExpenseReportReadable expenseReportReadable = new ExpenseReportDatabaseReader(databaseConnectable,
+          sqlLiteDatabaseSessionFactoryBuilder, SQLITE_ENVIRONMENT_ID);
+
+      final String mysqlHost = "172.22.211.134";
+      final String database = "expense_manager";
+      final String user = "expensetally";
+      final String password = "Password1";
+      DatabaseConnectable mySqlConnectable = MySqlConnection.create(mysqlHost, database, user, password);
+      SqlSessionFactoryBuilder mySqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+      DatabaseSessionFactoryBuilder mySqlDatabaseSessionFactoryBuilder =
+          new DatabaseSessionFactoryBuilder(mySqlSessionFactoryBuilder);
+      ExpenseUpdatable expenseUpdatable = new ExpenseManagerTransactionDatabaseProxy(mySqlConnectable,
+          mySqlDatabaseSessionFactoryBuilder, MYSQL_ENVIRONMENT_ID);
+
+      ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReportReadable, expenseUpdatable);
       expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));
     } catch (IOException ioException) {
       LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");
@@ -49,29 +64,6 @@ public final class CommandLineRunner {
     } catch (SQLException sqlException) {
       LOGGER.atError().withThrowable(sqlException).log("Error reading from database");
       System.exit(DATABASE_ERR_CODE);
-    }
-
-    try {
-      final String mysqlHost = "172.23.72.222";
-      final String database = "expense_manager";
-      final String user = "expensetally";
-      final String password = "Password1";
-
-      DatabaseConnectable mySqlDatabaseConnectable = new MySqlConnection(mysqlHost, database, user, password);
-      Connection connection = mySqlDatabaseConnectable.connect();
-      DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder  =
-          new DatabaseSessionFactoryBuilder(new SqlSessionFactoryBuilder());
-      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory("mysql");
-      try (SqlSession sqlSession = sqlSessionFactory.openSession(connection)) {
-        ExpenseReportMapper expenseReportMapper = sqlSession.getMapper(ExpenseReportMapper.class);
-        expenseReportMapper.deleteAllExpenseReports();
-      }
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (SQLException throwables) {
-      throwables.printStackTrace();
     }
   }
 }

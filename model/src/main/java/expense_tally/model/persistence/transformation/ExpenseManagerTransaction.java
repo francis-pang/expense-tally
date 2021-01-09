@@ -1,13 +1,15 @@
 package expense_tally.model.persistence.transformation;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.time.Instant;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
  *
  */
 public final class ExpenseManagerTransaction {
+  private Long id;
   private Double amount;
   private ExpenseCategory category;
   private ExpenseSubCategory subcategory;
@@ -21,6 +23,7 @@ public final class ExpenseManagerTransaction {
 
   /**
    * Create a {@link ExpenseManagerTransaction} with the minimally required parameters.
+   * @param id identifier of the transaction
    * @param amount transaction amount
    * @param category transaction category
    * @param subCategory transaction sub-category
@@ -32,11 +35,15 @@ public final class ExpenseManagerTransaction {
    * @return a new instance of {@link ExpenseManagerTransaction}
    * @throws IllegalArgumentException when any of the enum class is null, or an blank description is provided
    */
-  public static ExpenseManagerTransaction create(double amount, ExpenseCategory category,
+  public static ExpenseManagerTransaction create(long id, double amount, ExpenseCategory category,
                                                  ExpenseSubCategory subCategory,
                                                  PaymentMethod paymentMethod, String description,
                                                  Instant expendedTime) {
     ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
+    if (id <= 0) {
+      throw new IllegalArgumentException("ID cannot 0 or negative");
+    }
+    expenseManagerTransaction.id = id;
     expenseManagerTransaction.amount = amount;
     if (category == null) {
       throw new IllegalArgumentException("Category cannot be null");
@@ -58,8 +65,24 @@ public final class ExpenseManagerTransaction {
     return expenseManagerTransaction;
   }
 
+  public Long getId() {
+    return id;
+  }
+
   public Double getAmount() {
     return amount;
+  }
+
+  public ExpenseCategory getCategory() {
+    return category;
+  }
+
+  public ExpenseSubCategory getSubcategory() {
+    return subcategory;
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public PaymentMethod getPaymentMethod() {
@@ -98,19 +121,20 @@ public final class ExpenseManagerTransaction {
 
   @Override
   public int hashCode() {
-    return Objects.hash(amount, category, subcategory, paymentMethod, description, expendedTime, referenceAmount);
+    return Objects.hash(id, amount, category, subcategory, paymentMethod, description, expendedTime, referenceAmount);
   }
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", ExpenseManagerTransaction.class.getSimpleName() + "[", "]")
-        .add("amount=" + amount)
-        .add("category=" + category)
-        .add("subcategory=" + subcategory)
-        .add("paymentMethod=" + paymentMethod)
-        .add("description='" + description + "'")
-        .add("expendedTime=" + expendedTime)
-        .add("referenceAmount=" + referenceAmount)
+    return new ToStringBuilder(this)
+        .append("id", id)
+        .append("amount", amount)
+        .append("category", category)
+        .append("subcategory", subcategory)
+        .append("paymentMethod", paymentMethod)
+        .append("description", description)
+        .append("expendedTime", expendedTime)
+        .append("referenceAmount", referenceAmount)
         .toString();
   }
 }

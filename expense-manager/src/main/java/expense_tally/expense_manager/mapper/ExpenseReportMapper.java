@@ -1,17 +1,29 @@
 package expense_tally.expense_manager.mapper;
 
 import expense_tally.model.persistence.database.ExpenseReport;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.type.JdbcType;
 
 import java.util.List;
 
+/**
+ * This interface stores all the functionality to interact with a specific data source.
+ */
 @Mapper
 public interface ExpenseReportMapper {
+  /**
+   * Retrieve all expense reports from the data source
+   *
+   * @return all expense reports from the data source
+   * @see {@link ExpenseReport}
+   */
   @Results(
       id = "allExpenseReports",
       value = {
-          @Result(property = "id", column = "_id", 	javaType = Integer.class, id = true, jdbcType = JdbcType.INTEGER),
+          @Result(property = "id", column = "_id", javaType = Integer.class, id = true, jdbcType = JdbcType.INTEGER),
           @Result(property = "account", column = "account", javaType = String.class, jdbcType = JdbcType.VARCHAR),
           @Result(property = "amount", column = "amount", javaType = String.class, jdbcType = JdbcType.VARCHAR),
           @Result(property = "category", column = "category", javaType = String.class, jdbcType = JdbcType.VARCHAR),
@@ -34,7 +46,4 @@ public interface ExpenseReportMapper {
       })
   @Select(value = "SELECT * FROM expense_report")
   List<ExpenseReport> getAllExpenseReports();
-
-  @Delete(value = "DELETE FROM expense_report")
-  boolean deleteAllExpenseReports();
 }

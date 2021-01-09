@@ -33,5 +33,6 @@
     </databaseIdProvider>
     <mappers>
         <mapper class="expense_tally.expense_manager.mapper.ExpenseReportMapper" />
+        <mapper class="expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper" />
     </mappers>
 </configuration>
