@@ -1,16 +1,22 @@
 package expense_tally.views.cli;
 
+import expense_tally.expense_manager.mapper.ExpenseReportMapper;
 import expense_tally.expense_manager.persistence.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.DatabaseSessionFactoryBuilder;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReportReader;
+import expense_tally.expense_manager.persistence.mysql.MySqlConnection;
 import expense_tally.expense_manager.persistence.sqlite.SqlLiteConnection;
 import expense_tally.views.AppParameter;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -43,6 +49,29 @@ public final class CommandLineRunner {
     } catch (SQLException sqlException) {
       LOGGER.atError().withThrowable(sqlException).log("Error reading from database");
       System.exit(DATABASE_ERR_CODE);
+    }
+
+    try {
+      final String mysqlHost = "172.23.72.222";
+      final String database = "expense_manager";
+      final String user = "expensetally";
+      final String password = "Password1";
+
+      DatabaseConnectable mySqlDatabaseConnectable = new MySqlConnection(mysqlHost, database, user, password);
+      Connection connection = mySqlDatabaseConnectable.connect();
+      DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder  =
+          new DatabaseSessionFactoryBuilder(new SqlSessionFactoryBuilder());
+      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory("mysql");
+      try (SqlSession sqlSession = sqlSessionFactory.openSession(connection)) {
+        ExpenseReportMapper expenseReportMapper = sqlSession.getMapper(ExpenseReportMapper.class);
+        expenseReportMapper.deleteAllExpenseReports();
+      }
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (SQLException throwables) {
+      throwables.printStackTrace();
     }
   }
 }
