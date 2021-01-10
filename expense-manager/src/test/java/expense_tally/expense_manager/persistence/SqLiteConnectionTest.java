@@ -1,7 +1,7 @@
 package expense_tally.expense_manager.persistence;
 
 import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
-import expense_tally.expense_manager.persistence.database.sqlite.SqlLiteConnection;
+import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
@@ -16,19 +16,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
-class SqlLiteConnectionTest {
+class SqLiteConnectionTest {
   private DatabaseConnectable spyDatabaseConnectable;
 
   @Test
-  void constructor() {
+  void create() {
     String testDatabaseConnection = "testSql";
-    assertThat(new SqlLiteConnection(testDatabaseConnection))
+    assertThat(SqLiteConnection.create(testDatabaseConnection))
         .isNotNull();
   }
 
   @Test
   void connect_connectionSuccess() throws SQLException {
-    spyDatabaseConnectable = new SqlLiteConnection("test error string");
+    spyDatabaseConnectable = SqLiteConnection.create("test error string");
     Connection mockedConnection = Mockito.mock(Connection.class);
     try (MockedStatic<DriverManager> mockDriverManager = Mockito.mockStatic(DriverManager.class)) {
       mockDriverManager.when(() -> DriverManager.getConnection(Mockito.anyString()))
@@ -41,7 +41,7 @@ class SqlLiteConnectionTest {
 
   @Test
   void connect_error() {
-    spyDatabaseConnectable = new SqlLiteConnection("test error string");
+    spyDatabaseConnectable = SqLiteConnection.create("test error string");
     SQLException testSqlException = new SQLException("test error");
     try (MockedStatic<DriverManager> mockDriverManager = Mockito.mockStatic(DriverManager.class)) {
       mockDriverManager.when(() -> DriverManager.getConnection(Mockito.anyString()))

@@ -1,6 +1,5 @@
 package expense_tally.views.cli;
 
-import expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
@@ -8,17 +7,13 @@ import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.database.ExpenseManagerTransactionDatabaseProxy;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
 import expense_tally.expense_manager.persistence.database.mysql.MySqlConnection;
-import expense_tally.expense_manager.persistence.database.sqlite.SqlLiteConnection;
+import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
 import expense_tally.views.AppParameter;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -38,7 +33,7 @@ public final class CommandLineRunner {
     try {
       Map<AppParameter, String> optionValues = CommandParser.parseCommandArgs(args);
       String databaseFileName = optionValues.get(AppParameter.DATABASE_PATH);
-      DatabaseConnectable databaseConnectable = new SqlLiteConnection(databaseFileName);
+      DatabaseConnectable databaseConnectable = SqLiteConnection.create(databaseFileName);
       SqlSessionFactoryBuilder sqliteSessionFactoryBuilder = new SqlSessionFactoryBuilder();
       DatabaseSessionFactoryBuilder sqlLiteDatabaseSessionFactoryBuilder =
               new DatabaseSessionFactoryBuilder(sqliteSessionFactoryBuilder);
