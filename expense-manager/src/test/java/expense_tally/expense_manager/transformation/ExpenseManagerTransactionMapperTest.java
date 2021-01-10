@@ -1,6 +1,5 @@
 package expense_tally.expense_manager.transformation;
 
-import expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class ExpenseManagerTransactionMapperTest {

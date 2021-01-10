@@ -1,7 +1,6 @@
 package expense_tally.views.cli;
 
 import expense_tally.csv.parser.CsvParser;
-import expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;

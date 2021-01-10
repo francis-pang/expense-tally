@@ -1,9 +1,9 @@
 package expense_tally.views.cli;
 
+import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
-import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.database.ExpenseManagerTransactionDatabaseProxy;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
 import expense_tally.expense_manager.persistence.database.mysql.MySqlConnection;
