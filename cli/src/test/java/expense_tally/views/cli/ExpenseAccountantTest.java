@@ -1,6 +1,7 @@
 package expense_tally.views.cli;
 
 import expense_tally.csv.parser.CsvParser;
+import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
@@ -27,6 +28,8 @@ class ExpenseAccountantTest {
   // specify expectations on them, and verify those expectations."
   @Mock
   private ExpenseReportDatabaseReader mockExpenseReportDatabaseReader;
+  @Mock
+  private ExpenseUpdatable mockExpenseUpdatable;
   @InjectMocks
   private ExpenseAccountant expenseAccountant;
 
@@ -39,6 +42,9 @@ class ExpenseAccountantTest {
       try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
                Mockito.mockStatic(ExpenseTransactionMapper.class)) {
         mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReports(Collections.emptyList()))
+            .thenReturn(Collections.emptyList());
+        mockedExpenseTransactionMapper.when(() ->
+            ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(Collections.emptyList()))
             .thenReturn(Collections.emptyMap());
         try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
           mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
@@ -87,6 +93,9 @@ class ExpenseAccountantTest {
       try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
                Mockito.mockStatic(ExpenseTransactionMapper.class)) {
         mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReports(Collections.emptyList()))
+            .thenReturn(Collections.emptyList());
+        mockedExpenseTransactionMapper.when(() ->
+            ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(Collections.emptyList()))
             .thenReturn(Collections.emptyMap());
         try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
           mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))

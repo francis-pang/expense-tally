@@ -36,7 +36,7 @@ public final class ExpenseAccountant {
   }
 
   public ExpenseAccountant(ExpenseReportReadable expenseReportReadable, ExpenseUpdatable expenseUpdatable) {
-    this.expenseReportReadable = expenseReportReadable;
+    this.expenseReportReadable = Objects.requireNonNull(expenseReportReadable);
     this.expenseUpdatable = expenseUpdatable;
   }
 
