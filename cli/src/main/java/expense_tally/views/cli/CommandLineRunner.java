@@ -45,7 +45,7 @@ public final class CommandLineRunner {
       ExpenseReportReadable expenseReportReadable = new ExpenseReportDatabaseReader(databaseConnectable,
           sqlLiteDatabaseSessionFactoryBuilder, SQLITE_ENVIRONMENT_ID);
 
-      final String mysqlHost = "172.22.211.134";
+      final String mysqlHost = "172.22.18.96";
       final String database = "expense_manager";
       final String user = "expensetally";
       final String password = "Password1";
