@@ -11,7 +11,6 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.type.JdbcType;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
