@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * This interface stores all the functionality to interact {@link ExpenseManagerTransaction} with a specific data
  * source.
+ * @see ExpenseManagerTransaction
  */
 @Mapper
 public interface ExpenseManagerTransactionMapper {
@@ -24,7 +25,6 @@ public interface ExpenseManagerTransactionMapper {
    * Retrieve all expense manager transactions from the data source
    *
    * @return all expense manager transactions from the data source
-   * @see {@link ExpenseManagerTransaction}
    */
   @Results(
       id = "allExpenseManagerTransactions",

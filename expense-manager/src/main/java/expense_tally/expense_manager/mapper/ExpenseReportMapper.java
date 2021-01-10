@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * This interface stores all the functionality to interact with a specific data source.
+ * @see ExpenseReport
  */
 @Mapper
 public interface ExpenseReportMapper {
@@ -18,7 +19,6 @@ public interface ExpenseReportMapper {
    * Retrieve all expense reports from the data source
    *
    * @return all expense reports from the data source
-   * @see {@link ExpenseReport}
    */
   @Results(
       id = "allExpenseReports",
