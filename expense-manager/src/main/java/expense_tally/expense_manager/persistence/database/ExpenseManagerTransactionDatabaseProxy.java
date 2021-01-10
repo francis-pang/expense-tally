@@ -127,7 +127,7 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
     Instant currentInstant = Instant.now();
     if (expensedTime == null || expensedTime.isAfter(currentInstant)) {
       LOGGER.atWarn().log("expensedTime is null/ in future time:{}",
-          StringUtils.defaultString(expensedTime.toString(), AppStringConstant.NULL.value()));
+          (expensedTime == null) ? AppStringConstant.NULL.value() : expensedTime.toString());
       throw new IllegalArgumentException("Expensed time cannot be null or in future.");
     }
     if (referenceAmount < 0) {
