@@ -487,6 +487,7 @@ class ExpenseManagerTransactionTest {
         testTime
     );
     assertThat(testExpenseManagerTransaction.toString())
-        .isEqualTo("ExpenseManagerTransaction[amount=5.48, category=ENTERTAINMENT, subcategory=CLOTHING, paymentMethod=GRAY_PAY, description='sd', expendedTime=2020-05-27T01:19:00Z, referenceAmount=null]");
+        .contains("[id=77,amount=5.48,category=ENTERTAINMENT,subcategory=CLOTHING,paymentMethod=GRAY_PAY," +
+            "description=sd,expendedTime=2020-05-27T01:19:00Z,referenceAmount=<null>]");
   }
 }
