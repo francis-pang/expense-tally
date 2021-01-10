@@ -19,24 +19,4 @@ public interface DatabaseConnectable {
    * @throws SQLException when there is an error accessing the database
    */
   Connection connect() throws SQLException;
-
-  /**
-   * This class provide concert implementation to communicate with a specific <i>MySQL</i> database
-   */
-  class ExpenseTransactionMapperDatabaseProxy implements ExpenseReadable, ExpenseUpdatable {
-    @Override
-    public List<ExpenseManagerTransaction> getAllExpenseManagerTransaction() {
-      return null;
-    }
-
-    @Override
-    public boolean add(ExpenseManagerTransaction expenseManagerTransaction) {
-      return false;
-    }
-
-    @Override
-    public boolean clear() {
-      return false;
-    }
-  }
 }

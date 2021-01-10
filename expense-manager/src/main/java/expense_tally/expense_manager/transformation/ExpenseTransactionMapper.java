@@ -59,7 +59,6 @@ public final class ExpenseTransactionMapper {
         LOGGER.atWarn()
             .withThrowable(runtimeException)
             .log("Unable to parse expense report entry. expenseReport={}", expenseReport);
-        continue;
       }
     }
     return mappedExpenseManagerTransactions;
