@@ -30,8 +30,7 @@ public class MySqlConnection implements DatabaseConnectable {
     mysqlDataSource.setUser(username);
     mysqlDataSource.setPassword(password);
     mysqlDataSource.setLogSlowQueries(true);
-    MySqlConnection mySqlConnection = new MySqlConnection(mysqlDataSource);
-    return mySqlConnection;
+    return new MySqlConnection(mysqlDataSource);
   }
 
   @Override

@@ -56,8 +56,10 @@ public final class ExpenseAccountant {
     }
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod;
     try {
-      boolean deleteResult = expenseUpdatable.clear();
-      LOGGER.atDebug().log("Table is cleared:{}", deleteResult);
+      if (expenseUpdatable != null) {
+        boolean deleteResult = expenseUpdatable.clear();
+        LOGGER.atDebug().log("Table is cleared:{}", deleteResult);
+      }
       List<ExpenseReport> expenseReports = expenseReportReadable.getExpenseTransactions();
       List<ExpenseManagerTransaction> expenseManagerTransactions =
           ExpenseTransactionMapper.mapExpenseReports(expenseReports);
