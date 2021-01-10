@@ -26,7 +26,7 @@ public class MySqlConnection implements DatabaseConnectable {
   public static MySqlConnection create(String connectionUrl, String database, String username, String password)
       throws SQLException {
     MysqlDataSource mysqlDataSource = new MysqlDataSource();
-    String connectionString = constructConnectionString(connectionUrl);
+    String connectionString = constructConnectionString(connectionUrl, database);
     mysqlDataSource.setUrl(connectionString);
     mysqlDataSource.setDatabaseName(database);
     mysqlDataSource.setUser(username);
@@ -41,11 +41,14 @@ public class MySqlConnection implements DatabaseConnectable {
     return dataSource.getConnection();
   }
 
-  private static String constructConnectionString(String connectionUrl) {
+  private static String constructConnectionString(String connectionUrl, String database) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append(ConnectionUrl.Type.SINGLE_CONNECTION.getScheme());
     stringBuilder.append("//");
     stringBuilder.append(connectionUrl);
+    // Due to a bug in the MySQL driver, the database need to be included as part of the connection URL
+    stringBuilder.append("/");
+    stringBuilder.append(database);
     LOGGER.atDebug().log("MySQL connection string:{}", stringBuilder.toString());
     return stringBuilder.toString();
   }

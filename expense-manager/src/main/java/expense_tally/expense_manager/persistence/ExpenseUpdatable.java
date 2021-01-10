@@ -40,5 +40,5 @@ public interface ExpenseUpdatable {
    * method returns. Return true if the deletion succeeds.
    * @return true if the deletion succeeds. Otherwise, false.
    */
-  boolean clear();
+  boolean clear() throws IOException, SQLException;
 }

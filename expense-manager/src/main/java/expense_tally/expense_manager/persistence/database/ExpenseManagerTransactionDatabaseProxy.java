@@ -43,12 +43,15 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
 
   @Override
   public List<ExpenseManagerTransaction> getAllExpenseManagerTransaction() throws IOException, SQLException {
-    if (expenseManagerTransactionMapper == null) {
-      connectToDatabase();
+    try (Connection connection = databaseConnectable.connect()) {
+      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
+      try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
+        expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
+        List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> expnsMngrTrnsctnMpprIntermediates =
+            expenseManagerTransactionMapper.getAllExpenseManagerTransactions();
+        return convert(expnsMngrTrnsctnMpprIntermediates);
+      }
     }
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> expnsMngrTrnsctnMpprIntermediates =
-        expenseManagerTransactionMapper.getAllExpenseManagerTransactions();
-    return convert(expnsMngrTrnsctnMpprIntermediates);
   }
 
   /**
@@ -61,8 +64,21 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
   private List<ExpenseManagerTransaction> convert(
       List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> expnsMngrTrnsctnMpprIntermediates) {
     List<ExpenseManagerTransaction> expenseManagerTransactions = new ArrayList<>();
-    expenseManagerTransactions.forEach(expenseManagerTransaction -> {
-
+    expnsMngrTrnsctnMpprIntermediates.forEach(expnsMngrTrnsctnMpprIntermediate -> {
+      ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(
+          expnsMngrTrnsctnMpprIntermediate.getId(),
+          expnsMngrTrnsctnMpprIntermediate.getAmount(),
+          ExpenseCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getCategory()),
+          ExpenseSubCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getSubcategory()),
+          PaymentMethod.resolve(expnsMngrTrnsctnMpprIntermediate.getPaymentMethod()),
+          expnsMngrTrnsctnMpprIntermediate.getDescription(),
+          expnsMngrTrnsctnMpprIntermediate.getExpensedTime()
+      );
+      double referenceAmount = expnsMngrTrnsctnMpprIntermediate.getReferenceAmount();
+      if (referenceAmount > 0) {
+        expenseManagerTransaction.setReferenceAmount(referenceAmount);
+      }
+      expenseManagerTransactions.add(expenseManagerTransaction);
     });
     return expenseManagerTransactions;
   }
@@ -121,8 +137,15 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
     if (expenseManagerTransactionMapper == null) {
       connectToDatabase();
     }
-    int numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(id, amount, category,
-        subcategory, paymentMethod, description, expensedTime, referenceAmount);
+    int numberOfInsertedEntry;
+    try (Connection connection = databaseConnectable.connect()) {
+      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
+      try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
+        expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
+        numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(id, amount, category,
+            subcategory, paymentMethod, description, expensedTime, referenceAmount);
+      }
+    }
     return (numberOfInsertedEntry == 1);
   }
 
@@ -147,8 +170,14 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
 
 
   @Override
-  public boolean clear() {
-    return expenseManagerTransactionMapper.deleteAllExpenseManagerTransactions();
+  public boolean clear() throws IOException, SQLException {
+    try (Connection connection = databaseConnectable.connect()) {
+      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
+      try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
+        expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
+        return expenseManagerTransactionMapper.deleteAllExpenseManagerTransactions();
+      }
+    }
   }
 
   private void connectToDatabase() throws IOException, SQLException {

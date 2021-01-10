@@ -65,16 +65,17 @@ public interface ExpenseManagerTransactionMapper {
    * @param referenceAmount receipt number or reference amount in alternate data source
    * @return the number of entries created from this operation
    */
-  @Insert(value = "INSERT INTO expense_report(id, amount, category, subcategory, payment_method, description," +
-      "expensed_time, reference_amount)")
+  @Insert(value = "INSERT INTO expense_manager(id, amount, category, subcategory, payment_method, description," +
+      "expensed_time, reference_amount) VALUES (#{id}, #{amount}, #{category},#{subcategory}, #{payment_method}, " +
+      "#{description}, #{expensed_time}, #{reference_amount})")
   int addExpenseManagerTransaction(
-      int id,
-      double amount,
-      String category,
-      String subcategory,
+      @Param(value = "id") int id,
+      @Param(value = "amount") double amount,
+      @Param(value = "category") String category,
+      @Param(value = "subcategory") String subcategory,
       @Param(value = "payment_method") String paymentMethod,
-      String description,
-      Instant expensedTime,
+      @Param(value = "description") String description,
+      @Param(value = "expensed_time") Instant expensedTime,
       @Param(value = "reference_amount") double referenceAmount
   );
 
@@ -85,7 +86,7 @@ public interface ExpenseManagerTransactionMapper {
     private String subcategory;
     private String paymentMethod;
     private String description;
-    private LocalDateTime expensedTime;
+    private Instant expensedTime;
     private Double referenceAmount;
 
     public long getId() {
@@ -112,7 +113,7 @@ public interface ExpenseManagerTransactionMapper {
       return description;
     }
 
-    public LocalDateTime getExpensedTime() {
+    public Instant getExpensedTime() {
       return expensedTime;
     }
 

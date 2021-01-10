@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ExpnseMngrTrnsctnTestMapBuilder {
+  private int id = 77;
   private Double amount = 0.8;
   private PaymentMethod paymentMethod = PaymentMethod.DBS_DEBIT_CARD;
   private Double referenceAmount = 0.0;
@@ -31,7 +32,7 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
   public final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> build() {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
     for (int index = 0; index < numberOfTransaction; index++) {
-      ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
+      ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(id ,amount,
           category, subcategory, paymentMethod, description, expensedTime);
       expenseManagerTransaction.setReferenceAmount(referenceAmount);
       expenseManagerTransactionList.add(expenseManagerTransaction);
@@ -97,7 +98,7 @@ public class ExpnseMngrTrnsctnTestMapBuilder {
     final int MINUTES = 15;
     final int SECONDS = 30;
     Instant expensedTime = LocalDateTime.of(expensedYear, expensedMonth, expensedDay, HOURS, MINUTES, SECONDS).toInstant(ZoneOffset.UTC);
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(id, amount,
         category, subcategory, paymentMethod, description, expensedTime);
     expenseManagerTransactionList.add(expenseManagerTransaction);
     return this;
