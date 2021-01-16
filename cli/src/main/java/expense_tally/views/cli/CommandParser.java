@@ -1,6 +1,6 @@
 package expense_tally.views.cli;
 
-import expense_tally.Exception.StringResolver;
+import expense_tally.exception.StringResolver;
 import expense_tally.views.AppParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

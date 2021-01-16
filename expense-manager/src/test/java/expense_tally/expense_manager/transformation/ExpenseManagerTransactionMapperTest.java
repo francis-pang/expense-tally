@@ -1,5 +1,6 @@
 package expense_tally.expense_manager.transformation;
 
+import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
@@ -88,7 +89,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
     testingExpenseReports.add(constructExpenseReport(
-        1,
+        77,
         "Test Account",
         1.78,
         "Entertainment",
@@ -232,7 +233,7 @@ class ExpenseManagerTransactionMapperTest {
     // Expected data
     List<ExpenseManagerTransaction> expectedCashExpenseManagerTransactionList = new ArrayList<>();
     expectedCashExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
-        77,
+        1,
         1.78,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.PAY_FOR_OTHERS,
@@ -242,7 +243,7 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
     expectedCashExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
-        77,
+        2,
         1.78,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.PAY_FOR_OTHERS,
@@ -254,7 +255,7 @@ class ExpenseManagerTransactionMapperTest {
 
     List<ExpenseManagerTransaction> expectedGrabPayExpenseManagerTransactionList = new ArrayList<>();
     expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
-        77,
+        3,
         2.0,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.CLOTHING,
@@ -264,7 +265,7 @@ class ExpenseManagerTransactionMapperTest {
         3.0
     ));
     expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
-        77,
+        4,
         200.0,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.AIRPLANE_TRAIN,
@@ -296,7 +297,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
     testingExpenseReports.add(constructExpenseReport(
-        1,
+        77,
         "Test Account",
         1.78,
         "Entertainment",
@@ -317,7 +318,7 @@ class ExpenseManagerTransactionMapperTest {
     ));
 
     testingExpenseReports.add(constructExpenseReport(
-        1,
+        77,
         "Test Account",
         1.78,
         "",
@@ -365,4 +366,23 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertAll();
   }
 
+  @Test
+  void toString_pass() {
+    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate expnsMngrTrnsctnMpprIntermediate =
+        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
+            15,
+            7.45,
+            "Something",
+            "subCat",
+            "cash",
+            "something",
+            Instant.ofEpochSecond(1610824771),
+            0.0
+        );
+    assertThat(expnsMngrTrnsctnMpprIntermediate.toString())
+        .isNotNull()
+        .isNotBlank()
+        .contains("[id=15,amount=7.45,category=Something,subcategory=subCat,paymentMethod=cash,description=something," +
+            "expensedTime=2021-01-16T19:19:31Z,referenceAmount=0.0]");
+  }
 }

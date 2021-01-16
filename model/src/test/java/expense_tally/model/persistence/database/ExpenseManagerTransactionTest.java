@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ExpenseManagerTransactionTest {
   @Test
@@ -87,6 +88,37 @@ class ExpenseManagerTransactionTest {
     ))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Description cannot be null or blank");
+  }
+
+  @Test
+  void create_IdIsZero() {
+    Instant now = Instant.now();
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
+        0,
+        7.0,
+        ExpenseCategory.AESTHETIC,
+        ExpenseSubCategory.CLOTHING,
+        PaymentMethod.CREDIT_CARD,
+        "Some test clothes",
+        now
+    ))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("ID cannot 0 or negative");
+  }
+
+  @Test
+  void create_IdIsNegative() {
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
+        0,
+        Double.parseDouble("-7.0"),
+        ExpenseCategory.AESTHETIC,
+        ExpenseSubCategory.CLOTHING,
+        PaymentMethod.CREDIT_CARD,
+        "Some test clothes",
+        Instant.now()
+    ))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("ID cannot 0 or negative");
   }
 
   @Test
@@ -202,7 +234,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_sameObject() {
+  void equals_sameObject() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -219,7 +251,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_null() {
+  void equals_null() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -236,7 +268,32 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSameInstanceType() {
+  void equals_notSameID() {
+    Instant testTime = Instant.now();
+    double testAmount = 5.48;
+    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
+        76,
+        testAmount,
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.CLOTHING,
+        PaymentMethod.GRAY_PAY,
+        "sd",
+        testTime
+    );
+    ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
+        77,
+        5.48,
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.CLOTHING,
+        PaymentMethod.GRAY_PAY,
+        "sd",
+        testTime
+    );
+    assertThat(testExpenseManagerTransaction).isNotEqualTo(expectedExpenseManagerTransaction);
+  }
+
+  @Test
+  void equals_notSameInstanceType() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -253,7 +310,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSameAmount() {
+  void equals_notSameAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -279,7 +336,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSameCategory() {
+  void equals_notSameCategory() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -305,7 +362,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSameSubcategory() {
+  void equals_notSameSubcategory() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -331,7 +388,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSamePaymentMethod() {
+  void equals_notSamePaymentMethod() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -357,7 +414,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSameDescription() {
+  void equals_notSameDescription() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -383,7 +440,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSameExpendedTime() {
+  void equals_notSameExpendedTime() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -402,14 +459,14 @@ class ExpenseManagerTransactionTest {
         ExpenseSubCategory.CLOTHING,
         PaymentMethod.GRAY_PAY,
         "sd",
-        testTime.plusSeconds(1)
+        testTime.minusSeconds(1)
     );
     assertThat(testExpenseManagerTransaction.equals(expectedExpenseManagerTransaction))
         .isFalse();
   }
 
   @Test
-  void testEquals_noReferenceAmount() {
+  void equals_noReferenceAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -436,7 +493,7 @@ class ExpenseManagerTransactionTest {
   }
 
   @Test
-  void testEquals_notSameReferenceAmount() {
+  void equals_notSameReferenceAmount() {
     Instant testTime = Instant.now();
     double testAmount = 5.48;
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(

@@ -1,7 +1,7 @@
 package expense_tally.expense_manager.persistence.database;
 
 import expense_tally.AppStringConstant;
-import expense_tally.Exception.StringResolver;
+import expense_tally.exception.StringResolver;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
@@ -79,8 +79,18 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> expnsMngrTrnsctnMpprIntermediates) {
     List<ExpenseManagerTransaction> expenseManagerTransactions = new ArrayList<>();
     expnsMngrTrnsctnMpprIntermediates.forEach(expnsMngrTrnsctnMpprIntermediate -> {
-      ExpenseManagerTransaction expenseManagerTransaction = convert(expnsMngrTrnsctnMpprIntermediate);
-      expenseManagerTransactions.add(expenseManagerTransaction);
+      ExpenseManagerTransaction expenseManagerTransaction = null;
+      try {
+        expenseManagerTransaction = convert(expnsMngrTrnsctnMpprIntermediate);
+      } catch (RuntimeException runtimeException) {
+        LOGGER
+            .atWarn()
+            .withThrowable(runtimeException)
+            .log("Unable to convert expnsMngrTrnsctnMpprIntermediate: {}", expnsMngrTrnsctnMpprIntermediate);
+      }
+      if (expenseManagerTransaction != null) {
+        expenseManagerTransactions.add(expenseManagerTransaction);
+      }
     });
     return expenseManagerTransactions;
   }
@@ -114,6 +124,10 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
     }
     Double amount = expenseManagerTransaction.getAmount();
     ExpenseCategory expenseCategory = expenseManagerTransaction.getCategory();
+    if (expenseCategory == null) {
+      LOGGER.atWarn().log("category is null");
+      throw new IllegalArgumentException("Category cannot be null.");
+    }
     String expenseCategoryString = expenseCategory.value();
     if (StringUtils.isBlank(expenseCategoryString)) {
       LOGGER.atWarn()
@@ -121,6 +135,10 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       throw new IllegalArgumentException("Category cannot be null or empty.");
     }
     ExpenseSubCategory expenseSubCategory = expenseManagerTransaction.getSubcategory();
+    if (expenseSubCategory == null) {
+      LOGGER.atWarn().log("subcategory is null.");
+      throw new IllegalArgumentException("Subcategory cannot be null.");
+    }
     String expenseSubCategoryString = expenseSubCategory.value();
     if (StringUtils.isBlank(expenseSubCategoryString)) {
       LOGGER.atWarn()
@@ -128,8 +146,12 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       throw new IllegalArgumentException("Subcategory cannot be null or empty.");
     }
     PaymentMethod paymentMethod = expenseManagerTransaction.getPaymentMethod();
+    if (paymentMethod == null) {
+      LOGGER.atWarn().log("paymentMethod is null");
+      throw new IllegalArgumentException("Payment Method cannot be null.");
+    }
     String paymentMethodString = paymentMethod.value();
-    if (StringUtils.isBlank(paymentMethodString)){
+    if (StringUtils.isBlank(paymentMethodString)) {
       LOGGER.atWarn()
           .log("paymentMethod is null/ blank:{}", StringResolver.resolveNullableString(paymentMethodString));
       throw new IllegalArgumentException("Payment Method cannot be null or empty.");
@@ -148,7 +170,9 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       throw new IllegalArgumentException("Expensed time cannot be null or in future.");
     }
     Double referenceAmount = expenseManagerTransaction.getReferenceAmount();
-    if (referenceAmount < 0) {
+    if (referenceAmount == null) {
+      referenceAmount = Double.parseDouble("0");
+    } else if (referenceAmount < 0) {
       LOGGER.atWarn().log("referenceAmount is negative:{}", referenceAmount);
       throw new IllegalArgumentException("Reference amount cannot be negative.");
     }

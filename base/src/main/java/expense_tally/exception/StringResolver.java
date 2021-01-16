@@ -1,4 +1,4 @@
-package expense_tally.Exception;
+package expense_tally.exception;
 
 import expense_tally.AppStringConstant;
 
@@ -12,6 +12,12 @@ import expense_tally.AppStringConstant;
  * </p>
  */
 public final class StringResolver {
+  /**
+   * Private default constructor so that no one can create an object based on this class
+   */
+  private StringResolver() {
+  }
+
   /**
    * Return "NULL" if <i>string</i> is null. Otherwise, returns <i>string</i>
    * @param string string to be checked
