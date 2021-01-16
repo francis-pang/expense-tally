@@ -1,5 +1,6 @@
 package expense_tally.model.csv;
 
+import expense_tally.Exception.StringResolver;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,8 +133,7 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
       // reflection is error prone and computationally expensive. Hence I have decided to deny the DRY principal and
       // duplicate the setter code.
       if (transactionRef1 == null || transactionRef1.isBlank()) {
-        LOGGER.atTrace().log("transactionRef1:\"{}\"",
-                StringUtils.defaultString(transactionRef1, expense_tally.AppStringConstant.NULL.value()));
+        LOGGER.atTrace().log("transactionRef1:\"{}\"", StringResolver.resolveNullableString(transactionRef1));
         return this;
       }
       this.transactionRef1 = transactionRef1;
@@ -150,8 +150,7 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
      */
     public Builder transactionRef2(String transactionRef2) {
       if (transactionRef2 == null || transactionRef2.isBlank()) {
-        LOGGER.atTrace().log("transactionRef2: \"{}\"",
-                StringUtils.defaultString(transactionRef2, expense_tally.AppStringConstant.NULL.value()));
+        LOGGER.atTrace().log("transactionRef2: \"{}\"", StringResolver.resolveNullableString(transactionRef2));
         return this;
       }
       this.transactionRef2 = transactionRef2;
@@ -168,8 +167,7 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
      */
     public Builder transactionRef3(String transactionRef3) {
       if (transactionRef3 == null || transactionRef3.isBlank()) {
-        LOGGER.atTrace().log("transactionRef3 :\"{}\"",
-                StringUtils.defaultString(transactionRef3, expense_tally.AppStringConstant.NULL.value()));
+        LOGGER.atTrace().log("transactionRef3 :\"{}\"", StringResolver.resolveNullableString(transactionRef3));
         return this;
       }
       this.transactionRef3 = transactionRef3;

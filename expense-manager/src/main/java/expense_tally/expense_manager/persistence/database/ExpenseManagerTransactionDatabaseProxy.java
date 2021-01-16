@@ -1,9 +1,10 @@
 package expense_tally.expense_manager.persistence.database;
 
 import expense_tally.AppStringConstant;
-import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
+import expense_tally.Exception.StringResolver;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
+import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
 import expense_tally.model.persistence.transformation.ExpenseSubCategory;
@@ -83,90 +84,66 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
     return expenseManagerTransactions;
   }
 
-  /**
-   * Adds a new {@link ExpenseManagerTransaction} to the data source. Returns if this data source changes as a result
-   * .
-   * @param id Identifier of the expense report
-   * @param amount expensed amount
-   * @param category category
-   * @param subcategory sub-category
-   * @param paymentMethod payment method used to pay
-   * @param description description of expense
-   * @param expensedTime time that the expense occurred
-   * @param referenceAmount receipt number or reference amount in alternate data source
-   * @return true if this data source changes. Otherwise, false.
-   */
-  public boolean add (int id, double amount, String category, String subcategory, String paymentMethod,
-                      String description, Instant expensedTime, double referenceAmount)
-      throws IOException, SQLException {
-    if (id <= 0) {
+  @Override
+  public boolean add(ExpenseManagerTransaction expenseManagerTransaction) throws IOException, SQLException {
+    long id = expenseManagerTransaction.getId();
+    int idInt = (int) id;
+    if (idInt <= 0) {
       LOGGER.atWarn().log("id is non positive:{}", id);
       throw new IllegalArgumentException("ID cannot be non positive.");
     }
-    if (StringUtils.isBlank(category)) {
-      LOGGER.atWarn().log("category is null/ blank:{}",
-          StringUtils.defaultString(category, AppStringConstant.NULL.value()));
+    Double amount = expenseManagerTransaction.getAmount();
+    ExpenseCategory expenseCategory = expenseManagerTransaction.getCategory();
+    String expenseCategoryString = expenseCategory.value();
+    if (StringUtils.isBlank(expenseCategoryString)) {
+      LOGGER.atWarn()
+          .log("category is null/ blank:{}", StringResolver.resolveNullableString(expenseCategoryString));
       throw new IllegalArgumentException("Category cannot be null or empty.");
     }
-    if (StringUtils.isBlank(subcategory)) {
-      LOGGER.atWarn().log("subcategory is null/ blank:{}",
-          StringUtils.defaultString(subcategory, AppStringConstant.NULL.value()));
+    ExpenseSubCategory expenseSubCategory = expenseManagerTransaction.getSubcategory();
+    String expenseSubCategoryString = expenseSubCategory.value();
+    if (StringUtils.isBlank(expenseSubCategoryString)) {
+      LOGGER.atWarn()
+          .log("subcategory is null/ blank:{}", StringResolver.resolveNullableString(expenseSubCategoryString));
       throw new IllegalArgumentException("Subcategory cannot be null or empty.");
     }
-    if (StringUtils.isBlank(paymentMethod)){
-      LOGGER.atWarn().log("paymentMethod is null/ blank:{}",
-          StringUtils.defaultString(paymentMethod, AppStringConstant.NULL.value()));
+    PaymentMethod paymentMethod = expenseManagerTransaction.getPaymentMethod();
+    String paymentMethodString = paymentMethod.value();
+    if (StringUtils.isBlank(paymentMethodString)){
+      LOGGER.atWarn()
+          .log("paymentMethod is null/ blank:{}", StringResolver.resolveNullableString(paymentMethodString));
       throw new IllegalArgumentException("Payment Method cannot be null or empty.");
     }
+    String description = expenseManagerTransaction.getDescription();
     if (StringUtils.isBlank(description)) {
       LOGGER.atWarn().log("description is null/ blank:{}",
           StringUtils.defaultString(description, AppStringConstant.NULL.value()));
       throw new IllegalArgumentException("Description cannot be null or empty.");
     }
+    Instant expensedTime = expenseManagerTransaction.getExpendedTime();
     Instant currentInstant = Instant.now();
     if (expensedTime == null || expensedTime.isAfter(currentInstant)) {
       LOGGER.atWarn().log("expensedTime is null/ in future time:{}",
           (expensedTime == null) ? AppStringConstant.NULL.value() : expensedTime.toString());
       throw new IllegalArgumentException("Expensed time cannot be null or in future.");
     }
+    Double referenceAmount = expenseManagerTransaction.getReferenceAmount();
     if (referenceAmount < 0) {
       LOGGER.atWarn().log("referenceAmount is negative:{}", referenceAmount);
       throw new IllegalArgumentException("Reference amount cannot be negative.");
-    }
-    if (expenseManagerTransactionMapper == null) {
-      connectToDatabase();
     }
     int numberOfInsertedEntry;
     try (Connection connection = databaseConnectable.connect()) {
       SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
       try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
         expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-        numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(id, amount, category,
-            subcategory, paymentMethod, description, expensedTime, referenceAmount);
+        numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(idInt, amount,
+            expenseCategoryString, expenseSubCategoryString, paymentMethodString, description, expensedTime,
+            referenceAmount);
       }
     }
     return (numberOfInsertedEntry == 1);
   }
-
-  @Override
-  public boolean add(ExpenseManagerTransaction expenseManagerTransaction) throws IOException, SQLException {
-    long id = expenseManagerTransaction.getId();
-    int idInt = (int) id;
-    Double amount = expenseManagerTransaction.getAmount();
-    ExpenseCategory expenseCategory = expenseManagerTransaction.getCategory();
-    String  expenseCategoryString = expenseCategory.value();
-    ExpenseSubCategory expenseSubCategory = expenseManagerTransaction.getSubcategory();
-    String expenseSubCategoryString = expenseSubCategory.value();
-    PaymentMethod paymentMethod = expenseManagerTransaction.getPaymentMethod();
-    String paymentMethodString = paymentMethod.value();
-    String description = expenseManagerTransaction.getDescription();
-    Instant expensedTime = expenseManagerTransaction.getExpendedTime();
-    Double referenceAmount = expenseManagerTransaction.getReferenceAmount();
-    return add(idInt, amount, expenseCategoryString, expenseSubCategoryString, paymentMethodString, description,
-        expensedTime, referenceAmount);
-  }
-
-
 
   @Override
   public boolean clear() throws IOException, SQLException {
