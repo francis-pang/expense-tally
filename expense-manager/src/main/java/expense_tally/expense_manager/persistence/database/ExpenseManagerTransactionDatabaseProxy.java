@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class provides proxy functionalities to interact with the {@link ExpenseManagerTransactionMapper} objects
@@ -34,11 +35,23 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
   private final DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder;
   private final String environmentId;
 
+  /**
+   * Default class constructor
+   * @param databaseConnectable Container for database connection object
+   * @param databaseSessionFactoryBuilder Container for database session object
+   * @param environmentId Identifier of the database configuration setting specific in the database configuration
+   * @throws IllegalArgumentException if any of the parameter is null, or <i>environmentId</i> contains only blank space
+   */
   public ExpenseManagerTransactionDatabaseProxy(DatabaseConnectable databaseConnectable,
                                                 DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder,
                                                 String environmentId) {
-    this.databaseConnectable = databaseConnectable;
-    this.databaseSessionFactoryBuilder = databaseSessionFactoryBuilder;
+    this.databaseConnectable = Objects.requireNonNull(databaseConnectable);
+    this.databaseSessionFactoryBuilder = Objects.requireNonNull(databaseSessionFactoryBuilder);
+    if (StringUtils.isBlank(environmentId)) {
+      LOGGER.atWarn()
+          .log("environmentId is null or empty: {}", StringResolver.resolveNullableString(environmentId));
+      throw new IllegalArgumentException("Environment ID cannot be null or empty");
+    }
     this.environmentId = environmentId;
   }
 
@@ -57,8 +70,8 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
 
   /**
    * Convert a list of
-   * {@link expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate} into
-   * a list of {@link ExpenseManagerTransaction}
+   * {@link expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate}
+   * into a list of {@link ExpenseManagerTransaction}
    * @param expnsMngrTrnsctnMpprIntermediates ExpnsMngrTrnsctnMpprIntermediate to be converted
    * @return a list of converted {@link ExpenseManagerTransaction}
    */
@@ -66,26 +79,33 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> expnsMngrTrnsctnMpprIntermediates) {
     List<ExpenseManagerTransaction> expenseManagerTransactions = new ArrayList<>();
     expnsMngrTrnsctnMpprIntermediates.forEach(expnsMngrTrnsctnMpprIntermediate -> {
-      ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(
-          expnsMngrTrnsctnMpprIntermediate.getId(),
-          expnsMngrTrnsctnMpprIntermediate.getAmount(),
-          ExpenseCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getCategory()),
-          ExpenseSubCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getSubcategory()),
-          PaymentMethod.resolve(expnsMngrTrnsctnMpprIntermediate.getPaymentMethod()),
-          expnsMngrTrnsctnMpprIntermediate.getDescription(),
-          expnsMngrTrnsctnMpprIntermediate.getExpensedTime()
-      );
-      double referenceAmount = expnsMngrTrnsctnMpprIntermediate.getReferenceAmount();
-      if (referenceAmount > 0) {
-        expenseManagerTransaction.setReferenceAmount(referenceAmount);
-      }
+      ExpenseManagerTransaction expenseManagerTransaction = convert(expnsMngrTrnsctnMpprIntermediate);
       expenseManagerTransactions.add(expenseManagerTransaction);
     });
     return expenseManagerTransactions;
   }
 
+  private ExpenseManagerTransaction convert(
+      ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate expnsMngrTrnsctnMpprIntermediate) {
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(
+        expnsMngrTrnsctnMpprIntermediate.getId(),
+        expnsMngrTrnsctnMpprIntermediate.getAmount(),
+        ExpenseCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getCategory()),
+        ExpenseSubCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getSubcategory()),
+        PaymentMethod.resolve(expnsMngrTrnsctnMpprIntermediate.getPaymentMethod()),
+        expnsMngrTrnsctnMpprIntermediate.getDescription(),
+        expnsMngrTrnsctnMpprIntermediate.getExpensedTime()
+    );
+    double referenceAmount = expnsMngrTrnsctnMpprIntermediate.getReferenceAmount();
+    if (referenceAmount > 0) {
+      expenseManagerTransaction.setReferenceAmount(referenceAmount);
+    }
+    return expenseManagerTransaction;
+  }
+
   @Override
   public boolean add(ExpenseManagerTransaction expenseManagerTransaction) throws IOException, SQLException {
+    //TODO: Consider having a validator class
     long id = expenseManagerTransaction.getId();
     int idInt = (int) id;
     if (idInt <= 0) {
@@ -156,12 +176,4 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
     }
   }
 
-  private void connectToDatabase() throws IOException, SQLException {
-    try (Connection connection = databaseConnectable.connect()) {
-      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
-      try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
-        expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-      }
-    }
-  }
 }
