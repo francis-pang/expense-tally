@@ -1,6 +1,6 @@
 package expense_tally.expense_manager.persistence.database;
 
-import org.apache.commons.lang3.StringUtils;
+import expense_tally.Exception.StringResolver;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -42,8 +42,8 @@ public final class DatabaseSessionFactoryBuilder {
    */
   public SqlSessionFactory buildSessionFactory(String environmentId) throws IOException {
     if (environmentId == null || environmentId.isBlank()) {
-      LOGGER.atError().log("Environment ID is invalid: \"{}\"", StringUtils.defaultString(environmentId,
-              expense_tally.AppStringConstant.NULL.value()));
+      LOGGER.atError()
+          .log("Environment ID is invalid: \"{}\"", StringResolver.resolveNullableString(environmentId));
       throw new IllegalArgumentException("Environment ID cannot be empty");
     }
     InputStream configurationInputStream = Resources.getResourceAsStream(CONFIGURATION_FILE_NAME);
