@@ -1,7 +1,7 @@
 package expense_tally.expense_manager.persistence.database;
 
 import expense_tally.AppStringConstant;
-import expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper;
+import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.model.persistence.transformation.ExpenseCategory;
@@ -56,7 +56,7 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
 
   /**
    * Convert a list of
-   * {@link expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate} into
+   * {@link expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate} into
    * a list of {@link ExpenseManagerTransaction}
    * @param expnsMngrTrnsctnMpprIntermediates ExpnsMngrTrnsctnMpprIntermediate to be converted
    * @return a list of converted {@link ExpenseManagerTransaction}
@@ -94,7 +94,6 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
    * @param description description of expense
    * @param expensedTime time that the expense occurred
    * @param referenceAmount receipt number or reference amount in alternate data source
-   * @return the number of entries created from this operation
    * @return true if this data source changes. Otherwise, false.
    */
   public boolean add (int id, double amount, String category, String subcategory, String paymentMethod,

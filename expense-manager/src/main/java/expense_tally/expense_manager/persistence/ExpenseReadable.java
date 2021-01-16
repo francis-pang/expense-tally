@@ -1,6 +1,10 @@
 package expense_tally.expense_manager.persistence;
 
-import org.apache.ibatis.annotations.Mapper;
+import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * This interface provides a way for reading data from a source.

@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.mapper;
+package expense_tally.expense_manager.persistence.database.mapper;
 
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
 import org.apache.ibatis.annotations.Delete;

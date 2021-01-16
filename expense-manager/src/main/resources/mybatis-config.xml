@@ -32,7 +32,7 @@
         <property name="mysql" value="mysql" />
     </databaseIdProvider>
     <mappers>
-        <mapper class="expense_tally.expense_manager.mapper.ExpenseReportMapper" />
-        <mapper class="expense_tally.expense_manager.mapper.ExpenseManagerTransactionMapper" />
+        <mapper class="expense_tally.expense_manager.persistence.database.mapper.ExpenseReportMapper" />
+        <mapper class="expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper" />
     </mappers>
 </configuration>
