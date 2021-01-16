@@ -1,6 +1,7 @@
 package expense_tally.expense_manager.persistence.database.mapper;
 
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -88,6 +89,19 @@ public interface ExpenseManagerTransactionMapper {
     private Instant expensedTime;
     private Double referenceAmount;
 
+    public ExpnsMngrTrnsctnMpprIntermediate(long id, double amount, String category, String subcategory,
+                                            String paymentMethod, String description, Instant expensedTime,
+                                            Double referenceAmount) {
+      this.id = id;
+      this.amount = amount;
+      this.category = category;
+      this.subcategory = subcategory;
+      this.paymentMethod = paymentMethod;
+      this.description = description;
+      this.expensedTime = expensedTime;
+      this.referenceAmount = referenceAmount;
+    }
+
     public long getId() {
       return id;
     }
@@ -118,6 +132,20 @@ public interface ExpenseManagerTransactionMapper {
 
     public Double getReferenceAmount() {
       return referenceAmount;
+    }
+
+    @Override
+    public String toString() {
+      return new ToStringBuilder(this)
+          .append("id", id)
+          .append("amount", amount)
+          .append("category", category)
+          .append("subcategory", subcategory)
+          .append("paymentMethod", paymentMethod)
+          .append("description", description)
+          .append("expensedTime", expensedTime)
+          .append("referenceAmount", referenceAmount)
+          .toString();
     }
   }
 }

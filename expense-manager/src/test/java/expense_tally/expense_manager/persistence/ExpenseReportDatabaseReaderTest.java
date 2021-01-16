@@ -1,9 +1,9 @@
 package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.persistence.database.mapper.ExpenseReportMapper;
 import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
+import expense_tally.expense_manager.persistence.database.mapper.ExpenseReportMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.session.ExecutorType;

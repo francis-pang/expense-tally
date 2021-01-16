@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 /**
- *
+ * This class stores all the details of a transaction inside the Expense Manager app.
  */
 public final class ExpenseManagerTransaction {
   private Long id;
@@ -18,6 +18,9 @@ public final class ExpenseManagerTransaction {
   private Instant expendedTime;
   private Double referenceAmount;
 
+  /**
+   * Private default constructor so that no one can create an object based on this class
+   */
   private ExpenseManagerTransaction() {
   }
 
@@ -61,6 +64,10 @@ public final class ExpenseManagerTransaction {
       throw new IllegalArgumentException("Description cannot be null or blank");
     }
     expenseManagerTransaction.description = description;
+    Instant currentInstant = Instant.now();
+    if (expendedTime == null || expendedTime.isAfter(currentInstant)) {
+      throw new IllegalArgumentException("Expensed time cannot be null or in the future");
+    }
     expenseManagerTransaction.expendedTime = expendedTime;
     return expenseManagerTransaction;
   }
@@ -110,7 +117,8 @@ public final class ExpenseManagerTransaction {
       return false;
     }
     ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
-    return amount.equals(that.amount) &&
+    return id.equals(that.id) &&
+        amount.equals(that.amount) &&
         category == that.category &&
         subcategory == that.subcategory &&
         paymentMethod == that.paymentMethod &&

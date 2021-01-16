@@ -1,4 +1,4 @@
-package expense_tally.Exception;
+package expense_tally.exception;
 
 import org.junit.jupiter.api.Test;
 

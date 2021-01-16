@@ -1,6 +1,6 @@
 package expense_tally.expense_manager.persistence.database;
 
-import expense_tally.Exception.StringResolver;
+import expense_tally.exception.StringResolver;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;

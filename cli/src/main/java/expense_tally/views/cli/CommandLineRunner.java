@@ -9,6 +9,7 @@ import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseR
 import expense_tally.expense_manager.persistence.database.mysql.MySqlConnection;
 import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
 import expense_tally.views.AppParameter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,17 +41,11 @@ public final class CommandLineRunner {
       ExpenseReportReadable expenseReportReadable = new ExpenseReportDatabaseReader(databaseConnectable,
           sqlLiteDatabaseSessionFactoryBuilder, SQLITE_ENVIRONMENT_ID);
 
-      final String mysqlHost = "172.22.18.96";
-      final String database = "expense_manager";
-      final String user = "expensetally";
-      final String password = "Password1";
-      DatabaseConnectable mySqlConnectable = MySqlConnection.create(mysqlHost, database, user, password);
-      SqlSessionFactoryBuilder mySqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-      DatabaseSessionFactoryBuilder mySqlDatabaseSessionFactoryBuilder =
-          new DatabaseSessionFactoryBuilder(mySqlSessionFactoryBuilder);
-      ExpenseUpdatable expenseUpdatable = new ExpenseManagerTransactionDatabaseProxy(mySqlConnectable,
-          mySqlDatabaseSessionFactoryBuilder, MYSQL_ENVIRONMENT_ID);
-
+      String databaseHostName = optionValues.getOrDefault(AppParameter.DATABASE_HOST, StringUtils.EMPTY);
+      ExpenseUpdatable expenseUpdatable = null;
+      if (StringUtils.isNotBlank(databaseHostName)) {
+        expenseUpdatable = constructExpenseUpdatable(databaseHostName);
+      }
       ExpenseAccountant expenseAccountant = new ExpenseAccountant(expenseReportReadable, expenseUpdatable);
       expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));
     } catch (IOException ioException) {
@@ -60,5 +55,17 @@ public final class CommandLineRunner {
       LOGGER.atError().withThrowable(sqlException).log("Error reading from database");
       System.exit(DATABASE_ERR_CODE);
     }
+  }
+
+  private static ExpenseUpdatable constructExpenseUpdatable(String mysqlHost) throws SQLException {
+    final String database = "expense_manager";
+    final String user = "expensetally";
+    final String password = "Password1";
+    DatabaseConnectable mySqlConnectable = MySqlConnection.create(mysqlHost, database, user, password);
+    SqlSessionFactoryBuilder mySqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+    DatabaseSessionFactoryBuilder mySqlDatabaseSessionFactoryBuilder =
+        new DatabaseSessionFactoryBuilder(mySqlSessionFactoryBuilder);
+    return new ExpenseManagerTransactionDatabaseProxy(mySqlConnectable,
+        mySqlDatabaseSessionFactoryBuilder, MYSQL_ENVIRONMENT_ID);
   }
 }
