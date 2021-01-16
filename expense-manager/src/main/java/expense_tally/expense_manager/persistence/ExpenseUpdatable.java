@@ -4,7 +4,6 @@ import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * This interface provides a way for updating the ExpenseManagerTransaction from a data source.
@@ -22,16 +21,11 @@ import java.util.List;
  */
 public interface ExpenseUpdatable {
   /**
-   * Retrieves all {@link ExpenseManagerTransaction} entries from the data source
-   * @return all {@link ExpenseManagerTransaction} entries from the data source
-   */
-  List<ExpenseManagerTransaction> getAllExpenseManagerTransaction() throws IOException, SQLException;
-
-  /**
-   * Adds a new {@link ExpenseManagerTransaction} to the data source. Returns if this data source changes as a result
-   * .
-   * @param expenseManagerTransaction
+   * Adds a new {@link ExpenseManagerTransaction} to the data source. Returns if this data source changes as a result.
+   * @param expenseManagerTransaction Expenese Manager to be committed
    * @return true if this data source changes. Otherwise, false.
+   * @throws IOException if fails to write to an output channel.
+   * @throws SQLException if fails to write to a database.
    */
   boolean add(ExpenseManagerTransaction expenseManagerTransaction) throws IOException, SQLException;
 
@@ -39,6 +33,8 @@ public interface ExpenseUpdatable {
    * Removes all {@link ExpenseManagerTransaction} from this data source. The data source will be empty after this
    * method returns. Return true if the deletion succeeds.
    * @return true if the deletion succeeds. Otherwise, false.
+   * @throws IOException if fails to write to an output channel.
+   * @throws SQLException if fails to write to a database.
    */
   boolean clear() throws IOException, SQLException;
 }
