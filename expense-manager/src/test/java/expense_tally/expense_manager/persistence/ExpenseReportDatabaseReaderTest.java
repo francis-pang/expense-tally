@@ -1,6 +1,6 @@
 package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.mapper.ExpenseReportMapper;
+import expense_tally.expense_manager.persistence.database.mapper.ExpenseReportMapper;
 import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
 import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
