@@ -17,7 +17,7 @@ public class MySqlConnection implements DatabaseConnectable {
   private static final Logger LOGGER = LogManager.getLogger(MySqlConnection.class);
   private final DataSource dataSource;
 
-  public MySqlConnection(DataSource dataSource) {
+  private MySqlConnection(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -30,6 +30,8 @@ public class MySqlConnection implements DatabaseConnectable {
     mysqlDataSource.setUser(username);
     mysqlDataSource.setPassword(password);
     mysqlDataSource.setLogSlowQueries(true);
+    LOGGER.atInfo().log("Creating MySqlConnection: connectionString:{}, database:{}, username:{}", connectionString,
+            database, username);
     return new MySqlConnection(mysqlDataSource);
   }
 
