@@ -28,6 +28,21 @@ class DatabaseSessionFactoryBuilderTest {
   private DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder;
 
   @Test
+  void constructor_working() {
+    // Verify that there is no exception when instantiate a new DatabaseSessionFactoryBuilder
+    SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+    assertThat(new DatabaseSessionFactoryBuilder(sqlSessionFactoryBuilder))
+        .isNotNull();
+  }
+
+  @Test
+  void constructor_nullSqlSessionFactoryBuilder() {
+    // Verify that null check is performed at object construction
+    assertThatThrownBy(() -> new DatabaseSessionFactoryBuilder(null))
+        .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
   void buildSessionFactory_fine() throws IOException {
     InputStream mockConfigurationStream = Mockito.mock(InputStream.class);
     SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
@@ -54,6 +69,13 @@ class DatabaseSessionFactoryBuilderTest {
     assertThatThrownBy(() -> databaseSessionFactoryBuilder.buildSessionFactory(StringUtils.EMPTY))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Environment ID cannot be empty");
+  }
+
+  @Test
+  void buildSessionFactory_environmentIdContainsOnlyBlankSpace() {
+    assertThatThrownBy(() -> databaseSessionFactoryBuilder.buildSessionFactory("      "))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Environment ID cannot be empty");
   }
 
   @Test
