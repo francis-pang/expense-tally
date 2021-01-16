@@ -19,7 +19,12 @@ import java.util.List;
  *
  * @see expense_tally.model.persistence.transformation.ExpenseManagerTransaction
  */
-@Mapper
 public interface ExpenseReadable {
-
+  /**
+   * Retrieves all {@link ExpenseManagerTransaction} entries from the data source
+   * @return all {@link ExpenseManagerTransaction} entries from the data source
+   * @throws IOException if unable to read data from an input channel
+   * @throws SQLException if unable to read from database
+   */
+  List<ExpenseManagerTransaction> getAllExpenseManagerTransaction() throws IOException, SQLException;
 }
