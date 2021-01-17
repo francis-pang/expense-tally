@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.persistence;
+package expense_tally.expense_manager.persistence.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,7 +1,8 @@
 package expense_tally.views.cli;
 
 import expense_tally.csv.parser.CsvParser;
-import expense_tally.expense_manager.persistence.ExpenseReportReader;
+import expense_tally.expense_manager.persistence.ExpenseUpdatable;
+import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.reconciliation.ExpenseReconciler;
 import org.junit.jupiter.api.Test;
@@ -26,19 +27,24 @@ class ExpenseAccountantTest {
   // https://stackoverflow.com/a/1607713/1522867 to "to use mocking framework that will create the mocks on the fly,
   // specify expectations on them, and verify those expectations."
   @Mock
-  private ExpenseReportReader mockExpenseReportReader;
+  private ExpenseReportDatabaseReader mockExpenseReportDatabaseReader;
+  @Mock
+  private ExpenseUpdatable mockExpenseUpdatable;
   @InjectMocks
   private ExpenseAccountant expenseAccountant;
 
 
   @Test
   void reconcileData_noError() throws SQLException, IOException {
-    Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
+    Mockito.when(mockExpenseReportDatabaseReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
       try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
                Mockito.mockStatic(ExpenseTransactionMapper.class)) {
-        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
+        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReports(Collections.emptyList()))
+            .thenReturn(Collections.emptyList());
+        mockedExpenseTransactionMapper.when(() ->
+            ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(Collections.emptyList()))
             .thenReturn(Collections.emptyMap());
         try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
           mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
@@ -47,7 +53,7 @@ class ExpenseAccountantTest {
         }
       }
     }
-    Mockito.verify(mockExpenseReportReader, Mockito.times(1)).getExpenseTransactions();
+    Mockito.verify(mockExpenseReportDatabaseReader, Mockito.times(1)).getExpenseTransactions();
   }
 
   @Test
@@ -68,8 +74,8 @@ class ExpenseAccountantTest {
   }
 
   @Test
-  void reconcileData_expenseReadableError() throws SQLException {
-    Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenThrow(new SQLException("test sql exception"));
+  void reconcileData_expenseReadableError() throws SQLException, IOException {
+    Mockito.when(mockExpenseReportDatabaseReader.getExpenseTransactions()).thenThrow(new SQLException("test sql exception"));
     String[] testArgs = new String[]{"csv-filepath=./some.csv", "database-filepath=./database.db"};
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
@@ -80,13 +86,16 @@ class ExpenseAccountantTest {
   }
 
   @Test
-  void reconcileData_expenseReconcilerError() throws SQLException {
-    Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
+  void reconcileData_expenseReconcilerError() throws SQLException, IOException {
+    Mockito.when(mockExpenseReportDatabaseReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
       try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
                Mockito.mockStatic(ExpenseTransactionMapper.class)) {
-        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
+        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReports(Collections.emptyList()))
+            .thenReturn(Collections.emptyList());
+        mockedExpenseTransactionMapper.when(() ->
+            ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(Collections.emptyList()))
             .thenReturn(Collections.emptyMap());
         try (MockedStatic<ExpenseReconciler> mockedExpenseReconciler = Mockito.mockStatic(ExpenseReconciler.class)) {
           mockedExpenseReconciler.when(() -> ExpenseReconciler.reconcileBankData(Collections.emptyList(), Collections.emptyMap()))
@@ -100,13 +109,13 @@ class ExpenseAccountantTest {
   }
 
   @Test
-  void reconcileData_expenseTransactionMapperError() throws SQLException {
-    Mockito.when(mockExpenseReportReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
+  void reconcileData_expenseTransactionMapperError() throws SQLException, IOException {
+    Mockito.when(mockExpenseReportDatabaseReader.getExpenseTransactions()).thenReturn(Collections.emptyList());
     try (MockedStatic<CsvParser> mockCsvParse = Mockito.mockStatic(CsvParser.class)) {
       mockCsvParse.when(() -> CsvParser.parseCsvFile("./some.csv")).thenReturn(Collections.emptyList());
       try (MockedStatic<ExpenseTransactionMapper> mockedExpenseTransactionMapper =
                Mockito.mockStatic(ExpenseTransactionMapper.class)) {
-        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReportsToMap(Collections.emptyList()))
+        mockedExpenseTransactionMapper.when(() -> ExpenseTransactionMapper.mapExpenseReports(Collections.emptyList()))
             .thenThrow(new RuntimeException("test runtime exception"));
         assertThatThrownBy(() -> expenseAccountant.reconcileData("./some.csv"))
             .isInstanceOf(RuntimeException.class)

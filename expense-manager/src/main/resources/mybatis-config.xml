@@ -1,13 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <environments default="production">
-        <environment id="production">
+    <settings>
+        <!-- Globally enables or disables any caches configured in any mapper under this configuration. -->
+        <setting name="cacheEnabled" value="false"/>
+        <!-- Globally enables or disables lazy loading. When enabled, all relations will be lazily loaded. -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- When enabled, any method call will load all the lazy properties of the object. Otherwise, each
+        property is loaded on demand -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+    <environments default="mysql">
+        <environment id="file_sqlite">
             <transactionManager type="JDBC" />
-            <dataSource type="POOLED">
-
+            <!-- UNPOOLED DataSource opens and closes a connection each time it is requested. This is Slower. Good
+            choice for applications that don't require the performance of immediately available connections. -->
+            <dataSource type="UNPOOLED">
+                <property name="driver" value="org.sqlite.JDBC"/>
+            </dataSource>
+        </environment>
+        <environment id="mysql">
+            <transactionManager type="JDBC" />
+            <!-- UNPOOLED DataSource opens and closes a connection each time it is requested. This is Slower. Good
+            choice for applications that don't require the performance of immediately available connections. -->
+            <dataSource type="UNPOOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
             </dataSource>
         </environment>
     </environments>
-    <mappers></mappers>
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="mysql" value="mysql" />
+    </databaseIdProvider>
+    <mappers>
+        <mapper class="expense_tally.expense_manager.persistence.database.mapper.ExpenseReportMapper" />
+        <mapper class="expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper" />
+    </mappers>
 </configuration>

@@ -49,19 +49,25 @@ public final class ExpenseTransactionMapper {
    * @param expenseReports the list of expense reports
    * @return a list {@link ExpenseManagerTransaction} filtered by the transaction amount followed by the payment method.
    */
-  public static Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> mapExpenseReportsToMap(
-      List<ExpenseReport> expenseReports) {
-    Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
+  public static List<ExpenseManagerTransaction> mapExpenseReports(List<ExpenseReport> expenseReports) {
+    List<ExpenseManagerTransaction> mappedExpenseManagerTransactions = new ArrayList<>();
     for (ExpenseReport expenseReport : expenseReports) {
-      ExpenseManagerTransaction expenseManagerTransaction;
       try {
-        expenseManagerTransaction = mapAExpenseReport(expenseReport);
+        ExpenseManagerTransaction expenseManagerTransaction = mapAExpenseReport(expenseReport);
+        mappedExpenseManagerTransactions.add(expenseManagerTransaction);
       } catch (RuntimeException runtimeException) {
         LOGGER.atWarn()
             .withThrowable(runtimeException)
             .log("Unable to parse expense report entry. expenseReport={}", expenseReport);
-        continue;
       }
+    }
+    return mappedExpenseManagerTransactions;
+  }
+
+  public static Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> convertToTableOfAmountAndPaymentMethod(
+      List<ExpenseManagerTransaction> expenseManagerTransactions) {
+    Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod = new HashMap<>();
+    expenseManagerTransactions.forEach(expenseManagerTransaction -> {
       Double transactionAmount = (expenseManagerTransaction.getReferenceAmount() > 0)
           ? expenseManagerTransaction.getReferenceAmount()
           : expenseManagerTransaction.getAmount();
@@ -71,7 +77,7 @@ public final class ExpenseTransactionMapper {
       List<ExpenseManagerTransaction> expenseManagerTransactionList =
           expenseTransactionsByPaymentMethod.computeIfAbsent(paymentMethod, k -> new ArrayList<>());
       expenseManagerTransactionList.add(expenseManagerTransaction);
-    }
+    });
     return expensesByAmountAndPaymentMethod;
   }
 
@@ -82,6 +88,7 @@ public final class ExpenseTransactionMapper {
    * @return the mapped {@link ExpenseManagerTransaction}
    */
   private static ExpenseManagerTransaction mapAExpenseReport(ExpenseReport expenseReport) {
+    int id = expenseReport.getId();
     String amountString = expenseReport.getAmount();
     double amount = Double.parseDouble(amountString);
     String expenseCategoryString = expenseReport.getCategory();
@@ -93,7 +100,7 @@ public final class ExpenseTransactionMapper {
     Instant expendedTime = Instant.ofEpochMilli(expendedTimeInSecondSinceEpoch); //This time is in UTC
     String paymentMethodString = expenseReport.getPaymentMethod();
     PaymentMethod paymentMethod = PaymentMethod.resolve(paymentMethodString);
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount, expenseCategory,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(id, amount, expenseCategory,
         expenseSubCategory, paymentMethod, description, expendedTime);
     String referenceNumber = expenseReport.getReferenceNumber();
     double referenceAmount = (referenceNumber.isBlank()) ? ZERO_AMOUNT : parseReferenceAmount(referenceNumber);
