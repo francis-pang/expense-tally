@@ -5,7 +5,8 @@ package expense_tally.views;
  */
 public enum AppParameter {
   DATABASE_PATH("--database-filepath", true),
-  CSV_PATH("--csv-filepath", true)
+  CSV_PATH("--csv-filepath", true),
+  DATABASE_HOST("--destination-database-hostname",false)
   ;
 
   private final String value;

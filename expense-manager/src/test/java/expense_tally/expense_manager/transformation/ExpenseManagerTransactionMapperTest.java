@@ -1,5 +1,6 @@
 package expense_tally.expense_manager.transformation;
 
+import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
@@ -8,7 +9,6 @@ import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(SoftAssertionsExtension.class)
 class ExpenseManagerTransactionMapperTest {
@@ -55,6 +54,7 @@ class ExpenseManagerTransactionMapperTest {
   }
 
   private ExpenseManagerTransaction constructExpenseManagerTransaction(
+      int id,
       double amount,
       ExpenseCategory category,
       ExpenseSubCategory subcategory,
@@ -62,7 +62,7 @@ class ExpenseManagerTransactionMapperTest {
       String description,
       String expensedTime,
       double referenceAmount) {
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(amount,
+    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(id, amount,
         category, subcategory, paymentMethod, description, Instant.parse(expensedTime));
     expenseManagerTransaction.setReferenceAmount(referenceAmount);
     return expenseManagerTransaction;
@@ -77,7 +77,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
 
-    assertThat(ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports)).isEmpty();
+    assertThat(ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports)).isEmpty();
   }
 
   /*
@@ -89,7 +89,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
     testingExpenseReports.add(constructExpenseReport(
-        1,
+        77,
         "Test Account",
         1.78,
         "Entertainment",
@@ -112,6 +112,7 @@ class ExpenseManagerTransactionMapperTest {
     // Expected data
     List<ExpenseManagerTransaction> expectedExpenseManagerTransactionList = new ArrayList<>();
     expectedExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
+        77,
         1.78,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.BREAKFAST,
@@ -120,8 +121,11 @@ class ExpenseManagerTransactionMapperTest {
         "2019-05-20T20:54:03.00Z",
         0
     ));
+    List<ExpenseManagerTransaction> expenseManagerTransactions =
+        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
+
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(1);
     softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);
@@ -229,6 +233,7 @@ class ExpenseManagerTransactionMapperTest {
     // Expected data
     List<ExpenseManagerTransaction> expectedCashExpenseManagerTransactionList = new ArrayList<>();
     expectedCashExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
+        1,
         1.78,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.PAY_FOR_OTHERS,
@@ -238,6 +243,7 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
     expectedCashExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
+        2,
         1.78,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.PAY_FOR_OTHERS,
@@ -249,6 +255,7 @@ class ExpenseManagerTransactionMapperTest {
 
     List<ExpenseManagerTransaction> expectedGrabPayExpenseManagerTransactionList = new ArrayList<>();
     expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
+        3,
         2.0,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.CLOTHING,
@@ -258,6 +265,7 @@ class ExpenseManagerTransactionMapperTest {
         3.0
     ));
     expectedGrabPayExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
+        4,
         200.0,
         ExpenseCategory.FOOD,
         ExpenseSubCategory.AIRPLANE_TRAIN,
@@ -267,8 +275,10 @@ class ExpenseManagerTransactionMapperTest {
         3.0
     ));
 
+    List<ExpenseManagerTransaction> expenseManagerTransactions =
+        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(2);
 
@@ -287,7 +297,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
     testingExpenseReports.add(constructExpenseReport(
-        1,
+        77,
         "Test Account",
         1.78,
         "Entertainment",
@@ -308,7 +318,7 @@ class ExpenseManagerTransactionMapperTest {
     ));
 
     testingExpenseReports.add(constructExpenseReport(
-        1,
+        77,
         "Test Account",
         1.78,
         "",
@@ -331,6 +341,7 @@ class ExpenseManagerTransactionMapperTest {
     // Expected data
     List<ExpenseManagerTransaction> expectedExpenseManagerTransactionList = new ArrayList<>();
     expectedExpenseManagerTransactionList.add(constructExpenseManagerTransaction(
+        77,
         1.78,
         ExpenseCategory.ENTERTAINMENT,
         ExpenseSubCategory.BREAKFAST,
@@ -339,8 +350,10 @@ class ExpenseManagerTransactionMapperTest {
         "2019-05-20T20:54:03.00Z",
         0
     ));
+    List<ExpenseManagerTransaction> expenseManagerTransactions =
+        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.mapExpenseReportsToMap(testingExpenseReports);
+        ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(1);
     softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);
@@ -353,4 +366,23 @@ class ExpenseManagerTransactionMapperTest {
     softly.assertAll();
   }
 
+  @Test
+  void toString_pass() {
+    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate expnsMngrTrnsctnMpprIntermediate =
+        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
+            15,
+            7.45,
+            "Something",
+            "subCat",
+            "cash",
+            "something",
+            Instant.ofEpochSecond(1610824771),
+            0.0
+        );
+    assertThat(expnsMngrTrnsctnMpprIntermediate.toString())
+        .isNotNull()
+        .isNotBlank()
+        .contains("[id=15,amount=7.45,category=Something,subcategory=subCat,paymentMethod=cash,description=something," +
+            "expensedTime=2021-01-16T19:19:31Z,referenceAmount=0.0]");
+  }
 }

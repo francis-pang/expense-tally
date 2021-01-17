@@ -1,5 +1,8 @@
 package expense_tally.model.persistence.transformation;
 
+import expense_tally.exception.StringResolver;
+import org.apache.commons.lang3.StringUtils;
+
 /**
  *
  */
@@ -23,6 +26,12 @@ public enum ExpenseCategory {
    * @param value the value of the value
    */
   ExpenseCategory(String value) {
+    // There is no way to unit test this check
+    if (StringUtils.isBlank(value)) {
+      String errorMessage = String.format("Blank expense category is disallowed: %s",
+          StringResolver.resolveNullableString(value));
+      throw new IllegalArgumentException(errorMessage);
+    }
     this.value = value;
   }
 
