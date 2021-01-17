@@ -1,7 +1,9 @@
 package expense_tally.expense_manager.persistence.database.mapper;
 
+import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import expense_tally.model.persistence.transformation.ExpenseSubCategory;
+import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -29,22 +31,23 @@ public interface ExpenseManagerTransactionMapper {
   @Results(
       id = "allExpenseManagerTransactions",
       value = {
-          @Result(property = "id", column = "id", javaType = Long.class, id = true, jdbcType = JdbcType.INTEGER),
+          @Result(property = "id", column = "id", javaType = Integer.class, id = true, jdbcType = JdbcType.INTEGER),
           @Result(property = "amount", column = "amount", javaType = Double.class, jdbcType = JdbcType.DECIMAL),
-          @Result(property = "category", column = "category", javaType = String.class, jdbcType = JdbcType.VARCHAR),
-          @Result(property = "subcategory", column = "subcategory", javaType = String.class, jdbcType =
-              JdbcType.VARCHAR),
-          @Result(property = "paymentMethod", column = "payment_method", javaType = String.class,
+          @Result(property = "category", column = "category", javaType = ExpenseCategory.class,
               jdbcType = JdbcType.VARCHAR),
-          @Result(property = "description", column = "description", javaType = String.class, jdbcType =
-              JdbcType.VARCHAR),
-          @Result(property = "expensedTime", column = "expensed", javaType = Instant.class, jdbcType =
-              JdbcType.TIMESTAMP),
+          @Result(property = "subcategory", column = "subcategory", javaType = ExpenseSubCategory.class,
+              jdbcType = JdbcType.VARCHAR),
+          @Result(property = "paymentMethod", column = "payment_method", javaType = PaymentMethod.class,
+              jdbcType = JdbcType.VARCHAR),
+          @Result(property = "description", column = "description", javaType = String.class,
+              jdbcType = JdbcType.VARCHAR),
+          @Result(property = "expensedTime", column = "expensed_time", javaType = Instant.class,
+              jdbcType = JdbcType.TIMESTAMP),
           @Result(property = "referenceAmount", column = "reference_amount", javaType = Double.class,
               jdbcType = JdbcType.DECIMAL)
       })
   @Select(value = "SELECT * FROM expense_manager")
-  List<ExpnsMngrTrnsctnMpprIntermediate> getAllExpenseManagerTransactions();
+  List<ExpenseManagerTransaction> getAllExpenseManagerTransactions();
 
   /**
    * Remove all {@link ExpenseManagerTransaction} entries in the data source
@@ -71,81 +74,11 @@ public interface ExpenseManagerTransactionMapper {
   int addExpenseManagerTransaction(
       @Param(value = "id") int id,
       @Param(value = "amount") double amount,
-      @Param(value = "category") String category,
-      @Param(value = "subcategory") String subcategory,
-      @Param(value = "payment_method") String paymentMethod,
+      @Param(value = "category") ExpenseCategory category,
+      @Param(value = "subcategory") ExpenseSubCategory subcategory,
+      @Param(value = "payment_method") PaymentMethod paymentMethod,
       @Param(value = "description") String description,
       @Param(value = "expensed_time") Instant expensedTime,
       @Param(value = "reference_amount") double referenceAmount
   );
-
-  class ExpnsMngrTrnsctnMpprIntermediate {
-    private long id;
-    private double amount;
-    private String category;
-    private String subcategory;
-    private String paymentMethod;
-    private String description;
-    private Instant expensedTime;
-    private Double referenceAmount;
-
-    public ExpnsMngrTrnsctnMpprIntermediate(long id, double amount, String category, String subcategory,
-                                            String paymentMethod, String description, Instant expensedTime,
-                                            Double referenceAmount) {
-      this.id = id;
-      this.amount = amount;
-      this.category = category;
-      this.subcategory = subcategory;
-      this.paymentMethod = paymentMethod;
-      this.description = description;
-      this.expensedTime = expensedTime;
-      this.referenceAmount = referenceAmount;
-    }
-
-    public long getId() {
-      return id;
-    }
-
-    public double getAmount() {
-      return amount;
-    }
-
-    public String getCategory() {
-      return category;
-    }
-
-    public String getSubcategory() {
-      return subcategory;
-    }
-
-    public String getPaymentMethod() {
-      return paymentMethod;
-    }
-
-    public String getDescription() {
-      return description;
-    }
-
-    public Instant getExpensedTime() {
-      return expensedTime;
-    }
-
-    public Double getReferenceAmount() {
-      return referenceAmount;
-    }
-
-    @Override
-    public String toString() {
-      return new ToStringBuilder(this)
-          .append("id", id)
-          .append("amount", amount)
-          .append("category", category)
-          .append("subcategory", subcategory)
-          .append("paymentMethod", paymentMethod)
-          .append("description", description)
-          .append("expensedTime", expensedTime)
-          .append("referenceAmount", referenceAmount)
-          .toString();
-    }
-  }
 }

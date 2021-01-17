@@ -10,6 +10,11 @@
         property is loaded on demand -->
         <setting name="aggressiveLazyLoading" value="false"/>
     </settings>
+    <typeHandlers>
+        <typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" javaType="expense_tally.model.persistence.transformation.ExpenseCategory"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" javaType="expense_tally.model.persistence.transformation.ExpenseSubCategory"/>
+        <typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" javaType="expense_tally.model.persistence.transformation.PaymentMethod"/>
+    </typeHandlers>
     <environments default="mysql">
         <environment id="file_sqlite">
             <transactionManager type="JDBC" />
