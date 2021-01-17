@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,64 +60,16 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
       try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
         expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-        List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> expnsMngrTrnsctnMpprIntermediates =
-            expenseManagerTransactionMapper.getAllExpenseManagerTransactions();
-        return convert(expnsMngrTrnsctnMpprIntermediates);
+        return expenseManagerTransactionMapper.getAllExpenseManagerTransactions();
       }
     }
-  }
-
-  /**
-   * Convert a list of
-   * {@link expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate}
-   * into a list of {@link ExpenseManagerTransaction}
-   * @param expnsMngrTrnsctnMpprIntermediates ExpnsMngrTrnsctnMpprIntermediate to be converted
-   * @return a list of converted {@link ExpenseManagerTransaction}
-   */
-  private List<ExpenseManagerTransaction> convert(
-      List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> expnsMngrTrnsctnMpprIntermediates) {
-    List<ExpenseManagerTransaction> expenseManagerTransactions = new ArrayList<>();
-    expnsMngrTrnsctnMpprIntermediates.forEach(expnsMngrTrnsctnMpprIntermediate -> {
-      ExpenseManagerTransaction expenseManagerTransaction = null;
-      try {
-        expenseManagerTransaction = convert(expnsMngrTrnsctnMpprIntermediate);
-      } catch (RuntimeException runtimeException) {
-        LOGGER
-            .atWarn()
-            .withThrowable(runtimeException)
-            .log("Unable to convert expnsMngrTrnsctnMpprIntermediate: {}", expnsMngrTrnsctnMpprIntermediate);
-      }
-      if (expenseManagerTransaction != null) {
-        expenseManagerTransactions.add(expenseManagerTransaction);
-      }
-    });
-    return expenseManagerTransactions;
-  }
-
-  private ExpenseManagerTransaction convert(
-      ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate expnsMngrTrnsctnMpprIntermediate) {
-    ExpenseManagerTransaction expenseManagerTransaction = ExpenseManagerTransaction.create(
-        expnsMngrTrnsctnMpprIntermediate.getId(),
-        expnsMngrTrnsctnMpprIntermediate.getAmount(),
-        ExpenseCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getCategory()),
-        ExpenseSubCategory.resolve(expnsMngrTrnsctnMpprIntermediate.getSubcategory()),
-        PaymentMethod.resolve(expnsMngrTrnsctnMpprIntermediate.getPaymentMethod()),
-        expnsMngrTrnsctnMpprIntermediate.getDescription(),
-        expnsMngrTrnsctnMpprIntermediate.getExpensedTime()
-    );
-    double referenceAmount = expnsMngrTrnsctnMpprIntermediate.getReferenceAmount();
-    if (referenceAmount > 0) {
-      expenseManagerTransaction.setReferenceAmount(referenceAmount);
-    }
-    return expenseManagerTransaction;
   }
 
   @Override
   public boolean add(ExpenseManagerTransaction expenseManagerTransaction) throws IOException, SQLException {
     //TODO: Consider having a validator class
-    long id = expenseManagerTransaction.getId();
-    int idInt = (int) id;
-    if (idInt <= 0) {
+    int id = expenseManagerTransaction.getId();
+    if (id <= 0) {
       LOGGER.atWarn().log("id is non positive:{}", id);
       throw new IllegalArgumentException("ID cannot be non positive.");
     }
@@ -128,33 +79,15 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       LOGGER.atWarn().log("category is null");
       throw new IllegalArgumentException("Category cannot be null.");
     }
-    String expenseCategoryString = expenseCategory.value();
-    if (StringUtils.isBlank(expenseCategoryString)) {
-      LOGGER.atWarn()
-          .log("category is null/ blank:{}", StringResolver.resolveNullableString(expenseCategoryString));
-      throw new IllegalArgumentException("Category cannot be null or empty.");
-    }
     ExpenseSubCategory expenseSubCategory = expenseManagerTransaction.getSubcategory();
     if (expenseSubCategory == null) {
       LOGGER.atWarn().log("subcategory is null.");
       throw new IllegalArgumentException("Subcategory cannot be null.");
     }
-    String expenseSubCategoryString = expenseSubCategory.value();
-    if (StringUtils.isBlank(expenseSubCategoryString)) {
-      LOGGER.atWarn()
-          .log("subcategory is null/ blank:{}", StringResolver.resolveNullableString(expenseSubCategoryString));
-      throw new IllegalArgumentException("Subcategory cannot be null or empty.");
-    }
     PaymentMethod paymentMethod = expenseManagerTransaction.getPaymentMethod();
     if (paymentMethod == null) {
       LOGGER.atWarn().log("paymentMethod is null");
       throw new IllegalArgumentException("Payment Method cannot be null.");
-    }
-    String paymentMethodString = paymentMethod.value();
-    if (StringUtils.isBlank(paymentMethodString)) {
-      LOGGER.atWarn()
-          .log("paymentMethod is null/ blank:{}", StringResolver.resolveNullableString(paymentMethodString));
-      throw new IllegalArgumentException("Payment Method cannot be null or empty.");
     }
     String description = expenseManagerTransaction.getDescription();
     if (StringUtils.isBlank(description)) {
@@ -181,8 +114,8 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
       try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
         expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-        numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(idInt, amount,
-            expenseCategoryString, expenseSubCategoryString, paymentMethodString, description, expensedTime,
+        numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(id, amount,
+            expenseCategory, expenseSubCategory, paymentMethod, description, expensedTime,
             referenceAmount);
       }
     }

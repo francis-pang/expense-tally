@@ -9,7 +9,7 @@ import java.util.Objects;
  * This class stores all the details of a transaction inside the Expense Manager app.
  */
 public final class ExpenseManagerTransaction {
-  private Long id;
+  private int id;
   private Double amount;
   private ExpenseCategory category;
   private ExpenseSubCategory subcategory;
@@ -38,7 +38,7 @@ public final class ExpenseManagerTransaction {
    * @return a new instance of {@link ExpenseManagerTransaction}
    * @throws IllegalArgumentException when any of the enum class is null, or an blank description is provided
    */
-  public static ExpenseManagerTransaction create(long id, double amount, ExpenseCategory category,
+  public static ExpenseManagerTransaction create(int id, double amount, ExpenseCategory category,
                                                  ExpenseSubCategory subCategory,
                                                  PaymentMethod paymentMethod, String description,
                                                  Instant expendedTime) {
@@ -72,7 +72,7 @@ public final class ExpenseManagerTransaction {
     return expenseManagerTransaction;
   }
 
-  public Long getId() {
+  public int getId() {
     return id;
   }
 
@@ -110,14 +110,10 @@ public final class ExpenseManagerTransaction {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
     ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
-    return id.equals(that.id) &&
+    return id == that.id &&
         amount.equals(that.amount) &&
         category == that.category &&
         subcategory == that.subcategory &&

@@ -1,6 +1,5 @@
 package expense_tally.expense_manager.transformation;
 
-import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseCategory;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
@@ -364,25 +363,5 @@ class ExpenseManagerTransactionMapperTest {
 
     softly.assertThat(actualExpenseManagerMap).containsExactly(Assertions.entry(1.78, expectedExpensesPaymentMethod));
     softly.assertAll();
-  }
-
-  @Test
-  void toString_pass() {
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate expnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            15,
-            7.45,
-            "Something",
-            "subCat",
-            "cash",
-            "something",
-            Instant.ofEpochSecond(1610824771),
-            0.0
-        );
-    assertThat(expnsMngrTrnsctnMpprIntermediate.toString())
-        .isNotNull()
-        .isNotBlank()
-        .contains("[id=15,amount=7.45,category=Something,subcategory=subCat,paymentMethod=cash,description=something," +
-            "expensedTime=2021-01-16T19:19:31Z,referenceAmount=0.0]");
   }
 }

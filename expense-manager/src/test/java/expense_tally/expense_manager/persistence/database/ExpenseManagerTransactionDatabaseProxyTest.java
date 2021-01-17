@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -136,6 +135,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         "Dinner. Sbcd Korean tofu house. Millenia walk.",
         Instant.ofEpochMilli(Long.parseLong("1514813160000"))
     );
+    List<ExpenseManagerTransaction> expectedExpenseManagerTransactions = List.of(expectedExpenseManagerTransaction);
     Connection mockConnection = Mockito.mock(Connection.class);
     Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
     SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
@@ -147,22 +147,8 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
         .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
     Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
+        .thenReturn(expectedExpenseManagerTransactions);
     assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
         .isNotNull()
         .isNotEmpty()
@@ -219,6 +205,11 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         "Lunch. Single Bowl Salad. Happy Tummy.",
         Instant.ofEpochMilli(Long.parseLong("1515388500000"))
     );
+    List<ExpenseManagerTransaction> expectedExpenseManagerTransactions = List.of(
+        expectedExpenseManagerTransaction1,
+        expectedExpenseManagerTransaction2,
+        expectedExpenseManagerTransaction3
+    );
     Connection mockConnection = Mockito.mock(Connection.class);
     Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
     SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
@@ -230,47 +221,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
         .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate1 =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate2 =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4868,
-            Double.parseDouble("7"),
-            "Entertainment",
-            "Karaoke/ Party",
-            "Cash",
-            "Teo Heng. Suntec City.",
-            Instant.ofEpochMilli(Long.parseLong("1514813220000")),
-            Double.parseDouble("4.0")
-        );
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate3 =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4871,
-            Double.parseDouble("6.1"),
-            "Food",
-            "Food court/ Fast food",
-            "Debit 5548-2741-0014-1067",
-            "Lunch. Single Bowl Salad. Happy Tummy.",
-            Instant.ofEpochMilli(Long.parseLong("1515388500000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates =
-        List.of(
-            testExpnsMngrTrnsctnMpprIntermediate1,
-            testExpnsMngrTrnsctnMpprIntermediate2,
-            testExpnsMngrTrnsctnMpprIntermediate3
-        );
     Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
+        .thenReturn(List.of(expectedExpenseManagerTransaction1, expectedExpenseManagerTransaction2,
+            expectedExpenseManagerTransaction3));
     assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
         .isNotNull()
         .isNotEmpty()
@@ -355,482 +308,6 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void getAllExpenseManagerTransaction_iDIsZero() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            0,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_categoryIsEmpty() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            StringUtils.EMPTY,
-            "Alcohol/ Restaurant",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_categoryIsNull() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            null,
-            "Alcohol/ Restaurant",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_categoryIsBlank() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "    ",
-            "Alcohol/ Restaurant",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_subcategoryIsEmpty() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            StringUtils.EMPTY,
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_subcategoryIsNull() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            null,
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_subcategoryIsBlank() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "    ",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_paymentMethodIsEmpty() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            StringUtils.EMPTY,
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_paymentMethodIsNull() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            null,
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_paymentMethodIsBlank() throws IOException, SQLException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            " ",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_descriptionIsEmpty() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            "Cash",
-            StringUtils.EMPTY,
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_descriptionIsNull() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            "Cash",
-            null,
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_descriptionIsBlank() throws IOException, SQLException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            "Cash",
-            "   ",
-            Instant.ofEpochMilli(Long.parseLong("1514813160000")),
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_expensedTimeIsNull() throws IOException, SQLException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
-    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
-        Mockito.mock(ExpenseManagerTransactionMapper.class);
-    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
-        .thenReturn(mockExpenseManagerTransactionMapper);
-    ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate testExpnsMngrTrnsctnMpprIntermediate =
-        new ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate(
-            4867,
-            Double.parseDouble("30.0"),
-            "Entertainment",
-            "Alcohol/ Restaurant",
-            "Cash",
-            "Dinner. Sbcd Korean tofu house. Millenia walk.",
-            null,
-            Double.parseDouble("0")
-        );
-    List<ExpenseManagerTransactionMapper.ExpnsMngrTrnsctnMpprIntermediate> mockExpnsMngrTrnsctnMpprIntermediates = new
-        ArrayList<>();
-    mockExpnsMngrTrnsctnMpprIntermediates.add(testExpnsMngrTrnsctnMpprIntermediate);
-    Mockito.when(mockExpenseManagerTransactionMapper.getAllExpenseManagerTransactions())
-        .thenReturn(mockExpnsMngrTrnsctnMpprIntermediates);
-    assertThat(expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isNotNull()
-        .isEmpty();
-  }
-
-  @Test
   void add_succeed() throws SQLException, IOException {
     Connection mockConnection = Mockito.mock(Connection.class);
     Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
@@ -846,9 +323,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransactionMapper.addExpenseManagerTransaction(
         4867,
         Double.parseDouble("30.0"),
-        "Entertainment",
-        "Alcohol/ Restaurant",
-        "Cash",
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
+        PaymentMethod.CASH,
         "Dinner. Sbcd Korean tofu house. Millenia walk.",
         Instant.ofEpochMilli(Long.parseLong("1514813160000")),
         Double.parseDouble("0")
@@ -882,9 +359,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransactionMapper.addExpenseManagerTransaction(
         4867,
         Double.parseDouble("30.0"),
-        "Entertainment",
-        "Alcohol/ Restaurant",
-        "Cash",
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
+        PaymentMethod.CASH,
         "Dinner. Sbcd Korean tofu house. Millenia walk.",
         Instant.ofEpochMilli(Long.parseLong("1514813160000")),
         Double.parseDouble("0")
@@ -905,62 +382,25 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_idIsZero() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("0"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(0);
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("ID cannot be non positive.");
   }
 
   @Test
-  void add_categoryIsEmpty() {
-    ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
-    ExpenseCategory mockExpenseCategory = Mockito.mock(ExpenseCategory.class);
-    Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(mockExpenseCategory);
-    Mockito.when(mockExpenseCategory.value()).thenReturn(StringUtils.EMPTY);
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Category cannot be null or empty.");
-  }
-
-  @Test
   void add_categoryIsNull() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Category cannot be null.");
   }
 
   @Test
-  void add_categoryIsBlank() {
-    ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
-    ExpenseCategory mockExpenseCategory = Mockito.mock(ExpenseCategory.class);
-    Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(mockExpenseCategory);
-    Mockito.when(mockExpenseCategory.value()).thenReturn("   ");
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Category cannot be null or empty.");
-  }
-
-  @Test
-  void add_subcategoryIsEmpty() {
-    ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
-    Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
-    ExpenseSubCategory mockExpenseSubCategory = Mockito.mock(ExpenseSubCategory.class);
-    Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(mockExpenseSubCategory);
-    Mockito.when(mockExpenseSubCategory.value()).thenReturn(StringUtils.EMPTY);
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Subcategory cannot be null or empty.");
-  }
-
-  @Test
   void add_subcategoryIsNull() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
         .isInstanceOf(IllegalArgumentException.class)
@@ -968,36 +408,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_subcategoryIsBlank() {
-    ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
-    Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
-    ExpenseSubCategory mockExpenseSubCategory = Mockito.mock(ExpenseSubCategory.class);
-    Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(mockExpenseSubCategory);
-    Mockito.when(mockExpenseSubCategory.value()).thenReturn(StringUtils.SPACE);
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Subcategory cannot be null or empty.");
-  }
-
-  @Test
-  void add_paymentMethodIsEmpty() {
-    ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
-    Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
-    Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
-    PaymentMethod mockPaymentMethod = Mockito.mock(PaymentMethod.class);
-    Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(mockPaymentMethod);
-    Mockito.when(mockPaymentMethod.value()).thenReturn(StringUtils.EMPTY);
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Payment Method cannot be null or empty.");
-  }
-
-  @Test
   void add_paymentMethodIsNull() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
@@ -1006,23 +419,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_paymentMethodIsBlank() {
-    ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
-    Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
-    Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
-    PaymentMethod mockPaymentMethod = Mockito.mock(PaymentMethod.class);
-    Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(mockPaymentMethod);
-    Mockito.when(mockPaymentMethod.value()).thenReturn(StringUtils.SPACE);
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Payment Method cannot be null or empty.");
-  }
-
-  @Test
   void add_descriptionIsEmpty() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
@@ -1035,7 +434,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_descriptionIsNull() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
@@ -1048,7 +447,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_descriptionIsBlank() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
@@ -1061,7 +460,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_expensedTimeIsNull() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
@@ -1075,7 +474,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_expensedTimeInTheFuture() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
@@ -1090,7 +489,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_referenceAmountNull() throws IOException, SQLException {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getAmount()).thenReturn(Double.parseDouble("30.0"));
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
@@ -1113,9 +512,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransactionMapper.addExpenseManagerTransaction(
         4867,
         Double.parseDouble("30.0"),
-        "Entertainment",
-        "Alcohol/ Restaurant",
-        "Cash",
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
+        PaymentMethod.CASH,
         "Dinner. Sbcd Korean tofu house. Millenia walk.",
         Instant.ofEpochMilli(Long.parseLong("1514813160000")),
         Double.parseDouble("0")
@@ -1127,7 +526,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_referenceAmountIsZero() throws IOException, SQLException {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getAmount()).thenReturn(Double.parseDouble("30.0"));
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
@@ -1152,9 +551,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransactionMapper.addExpenseManagerTransaction(
         4867,
         Double.parseDouble("30.0"),
-        "Entertainment",
-        "Alcohol/ Restaurant",
-        "Cash",
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
+        PaymentMethod.CASH,
         "Dinner. Sbcd Korean tofu house. Millenia walk.",
         Instant.ofEpochMilli(Long.parseLong("1514813160000")),
         Double.parseDouble("0")
@@ -1166,7 +565,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   @Test
   void add_referenceAmountIsNegative() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
-    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(Long.parseLong("4867"));
+    Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getCategory()).thenReturn(ExpenseCategory.ENTERTAINMENT);
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
@@ -1283,9 +682,9 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransactionMapper.addExpenseManagerTransaction(
         4867,
         Double.parseDouble("30.0"),
-        "Entertainment",
-        "Alcohol/ Restaurant",
-        "Cash",
+        ExpenseCategory.ENTERTAINMENT,
+        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
+        PaymentMethod.CASH,
         "Dinner. Sbcd Korean tofu house. Millenia walk.",
         Instant.ofEpochMilli(Long.parseLong("1514813160000")),
         Double.parseDouble("0")
