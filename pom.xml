@@ -4,7 +4,7 @@
     <groupId>com.github.francis-pang</groupId>
     <artifactId>expense-tally</artifactId>
     <packaging>pom</packaging>
-    <version>66-SNAPSHOT</version>
+    <version>66</version>
     <modules>
         <module>base</module>
         <module>model</module>
@@ -58,7 +58,7 @@
         <connection>scm:git:git@github.com:francis-pang/expense-tally.git</connection>
         <developerConnection>scm:git:https://github.com/francis-pang/expense-tally.git</developerConnection>
         <url>https://github.com/francis-pang/expense-tally</url>
-        <tag>HEAD</tag>
+        <tag>expense-tally-66</tag>
     </scm>
 
     <distributionManagement>
