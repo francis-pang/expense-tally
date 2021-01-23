@@ -149,11 +149,14 @@ public final class ExpenseReconciler {
         .getOrDefault(expensePaymentMethod, Collections.emptyList());
     LocalDate csvTransactionDate = abstractCsvTransaction.getTransactionDate();
     int matchingTransactionCount = calculateNumberOfMatchingTransactions(csvTransactionDate, possibleMatchingExpenses);
-    return switch (matchingTransactionCount) {
-      case 0 -> handleMissingCsvTransaction(abstractCsvTransaction);
-      case 1 -> handleExactMatchCsvTransaction();
-      default -> handleMultipleMatchingTransaction(abstractCsvTransaction);
-    };
+    switch (matchingTransactionCount) {
+      case 0:
+        return handleMissingCsvTransaction(abstractCsvTransaction);
+      case 1:
+        return handleExactMatchCsvTransaction();
+      default:
+        return handleMultipleMatchingTransaction(abstractCsvTransaction);
+    }
   }
 
   private static boolean handleMissingCsvTransaction(AbstractCsvTransaction abstractCsvTransaction) {
