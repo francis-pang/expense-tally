@@ -5,6 +5,9 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 import expense_tally.exception.StringResolver;
 import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,9 +21,11 @@ import java.sql.SQLException;
 public class MySqlConnection implements DatabaseConnectable {
   private static final Logger LOGGER = LogManager.getLogger(MySqlConnection.class);
   private final DataSource dataSource;
+  private final String connectionUrl;
 
-  private MySqlConnection(DataSource dataSource) {
+  private MySqlConnection(DataSource dataSource, String connectionUrl) {
     this.dataSource = dataSource;
+    this.connectionUrl = connectionUrl;
   }
 
   /**
@@ -67,7 +72,7 @@ public class MySqlConnection implements DatabaseConnectable {
     mysqlDataSource.setLogSlowQueries(true);
     LOGGER.atInfo().log("Creating MySqlConnection: connectionString:{}, database:{}, username:{}", connectionString,
             database, StringResolver.resolveNullableString(username));
-    return new MySqlConnection(mysqlDataSource);
+    return new MySqlConnection(mysqlDataSource, connectionString);
   }
 
   @Override
@@ -91,5 +96,35 @@ public class MySqlConnection implements DatabaseConnectable {
     stringBuilder.append(database);
     LOGGER.atDebug().log("MySQL connection string:{}", stringBuilder.toString());
     return stringBuilder.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+
+    if (o == null || getClass() != o.getClass()) return false;
+
+    MySqlConnection that = (MySqlConnection) o;
+
+    return new EqualsBuilder()
+        .append(dataSource, that.dataSource)
+        .append(connectionUrl, that.connectionUrl)
+        .isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37)
+        .append(dataSource)
+        .append(connectionUrl)
+        .toHashCode();
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("dataSource", dataSource)
+        .append("connectionUrl", connectionUrl)
+        .toString();
   }
 }
