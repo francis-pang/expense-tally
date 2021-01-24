@@ -1,6 +1,10 @@
 package expense_tally.expense_manager.persistence.database.sqlite;
 
 import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.sqlite.JDBC;
 import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
@@ -15,14 +19,16 @@ import java.sql.SQLException;
  * database (definitions, tables, indices, and the data itself) is stored inside a single cross-platform file.</p>
  */
 public final class SqLiteConnection implements DatabaseConnectable {
-  private static final String SQLITE_JDBC_PREFIX = "jdbc:sqlite:";
+  private static final Logger LOGGER = LogManager.getLogger(SqLiteConnection.class);
   private final DataSource dataSource;
+  private String connectionString;
 
   /**
    * Default constructor
    */
-  private SqLiteConnection(DataSource dataSource) {
+  private SqLiteConnection(DataSource dataSource, String connectionString) {
     this.dataSource = dataSource;
+    this.connectionString = connectionString;
   }
 
   /**
@@ -34,12 +40,13 @@ public final class SqLiteConnection implements DatabaseConnectable {
     SQLiteDataSource sqLiteDataSource = new SQLiteDataSource();
     String connectionUrl = constructConnectionUrl(databaseFile);
     sqLiteDataSource.setUrl(connectionUrl);
-    return new SqLiteConnection(sqLiteDataSource);
+    LOGGER.atDebug().log("Creating new sqLiteDataSource. connectionUrl:{}", connectionUrl);
+    return new SqLiteConnection(sqLiteDataSource, connectionUrl);
   }
 
   private static String constructConnectionUrl(String databaseFile) {
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(SQLITE_JDBC_PREFIX);
+    stringBuilder.append(JDBC.PREFIX);
     stringBuilder.append(databaseFile);
     return stringBuilder.toString();
   }
@@ -47,5 +54,13 @@ public final class SqLiteConnection implements DatabaseConnectable {
   @Override
   public Connection connect() throws SQLException {
     return dataSource.getConnection();
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("dataSource", dataSource)
+        .append("connectionString", connectionString)
+        .toString();
   }
 }

@@ -1,6 +1,7 @@
 package expense_tally.expense_manager.persistence.database;
 
 import expense_tally.exception.StringResolver;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -41,11 +42,13 @@ public final class DatabaseSessionFactoryBuilder {
    * @throws IOException when there is issue to read the myBatis configuration resource
    */
   public SqlSessionFactory buildSessionFactory(String environmentId) throws IOException {
-    if (environmentId == null || environmentId.isBlank()) {
+    if (StringUtils.isBlank(environmentId)) {
       LOGGER.atError()
           .log("Environment ID is invalid: \"{}\"", StringResolver.resolveNullableString(environmentId));
       throw new IllegalArgumentException("Environment ID cannot be empty");
     }
+    LOGGER.atDebug().log("Loading iBatis configuration from file. CONFIGURATION_FILE_NAME:{}, environmentId:{}",
+        CONFIGURATION_FILE_NAME, environmentId);
     InputStream configurationInputStream = Resources.getResourceAsStream(CONFIGURATION_FILE_NAME);
     return sqlSessionFactoryBuilder.build(configurationInputStream, environmentId);
   }

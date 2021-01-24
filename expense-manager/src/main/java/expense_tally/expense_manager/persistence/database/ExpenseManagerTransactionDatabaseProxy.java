@@ -124,7 +124,9 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
 
   @Override
   public boolean clear() throws IOException, SQLException {
+    LOGGER.atTrace().log("Retrieve a database connection. databaseConnectable:{}", databaseConnectable);
     try (Connection connection = databaseConnectable.connect()) {
+      LOGGER.atTrace().log("Connection retrieved. connection:{}", connection);
       SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
       try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
         expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);

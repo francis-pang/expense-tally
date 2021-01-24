@@ -9,6 +9,8 @@
         <!-- When enabled, any method call will load all the lazy properties of the object. Otherwise, each
         property is loaded on demand -->
         <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 	Sets the number of seconds the driver will wait for a response from the database. -->
+        <setting name="defaultStatementTimeout" value="30"/>
     </settings>
     <typeHandlers>
         <typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" javaType="expense_tally.model.persistence.transformation.ExpenseCategory"/>
