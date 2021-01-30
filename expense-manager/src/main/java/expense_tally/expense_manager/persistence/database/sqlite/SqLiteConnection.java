@@ -10,6 +10,7 @@ import org.sqlite.SQLiteDataSource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.StringJoiner;
 
 /**
  * Manages the database connection to SQLite embedded database engine.
@@ -45,10 +46,7 @@ public final class SqLiteConnection implements DatabaseConnectable {
   }
 
   private static String constructConnectionUrl(String databaseFile) {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(JDBC.PREFIX);
-    stringBuilder.append(databaseFile);
-    return stringBuilder.toString();
+    return JDBC.PREFIX + databaseFile;
   }
 
   @Override
@@ -58,9 +56,9 @@ public final class SqLiteConnection implements DatabaseConnectable {
 
   @Override
   public String toString() {
-    return new ToStringBuilder(this)
-        .append("dataSource", dataSource)
-        .append("connectionString", connectionString)
+    return new StringJoiner(", ", SqLiteConnection.class.getSimpleName() + "[", "]")
+        .add("dataSource=" + dataSource)
+        .add("connectionString='" + connectionString + "'")
         .toString();
   }
 }
