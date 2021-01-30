@@ -12,6 +12,8 @@ import expense_tally.views.AppParameter;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.TransactionFactory;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,10 +46,12 @@ public final class CommandLineRunner {
       expenseAccountant.reconcileData(optionValues.get(AppParameter.CSV_PATH));
     } catch (IOException ioException) {
       LOGGER.atError().withThrowable(ioException).log("Error reading CSV file");
-      System.exit(CSV_FILE_PARSING_ERR_CODE);
+      Runtime runtime = Runtime.getRuntime();
+      runtime.exit(CSV_FILE_PARSING_ERR_CODE);
     } catch (SQLException sqlException) {
       LOGGER.atError().withThrowable(sqlException).log("Error reading from database");
-      System.exit(DATABASE_ERR_CODE);
+      Runtime runtime = Runtime.getRuntime();
+      runtime.exit(DATABASE_ERR_CODE);
     }
   }
 
@@ -79,12 +83,20 @@ public final class CommandLineRunner {
       default:
         throw new IllegalStateException("Unexpected value: " + databaseEnvironmentId);
     }
-    Environment environment = new Environment.Builder(databaseEnvironmentId.name())
-        .dataSource(dataSource)
-        .build();
+    Environment environment = constructEnvironment(databaseEnvironmentId.name(), dataSource,
+        new JdbcTransactionFactory());
 
     // Create SqlSessionFactory
     DatabaseSessionBuilder databaseSessionBuilder = DatabaseSessionBuilder.of(new SqlSessionFactoryBuilder());
     return databaseSessionBuilder.buildSessionFactory(environment);
+  }
+
+  public static Environment constructEnvironment(String environmentId,
+                                          DataSource dataSource,
+                                          TransactionFactory transactionFactory) {
+    return new Environment.Builder(environmentId)
+        .dataSource(dataSource)
+        .transactionFactory(transactionFactory)
+        .build();
   }
 }
