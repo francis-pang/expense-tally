@@ -1,7 +1,6 @@
 package expense_tally.expense_manager.persistence.database;
 
 import expense_tally.AppStringConstant;
-import expense_tally.exception.StringResolver;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.persistence.database.mapper.ExpenseManagerTransactionMapper;
@@ -10,15 +9,10 @@ import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
 import expense_tally.model.persistence.transformation.ExpenseSubCategory;
 import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -29,44 +23,25 @@ import java.util.Objects;
  */
 public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, ExpenseUpdatable {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseManagerTransactionDatabaseProxy.class);
-  private ExpenseManagerTransactionMapper expenseManagerTransactionMapper;
-  private final DatabaseConnectable databaseConnectable;
-  private final DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder;
-  private final String environmentId;
+  private final SqlSession sqlSession;
 
   /**
    * Default class constructor
-   * @param databaseConnectable Container for database connection object
-   * @param databaseSessionFactoryBuilder Container for database session object
-   * @param environmentId Identifier of the database configuration setting specific in the database configuration
-   * @throws IllegalArgumentException if any of the parameter is null, or <i>environmentId</i> contains only blank space
+   * @param sqlSession SQL session
    */
-  public ExpenseManagerTransactionDatabaseProxy(DatabaseConnectable databaseConnectable,
-                                                DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder,
-                                                String environmentId) {
-    this.databaseConnectable = Objects.requireNonNull(databaseConnectable);
-    this.databaseSessionFactoryBuilder = Objects.requireNonNull(databaseSessionFactoryBuilder);
-    if (StringUtils.isBlank(environmentId)) {
-      LOGGER.atWarn()
-          .log("environmentId is null or empty: {}", StringResolver.resolveNullableString(environmentId));
-      throw new IllegalArgumentException("Environment ID cannot be null or empty");
-    }
-    this.environmentId = environmentId;
+  public ExpenseManagerTransactionDatabaseProxy(SqlSession sqlSession) {
+    this.sqlSession = Objects.requireNonNull(sqlSession);
   }
 
   @Override
-  public List<ExpenseManagerTransaction> getAllExpenseManagerTransaction() throws IOException, SQLException {
-    try (Connection connection = databaseConnectable.connect()) {
-      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
-      try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
-        expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-        return expenseManagerTransactionMapper.getAllExpenseManagerTransactions();
-      }
-    }
+  public List<ExpenseManagerTransaction> getAllExpenseManagerTransaction() {
+    ExpenseManagerTransactionMapper expenseManagerTransactionMapper =
+        sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
+    return expenseManagerTransactionMapper.getAllExpenseManagerTransactions();
   }
 
   @Override
-  public boolean add(ExpenseManagerTransaction expenseManagerTransaction) throws IOException, SQLException {
+  public boolean add(ExpenseManagerTransaction expenseManagerTransaction) {
     //TODO: Consider having a validator class
     int id = expenseManagerTransaction.getId();
     if (id <= 0) {
@@ -110,29 +85,34 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
       throw new IllegalArgumentException("Reference amount cannot be negative.");
     }
     int numberOfInsertedEntry;
-    try (Connection connection = databaseConnectable.connect()) {
-      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
-      try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
-        expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-        numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(id, amount,
-            expenseCategory, expenseSubCategory, paymentMethod, description, expensedTime,
-            referenceAmount);
-      }
+    try {
+      ExpenseManagerTransactionMapper expenseManagerTransactionMapper =
+          sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
+      numberOfInsertedEntry = expenseManagerTransactionMapper.addExpenseManagerTransaction(id, amount,
+          expenseCategory, expenseSubCategory, paymentMethod, description, expensedTime,
+          referenceAmount);
+    } catch (RuntimeException runtimeException) {
+      LOGGER.atWarn()
+          .log("Unable to insert expense manager transaction. expenseManagerTransaction:{}", expenseManagerTransaction);
+      throw  runtimeException;
     }
     return (numberOfInsertedEntry == 1);
   }
 
   @Override
-  public boolean clear() throws IOException, SQLException {
-    LOGGER.atTrace().log("Retrieve a database connection. databaseConnectable:{}", databaseConnectable);
-    try (Connection connection = databaseConnectable.connect()) {
-      LOGGER.atTrace().log("Connection retrieved. connection:{}", connection);
-      SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
-      try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.SIMPLE, connection)) {
-        expenseManagerTransactionMapper = sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-        return expenseManagerTransactionMapper.deleteAllExpenseManagerTransactions();
-      }
+  public boolean clear() {
+    LOGGER.atTrace().log("Retrieve a database connection.");
+    try {
+      ExpenseManagerTransactionMapper expenseManagerTransactionMapper =
+          sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
+      return expenseManagerTransactionMapper.deleteAllExpenseManagerTransactions();
+    } catch (RuntimeException runtimeException) {
+      LOGGER
+          .atWarn()
+          .log("Unable to delete all entries from database. configuration:{}, connection:{}",
+              sqlSession.getConfiguration(),
+              sqlSession.getConnection());
+      throw runtimeException;
     }
   }
-
 }

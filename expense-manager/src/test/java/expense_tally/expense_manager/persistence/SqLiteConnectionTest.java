@@ -5,15 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class SqLiteConnectionTest {
@@ -26,31 +22,8 @@ class SqLiteConnectionTest {
   @Test
   void create() {
     String testDatabaseConnection = "testSql";
-    assertThat(SqLiteConnection.create(testDatabaseConnection))
+    assertThat(SqLiteConnection.createDataSource(testDatabaseConnection, null, null, null))
         .isNotNull();
-  }
-
-  @Test
-  void connect_connectionSuccess() throws SQLException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDataSource.getConnection()).thenReturn(mockConnection);
-    assertThat(sqLiteConnection.connect())
-        .isNotNull()
-        .isEqualTo(mockConnection);
-  }
-
-  @Test
-  void connect_error() throws SQLException {
-    Mockito.when(mockDataSource.getConnection()).thenThrow(new SQLException("test SQL error"));
-    assertThatThrownBy(() -> sqLiteConnection.connect())
-        .isInstanceOf(SQLException.class)
-        .hasMessage("test SQL error");
-  }
-
-  @Test
-  void testToString() {
-    SqLiteConnection testSqLiteConnection = SqLiteConnection.create("file");
-    assertThat(testSqLiteConnection.toString()).contains("connectionString='jdbc:sqlite:file'");
   }
 }
 
