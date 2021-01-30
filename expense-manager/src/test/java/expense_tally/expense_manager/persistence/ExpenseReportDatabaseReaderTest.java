@@ -1,25 +1,18 @@
 package expense_tally.expense_manager.persistence;
 
-import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
-import expense_tally.expense_manager.persistence.database.DatabaseSessionFactoryBuilder;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
 import expense_tally.expense_manager.persistence.database.mapper.ExpenseReportMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
 import org.apache.ibatis.binding.BindingException;
-import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,25 +23,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(MockitoExtension.class)
 class ExpenseReportDatabaseReaderTest {
   @Mock
-  private DatabaseConnectable mockDatabaseConnectable;
+  private SqlSession mockSqlSession;
 
-  @Mock
-  private DatabaseSessionFactoryBuilder mockDatabaseSessionFactoryBuilder;
-
+  @InjectMocks
   private ExpenseReportDatabaseReader expenseReportDatabaseReader;
-
-  // This is needed instead of using @InjectMocks because String cannot be mocked.
-  @BeforeEach
-  void setUp() {
-    expenseReportDatabaseReader = new ExpenseReportDatabaseReader(mockDatabaseConnectable, mockDatabaseSessionFactoryBuilder,
-            "testId");
-  }
 
   /**
    * A simple happy case where a single transaction database table is being read and parsed correctly
    */
   @Test
-  void getExpenseTransactions_retrieve1Record() throws SQLException, IOException {
+  void getExpenseTransactions_retrieve1Record() {
     List<ExpenseReport> expectedExpenseReports = new ArrayList<>();
     /*
      * Following the practice of writing good test from
@@ -77,13 +61,6 @@ class ExpenseReportDatabaseReaderTest {
     expectedExpenseReport1.setExpenseTag("");
     expectedExpenseReports.add(expectedExpenseReport1);
 
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(Mockito.anyString()))
-            .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.REUSE, mockConnection)).thenReturn(mockSqlSession);
     ExpenseReportMapper mockExpenseReportMapper = Mockito.mock(ExpenseReportMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
     Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(expectedExpenseReports);
@@ -103,14 +80,7 @@ class ExpenseReportDatabaseReaderTest {
   }
 
   @Test
-  void getExpenseTransactions_noRecord() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(Mockito.anyString()))
-            .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.REUSE, mockConnection)).thenReturn(mockSqlSession);
+  void getExpenseTransactions_noRecord() {
     ExpenseReportMapper mockExpenseReportMapper = Mockito.mock(ExpenseReportMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
     Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(Collections.emptyList());
@@ -120,26 +90,7 @@ class ExpenseReportDatabaseReaderTest {
   }
 
   @Test
-  void getExpenseTransactions_SqlError() throws SQLException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect())
-            .thenThrow(new SQLException("New SQL error"));
-    assertThatThrownBy(() -> expenseReportDatabaseReader.getExpenseTransactions())
-        .isInstanceOf(SQLException.class)
-        .hasMessage("New SQL error");
-  }
-
-  @Test
-  void getExpenseTransaction_IOException() throws IOException {
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(Mockito.anyString()))
-            .thenThrow(new IOException("test IOException"));
-    assertThatThrownBy(() -> expenseReportDatabaseReader.getExpenseTransactions())
-            .isInstanceOf(IOException.class)
-            .hasMessage("test IOException");
-  }
-
-  @Test
-  void getExpenseTransaction_multipleRecords() throws SQLException, IOException {
+  void getExpenseTransaction_multipleRecords() {
     List<ExpenseReport> expectedExpenseReports = new ArrayList<>();
 
     ExpenseReport expectedExpenseReport1 = new ExpenseReport();
@@ -184,13 +135,6 @@ class ExpenseReportDatabaseReaderTest {
     expectedExpenseReport2.setExpenseTag("");
     expectedExpenseReports.add(expectedExpenseReport2);
 
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(Mockito.anyString()))
-            .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.REUSE, mockConnection)).thenReturn(mockSqlSession);
     ExpenseReportMapper mockExpenseReportMapper = Mockito.mock(ExpenseReportMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class)).thenReturn(mockExpenseReportMapper);
     Mockito.when(mockExpenseReportMapper.getAllExpenseReports()).thenReturn(expectedExpenseReports);
@@ -206,14 +150,7 @@ class ExpenseReportDatabaseReaderTest {
   }
 
   @Test
-  void getExpenseTransaction_bindingException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(Mockito.anyString()))
-            .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.REUSE, mockConnection)).thenReturn(mockSqlSession);
+  void getExpenseTransaction_bindingException() {
     Mockito.when(mockSqlSession.getMapper(ExpenseReportMapper.class))
             .thenThrow(new BindingException("Unable to find ExpenseReportMapper class in mapping registry"));
 

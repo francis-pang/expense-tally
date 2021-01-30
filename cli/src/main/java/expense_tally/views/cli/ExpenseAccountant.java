@@ -3,7 +3,7 @@ package expense_tally.views.cli;
 import expense_tally.csv.parser.CsvParser;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
-import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
+import expense_tally.expense_manager.transformation.ExpenseTransactionTransformer;
 import expense_tally.model.csv.AbstractCsvTransaction;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
@@ -65,14 +65,14 @@ public final class ExpenseAccountant {
       }
       List<ExpenseReport> expenseReports = expenseReportReadable.getExpenseTransactions();
       List<ExpenseManagerTransaction> expenseManagerTransactions =
-          ExpenseTransactionMapper.mapExpenseReports(expenseReports);
+          ExpenseTransactionTransformer.mapExpenseReports(expenseReports);
       if (expenseUpdatable != null) {
         for (ExpenseManagerTransaction expenseManagerTransaction : expenseManagerTransactions) {
           expenseUpdatable.add(expenseManagerTransaction);
         }
       }
       expensesByAmountAndPaymentMethod =
-          ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
+          ExpenseTransactionTransformer.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
     } catch (SQLException ex) {
       LOGGER
           .atError()

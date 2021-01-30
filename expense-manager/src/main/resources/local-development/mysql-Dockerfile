@@ -14,7 +14,7 @@ ENV MYSQL_ROOT_PASSWORD=Password1
 # database.
 ENV MYSQL_DATABASE=expense_manager
 
-# These variables are optional, used in conjunction to create a new user and to set that user's password. This user will
+# These variables are optional, used in conjunction to of a new user and to set that user's password. This user will
 # be granted superuser permissions (see above) for the database specified by the MYSQL_DATABASE variable. Both variables
 # are required for a user to be created.
 ENV MYSQL_USER=expensetally

@@ -76,7 +76,7 @@ class ExpenseManagerTransactionMapperTest {
     // Create test data
     List<ExpenseReport> testingExpenseReports = new ArrayList<>();
 
-    assertThat(ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports)).isEmpty();
+    assertThat(ExpenseTransactionTransformer.mapExpenseReports(testingExpenseReports)).isEmpty();
   }
 
   /*
@@ -121,9 +121,9 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
     List<ExpenseManagerTransaction> expenseManagerTransactions =
-        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
+        ExpenseTransactionTransformer.mapExpenseReports(testingExpenseReports);
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
+        ExpenseTransactionTransformer.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
 
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(1);
@@ -275,9 +275,9 @@ class ExpenseManagerTransactionMapperTest {
     ));
 
     List<ExpenseManagerTransaction> expenseManagerTransactions =
-        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
+        ExpenseTransactionTransformer.mapExpenseReports(testingExpenseReports);
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
+        ExpenseTransactionTransformer.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(2);
 
@@ -350,9 +350,9 @@ class ExpenseManagerTransactionMapperTest {
         0
     ));
     List<ExpenseManagerTransaction> expenseManagerTransactions =
-        ExpenseTransactionMapper.mapExpenseReports(testingExpenseReports);
+        ExpenseTransactionTransformer.mapExpenseReports(testingExpenseReports);
     Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> actualExpenseManagerMap =
-        ExpenseTransactionMapper.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
+        ExpenseTransactionTransformer.convertToTableOfAmountAndPaymentMethod(expenseManagerTransactions);
     softly.assertThat(actualExpenseManagerMap).isNotEmpty();
     softly.assertThat(actualExpenseManagerMap).hasSize(1);
     softly.assertThat(actualExpenseManagerMap).containsOnlyKeys(1.78);

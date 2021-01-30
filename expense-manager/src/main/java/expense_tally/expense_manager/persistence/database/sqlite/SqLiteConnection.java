@@ -1,16 +1,13 @@
 package expense_tally.expense_manager.persistence.database.sqlite;
 
-import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import expense_tally.exception.StringResolver;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sqlite.JDBC;
 import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.StringJoiner;
 
 /**
  * Manages the database connection to SQLite embedded database engine.
@@ -19,46 +16,36 @@ import java.util.StringJoiner;
  * , SQLite library is linked and form part of the application. Hence there isn't a database server. The entire
  * database (definitions, tables, indices, and the data itself) is stored inside a single cross-platform file.</p>
  */
-public final class SqLiteConnection implements DatabaseConnectable {
+public final class SqLiteConnection {
   private static final Logger LOGGER = LogManager.getLogger(SqLiteConnection.class);
-  private final DataSource dataSource;
-  private String connectionString;
 
   /**
-   * Default constructor
+   * Private constructor
+   * Utility classes, which are collections of static members, are not meant to be instantiated
    */
-  private SqLiteConnection(DataSource dataSource, String connectionString) {
-    this.dataSource = dataSource;
-    this.connectionString = connectionString;
+  private SqLiteConnection() {
   }
 
   /**
-   * Construct a SqlLiteConnection with the file path to the database file
-   *
-   * @param databaseFile file path of the database file
+   * Create a new data source based on the given parameters.
+   * @param databaseFilePath URL of the database connection. Does not need to include database scheme.
+   * @return a newly created instance of <i>data source</i> if creation succeeds.
    */
-  public static SqLiteConnection create(String databaseFile) {
+  public static DataSource createDataSource(String databaseFilePath) {
+    if (StringUtils.isBlank(databaseFilePath)) {
+      LOGGER.atWarn()
+          .log("databaseFilePath is blank. databaseFilePath:{}",
+              StringResolver.resolveNullableString(databaseFilePath));
+      throw new IllegalArgumentException("database file path cannot be blank.");
+    }
     SQLiteDataSource sqLiteDataSource = new SQLiteDataSource();
-    String connectionUrl = constructConnectionUrl(databaseFile);
+    String connectionUrl = constructConnectionUrl(databaseFilePath);
     sqLiteDataSource.setUrl(connectionUrl);
     LOGGER.atDebug().log("Creating new sqLiteDataSource. connectionUrl:{}", connectionUrl);
-    return new SqLiteConnection(sqLiteDataSource, connectionUrl);
+    return sqLiteDataSource;
   }
 
   private static String constructConnectionUrl(String databaseFile) {
     return JDBC.PREFIX + databaseFile;
-  }
-
-  @Override
-  public Connection connect() throws SQLException {
-    return dataSource.getConnection();
-  }
-
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", SqLiteConnection.class.getSimpleName() + "[", "]")
-        .add("dataSource=" + dataSource)
-        .add("connectionString='" + connectionString + "'")
-        .toString();
   }
 }
