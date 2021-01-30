@@ -48,7 +48,9 @@ public final class ExpenseAccountant {
   public void reconcileData(String csvFilename) throws IOException, SQLException {
     List<AbstractCsvTransaction> bankTransactions;
     try {
+      LOGGER.atDebug().log("Parsing CSV file. csvFileName:{}", csvFilename);
       bankTransactions = CsvParser.parseCsvFile(csvFilename);
+      LOGGER.atInfo().log("CSV file is parsed. csvFileName:{}", csvFilename);
     } catch (RuntimeException runtimeException) {
       LOGGER.atError().withThrowable(runtimeException)
           .log("Unable to read the CSV file. CSV file location = {}", csvFilename);
@@ -57,8 +59,9 @@ public final class ExpenseAccountant {
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod;
     try {
       if (expenseUpdatable != null) {
+        LOGGER.atDebug().log("Clearing remote database now.");
         boolean deleteResult = expenseUpdatable.clear();
-        LOGGER.atDebug().log("Table is cleared:{}", deleteResult);
+        LOGGER.atInfo().log("Table is cleared:{}", deleteResult);
       }
       List<ExpenseReport> expenseReports = expenseReportReadable.getExpenseTransactions();
       List<ExpenseManagerTransaction> expenseManagerTransactions =
