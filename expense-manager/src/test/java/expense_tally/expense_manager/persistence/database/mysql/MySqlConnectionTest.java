@@ -151,4 +151,41 @@ class MySqlConnectionTest {
         .isInstanceOf(SQLException.class)
         .hasMessage("dataSourceGetConnectionException");
   }
+
+  @Test
+  void testHashcode() throws SQLException {
+    MySqlConnection testMySqlConnection = MySqlConnection.create("testUrl", "testdb", "user", "pass");
+    assertThat(testMySqlConnection.hashCode()).isNotZero();
+  }
+
+  @Test
+  void testToString() throws SQLException {
+    MySqlConnection testMySqlConnection = MySqlConnection.create("testUrl", "testdb", "user", "pass");
+    assertThat(testMySqlConnection.toString()).contains("connectionUrl='jdbc:mysql://testUrl/testdb'");
+  }
+
+  @Test
+  void testEquals_sameObject() throws SQLException {
+    MySqlConnection testMySqlConnection = MySqlConnection.create("testUrl", "testdb", "user", "pass");
+    assertThat(testMySqlConnection.equals(testMySqlConnection)).isTrue();
+  }
+
+  @Test
+  void testEquals_null() throws SQLException {
+    MySqlConnection testMySqlConnection = MySqlConnection.create("testUrl", "testdb", "user", "pass");
+    assertThat(testMySqlConnection.equals(null)).isFalse();
+  }
+
+  @Test
+  void testEquals_differentClass() throws SQLException {
+    MySqlConnection testMySqlConnection = MySqlConnection.create("testUrl", "testdb", "user", "pass");
+    assertThat(testMySqlConnection.equals("adcadva")).isFalse();
+  }
+
+  @Test
+  void testEquals_different() throws SQLException {
+    MySqlConnection testMySqlConnection = MySqlConnection.create("testUrl", "testdb", "user", "pass");
+    MySqlConnection testMySqlConnection2 = MySqlConnection.create("testUrl2", "testdb", "user", "pass");
+    assertThat(testMySqlConnection.equals(testMySqlConnection2)).isFalse();
+  }
 }

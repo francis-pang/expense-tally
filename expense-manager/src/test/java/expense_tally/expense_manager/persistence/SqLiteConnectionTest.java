@@ -46,5 +46,11 @@ class SqLiteConnectionTest {
         .isInstanceOf(SQLException.class)
         .hasMessage("test SQL error");
   }
+
+  @Test
+  void testToString() {
+    SqLiteConnection testSqLiteConnection = SqLiteConnection.create("file");
+    assertThat(testSqLiteConnection.toString()).contains("connectionString='jdbc:sqlite:file'");
+  }
 }
 
