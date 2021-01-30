@@ -7,18 +7,19 @@ import expense_tally.expense_manager.persistence.database.DatabaseConnectable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sql.DataSource;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.StringJoiner;
 
 /**
  * This class provide the default implementation to connection to a MySQL database.
  */
-public class MySqlConnection implements DatabaseConnectable {
+public class MySqlConnection implements DatabaseConnectable, Serializable {
   private static final Logger LOGGER = LogManager.getLogger(MySqlConnection.class);
   private final DataSource dataSource;
   private final String connectionUrl;
@@ -100,9 +101,13 @@ public class MySqlConnection implements DatabaseConnectable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
+    if (this == o) {
+      return true;
+    }
 
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     MySqlConnection that = (MySqlConnection) o;
 
@@ -122,9 +127,9 @@ public class MySqlConnection implements DatabaseConnectable {
 
   @Override
   public String toString() {
-    return new ToStringBuilder(this)
-        .append("dataSource", dataSource)
-        .append("connectionUrl", connectionUrl)
+    return new StringJoiner(", ", MySqlConnection.class.getSimpleName() + "[", "]")
+        .add("dataSource=" + dataSource)
+        .add("connectionUrl='" + connectionUrl + "'")
         .toString();
   }
 }
