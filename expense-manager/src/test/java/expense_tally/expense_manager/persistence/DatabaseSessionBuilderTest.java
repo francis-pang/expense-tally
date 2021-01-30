@@ -30,6 +30,22 @@ class DatabaseSessionBuilderTest {
   private DatabaseSessionBuilder databaseSessionBuilder;
 
   @Test
+  void of_once() {
+    assertThat(DatabaseSessionBuilder.of(mockSqlSessionFactoryBuilder))
+        .isNotNull();
+  }
+
+  @Test
+  void of_twice() {
+    DatabaseSessionBuilder testDatabaseSessionBuilder = DatabaseSessionBuilder.of(mockSqlSessionFactoryBuilder);
+    assertThat(testDatabaseSessionBuilder)
+        .isNotNull();
+    assertThat(DatabaseSessionBuilder.of(mockSqlSessionFactoryBuilder))
+        .isNotNull()
+        .isEqualTo(testDatabaseSessionBuilder);
+  }
+
+  @Test
   void buildSessionFactory_fine() throws IOException {
     InputStream mockConfigurationStream = Mockito.mock(InputStream.class);
     SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
