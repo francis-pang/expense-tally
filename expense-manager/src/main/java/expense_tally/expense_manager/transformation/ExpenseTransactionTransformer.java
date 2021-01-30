@@ -30,8 +30,8 @@ import java.util.Map;
  * @see ExpenseManagerTransaction
  * @see ExpenseReport
  */
-public final class ExpenseTransactionMapper {
-  private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionMapper.class);
+public final class ExpenseTransactionTransformer {
+  private static final Logger LOGGER = LogManager.getLogger(ExpenseTransactionTransformer.class);
 
   private static final String REFERENCE_AMOUNT_NUMBER_FORMAT = "[^\\d\\.]+";
   private static final double ZERO_AMOUNT = 0.0;
@@ -39,7 +39,7 @@ public final class ExpenseTransactionMapper {
   /**
    * Private constructor to avoid creation of object
    */
-  private ExpenseTransactionMapper() {
+  private ExpenseTransactionTransformer() {
   }
 
   /**

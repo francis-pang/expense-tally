@@ -17,24 +17,6 @@
         <typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" javaType="expense_tally.model.persistence.transformation.ExpenseSubCategory"/>
         <typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" javaType="expense_tally.model.persistence.transformation.PaymentMethod"/>
     </typeHandlers>
-    <environments default="mysql">
-        <environment id="file_sqlite">
-            <transactionManager type="JDBC" />
-            <!-- UNPOOLED DataSource opens and closes a connection each time it is requested. This is Slower. Good
-            choice for applications that don't require the performance of immediately available connections. -->
-            <dataSource type="UNPOOLED">
-                <property name="driver" value="org.sqlite.JDBC"/>
-            </dataSource>
-        </environment>
-        <environment id="mysql">
-            <transactionManager type="JDBC" />
-            <!-- UNPOOLED DataSource opens and closes a connection each time it is requested. This is Slower. Good
-            choice for applications that don't require the performance of immediately available connections. -->
-            <dataSource type="UNPOOLED">
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-            </dataSource>
-        </environment>
-    </environments>
     <databaseIdProvider type="DB_VENDOR">
         <property name="mysql" value="mysql" />
     </databaseIdProvider>

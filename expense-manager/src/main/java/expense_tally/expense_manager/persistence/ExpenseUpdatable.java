@@ -14,7 +14,7 @@ import java.sql.SQLException;
  *
  * </p>
  * <p>
- *   <b>Restriction</b>: For now the interface is limited to create/update/delete entries to a database source
+ *   <b>Restriction</b>: For now the interface is limited to of/update/delete entries to a database source
  * </p>
  *
  * @see expense_tally.model.persistence.transformation.ExpenseManagerTransaction

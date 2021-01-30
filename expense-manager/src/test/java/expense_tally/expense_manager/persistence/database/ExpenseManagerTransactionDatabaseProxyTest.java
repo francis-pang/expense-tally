@@ -8,19 +8,14 @@ import expense_tally.model.persistence.transformation.PaymentMethod;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -31,101 +26,27 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(MockitoExtension.class)
 class ExpenseManagerTransactionDatabaseProxyTest {
   @Mock
-  private DatabaseConnectable mockDatabaseConnectable;
-
-  @Mock
-  private DatabaseSessionFactoryBuilder mockDatabaseSessionFactoryBuilder;
+  private SqlSession mockSqlSession;
 
   private static final String TEST_ENVIRONMENT_ID = "testId";
 
+  @InjectMocks
   private ExpenseManagerTransactionDatabaseProxy expenseManagerTransactionDatabaseProxy;
-
-  @BeforeEach
-  void setUp() {
-    expenseManagerTransactionDatabaseProxy = new ExpenseManagerTransactionDatabaseProxy(
-        mockDatabaseConnectable,
-        mockDatabaseSessionFactoryBuilder,
-        TEST_ENVIRONMENT_ID
-    );
-  }
 
   @Test
   void constructor_simpleOkay() {
-    assertThat(new ExpenseManagerTransactionDatabaseProxy(
-        mockDatabaseConnectable,
-        mockDatabaseSessionFactoryBuilder,
-        TEST_ENVIRONMENT_ID
-    ))
+    assertThat(new ExpenseManagerTransactionDatabaseProxy(mockSqlSession))
         .isNotNull();
-    Mockito.verifyNoInteractions(mockDatabaseConnectable);
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
   }
 
   @Test
-  void constructor_databaseConnectableIsNull() {
-    assertThatThrownBy(() -> new ExpenseManagerTransactionDatabaseProxy(
-        null,
-        mockDatabaseSessionFactoryBuilder,
-        TEST_ENVIRONMENT_ID
-    ))
+  void constructor_environmentIsNull() {
+    assertThatThrownBy(() -> new ExpenseManagerTransactionDatabaseProxy(null))
         .isInstanceOf(NullPointerException.class);
-    Mockito.verifyNoInteractions(mockDatabaseConnectable);
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
   }
 
   @Test
-  void constructor_databaseSessionFactoryBuilderIsNull() {
-    assertThatThrownBy(() -> new ExpenseManagerTransactionDatabaseProxy(
-        mockDatabaseConnectable,
-        null,
-        TEST_ENVIRONMENT_ID
-    ))
-        .isInstanceOf(NullPointerException.class);
-    Mockito.verifyNoInteractions(mockDatabaseConnectable);
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
-  }
-
-  @Test
-  void constructor_environmentIdIsNull() {
-    assertThatThrownBy(() -> new ExpenseManagerTransactionDatabaseProxy(
-        mockDatabaseConnectable,
-        mockDatabaseSessionFactoryBuilder,
-        null
-    ))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Environment ID cannot be null or empty");
-    Mockito.verifyNoInteractions(mockDatabaseConnectable);
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
-  }
-
-  @Test
-  void constructor_environmentIdIsBlankString() {
-    assertThatThrownBy(() -> new ExpenseManagerTransactionDatabaseProxy(
-        mockDatabaseConnectable,
-        mockDatabaseSessionFactoryBuilder,
-        StringUtils.EMPTY
-    ))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Environment ID cannot be null or empty");
-    Mockito.verifyNoInteractions(mockDatabaseConnectable);
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
-  }
-
-  @Test
-  void constructor_environmentIdIsEmptyString() {
-    assertThatThrownBy(() -> new ExpenseManagerTransactionDatabaseProxy(
-        mockDatabaseConnectable,
-        mockDatabaseSessionFactoryBuilder,
-        "       "
-    ))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Environment ID cannot be null or empty");
-    Mockito.verifyNoInteractions(mockDatabaseConnectable);
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_returnOneResult() throws IOException, SQLException {
+  void getAllExpenseManagerTransaction_returnOneResult() {
     ExpenseManagerTransaction expectedExpenseManagerTransaction = ExpenseManagerTransaction.create(
         4867,
         Double.parseDouble("30.0"),
@@ -136,13 +57,6 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         Instant.ofEpochMilli(Long.parseLong("1514813160000"))
     );
     List<ExpenseManagerTransaction> expectedExpenseManagerTransactions = List.of(expectedExpenseManagerTransaction);
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -156,14 +70,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void getAllExpenseManagerTransaction_returnZeroResult() throws IOException, SQLException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void getAllExpenseManagerTransaction_returnZeroResult() {
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -176,7 +83,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void getAllExpenseManagerTransaction_returnMultipleResults() throws SQLException, IOException {
+  void getAllExpenseManagerTransaction_returnMultipleResults() {
     ExpenseManagerTransaction expectedExpenseManagerTransaction1 = ExpenseManagerTransaction.create(
         4867,
         Double.parseDouble("30.0"),
@@ -205,18 +112,6 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         "Lunch. Single Bowl Salad. Happy Tummy.",
         Instant.ofEpochMilli(Long.parseLong("1515388500000"))
     );
-    List<ExpenseManagerTransaction> expectedExpenseManagerTransactions = List.of(
-        expectedExpenseManagerTransaction1,
-        expectedExpenseManagerTransaction2,
-        expectedExpenseManagerTransaction3
-    );
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -235,49 +130,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void getAllExpenseManagerTransaction_databaseConnectableConnectException() throws SQLException {
-    Mockito.when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("databaseConnectableConnectException"));
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isInstanceOf(SQLException.class)
-        .hasMessage("databaseConnectableConnectException");
-  }
-
-
-  @Test
-  void getAllExpenseManagerTransaction_databaseSessionFactoryBuilderBuildSessionFactoryException() throws SQLException,
-      IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenThrow(new IOException("databaseSessionFactoryBuilderBuildSessionFactoryException"));
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isInstanceOf(IOException.class)
-        .hasMessage("databaseSessionFactoryBuilderBuildSessionFactoryException");
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_sqlSessionFactoryOpenSessionException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection))
-        .thenThrow(new PersistenceException("sqlSessionFactoryOpenSessionException"));
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
-        .isInstanceOf(PersistenceException.class)
-        .hasMessage("sqlSessionFactoryOpenSessionException");
-  }
-
-  @Test
-  void getAllExpenseManagerTransaction_sqlSessionGetMapperException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void getAllExpenseManagerTransaction_sqlSessionGetMapperException() {
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
         .thenThrow(new BindingException("Type ExpenseManagerTransactionMapper is not known to the MapperRegistry."));
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.getAllExpenseManagerTransaction())
@@ -286,15 +139,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void getAllExpenseManagerTransaction_expenseManagerTransactionMapperGetAllExpenseManagerTransactionsException()
-      throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void getAllExpenseManagerTransaction_expenseManagerTransactionMapperGetAllExpenseManagerTransactionsException() {
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -308,14 +153,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_succeed() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void add_succeed() {
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -344,14 +182,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_fail() throws IOException, SQLException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void add_fail() {
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -487,7 +318,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_referenceAmountNull() throws IOException, SQLException {
+  void add_referenceAmountNull() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
     Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getAmount()).thenReturn(Double.parseDouble("30.0"));
@@ -498,13 +329,6 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         .thenReturn("Dinner. Sbcd Korean tofu house. Millenia walk.");
     Mockito.when(mockExpenseManagerTransaction.getExpendedTime())
         .thenReturn(Instant.ofEpochMilli(Long.parseLong("1514813160000")));
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -524,7 +348,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_referenceAmountIsZero() throws IOException, SQLException {
+  void add_referenceAmountIsZero() {
     ExpenseManagerTransaction mockExpenseManagerTransaction = Mockito.mock(ExpenseManagerTransaction.class);
     Mockito.when(mockExpenseManagerTransaction.getId()).thenReturn(4867);
     Mockito.when(mockExpenseManagerTransaction.getAmount()).thenReturn(Double.parseDouble("30.0"));
@@ -537,13 +361,6 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         .thenReturn(Instant.ofEpochMilli(Long.parseLong("1514813160000")));
     Mockito.when(mockExpenseManagerTransaction.getReferenceAmount())
         .thenReturn(Double.parseDouble("0"));
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -580,76 +397,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_databaseConnectableConnectException() throws SQLException {
-    Mockito.when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("databaseConnectableConnectException"));
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
-        4867,
-        Double.parseDouble("30.0"),
-        ExpenseCategory.ENTERTAINMENT,
-        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
-        PaymentMethod.CASH,
-        "Dinner. Sbcd Korean tofu house. Millenia walk.",
-        Instant.ofEpochMilli(Long.parseLong("1514813160000"))
-    );
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(testExpenseManagerTransaction))
-        .isInstanceOf(SQLException.class)
-        .hasMessage("databaseConnectableConnectException");
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
-  }
-
-  @Test
-  void add_databaseSessionFactoryBuilderBuildSessionFactoryException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenThrow(new IOException("databaseSessionFactoryBuilderBuildSessionFactoryException"));
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
-        4867,
-        Double.parseDouble("30.0"),
-        ExpenseCategory.ENTERTAINMENT,
-        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
-        PaymentMethod.CASH,
-        "Dinner. Sbcd Korean tofu house. Millenia walk.",
-        Instant.ofEpochMilli(Long.parseLong("1514813160000"))
-    );
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(testExpenseManagerTransaction))
-        .isInstanceOf(IOException.class)
-        .hasMessage("databaseSessionFactoryBuilderBuildSessionFactoryException");
-  }
-
-  @Test
-  void add_sqlSessionFactoryOpenSessionException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection))
-        .thenThrow(new PersistenceException("sqlSessionFactoryOpenSessionException"));
-    ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
-        4867,
-        Double.parseDouble("30.0"),
-        ExpenseCategory.ENTERTAINMENT,
-        ExpenseSubCategory.ALCOHOL_AND_RESTAURANT,
-        PaymentMethod.CASH,
-        "Dinner. Sbcd Korean tofu house. Millenia walk.",
-        Instant.ofEpochMilli(Long.parseLong("1514813160000"))
-    );
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(testExpenseManagerTransaction))
-        .isInstanceOf(PersistenceException.class)
-        .hasMessage("sqlSessionFactoryOpenSessionException");
-  }
-
-  @Test
-  void add_sqlSessionGetMapperException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void add_sqlSessionGetMapperException() {
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
         .thenThrow(new BindingException("Type ExpenseManagerTransactionMapper is not known to the MapperRegistry."));
     ExpenseManagerTransaction testExpenseManagerTransaction = ExpenseManagerTransaction.create(
@@ -667,14 +415,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void add_expenseManagerTransactionMapperAddExpenseManagerTransactionException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void add_expenseManagerTransactionMapperAddExpenseManagerTransactionException() {
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -704,14 +445,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void clear_succeed() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void clear_succeed() {
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
@@ -723,48 +457,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void clear_databaseConnectableConnectException() throws SQLException {
-    Mockito.when(mockDatabaseConnectable.connect()).thenThrow(new SQLException("databaseConnectableConnectException"));
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.clear())
-        .isInstanceOf(SQLException.class)
-        .hasMessage("databaseConnectableConnectException");
-    Mockito.verifyNoInteractions(mockDatabaseSessionFactoryBuilder);
-  }
-
-  @Test
-  void clear_databaseSessionFactoryBuilderBuildSessionFactoryException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenThrow(new IOException("databaseSessionFactoryBuilderBuildSessionFactoryException"));
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.clear())
-        .isInstanceOf(IOException.class)
-        .hasMessage("databaseSessionFactoryBuilderBuildSessionFactoryException");
-  }
-
-  @Test
-  void clear_sqlSessionFactoryOpenSessionException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection))
-        .thenThrow(new PersistenceException("sqlSessionFactoryOpenSessionException"));
-    assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.clear())
-        .isInstanceOf(PersistenceException.class)
-        .hasMessage("sqlSessionFactoryOpenSessionException");
-  }
-
-  @Test
-  void clear_sqlSessionGetMapperException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void clear_sqlSessionGetMapperException() {
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
         .thenThrow(new BindingException("Type ExpenseManagerTransactionMapper is not known to the MapperRegistry."));
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.clear())
@@ -773,14 +466,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
-  void clear_expenseManagerTransactionMapperDeleteAllExpenseManagerTransactionsException() throws SQLException, IOException {
-    Connection mockConnection = Mockito.mock(Connection.class);
-    Mockito.when(mockDatabaseConnectable.connect()).thenReturn(mockConnection);
-    SqlSessionFactory mockSqlSessionFactory = Mockito.mock(SqlSessionFactory.class);
-    Mockito.when(mockDatabaseSessionFactoryBuilder.buildSessionFactory(TEST_ENVIRONMENT_ID))
-        .thenReturn(mockSqlSessionFactory);
-    SqlSession mockSqlSession = Mockito.mock(SqlSession.class);
-    Mockito.when(mockSqlSessionFactory.openSession(ExecutorType.SIMPLE, mockConnection)).thenReturn(mockSqlSession);
+  void clear_expenseManagerTransactionMapperDeleteAllExpenseManagerTransactionsException() {
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))

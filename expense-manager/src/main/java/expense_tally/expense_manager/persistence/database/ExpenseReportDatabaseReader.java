@@ -3,16 +3,13 @@ package expense_tally.expense_manager.persistence.database;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.database.mapper.ExpenseReportMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
-import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {@code ExpenseReportReader} provide the user ways to retrieve the {@link ExpenseReport} from a database file.
@@ -23,59 +20,31 @@ import java.util.List;
  *
  * <p><b>Implementation Note:</b></p>
  * <p>
- *     This class use {@link DatabaseSessionFactoryBuilder} as a dependency, instead of {@link SqlSessionFactory}.
+ *     This class use {@link DatabaseSessionBuilder} as a dependency, instead of {@link SqlSessionFactory}.
  *     This is because I want to abstract away the knowledge of myBatis dependency from the caller.
  * </p>
  */
 public final class ExpenseReportDatabaseReader implements ExpenseReportReadable {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseReportDatabaseReader.class);
 
-  private final DatabaseConnectable databaseConnectable;
-  private final DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder;
-  private final String environmentId;
+  private SqlSession sqlSession;
 
-  public ExpenseReportDatabaseReader(DatabaseConnectable databaseConnectable,
-                                     DatabaseSessionFactoryBuilder databaseSessionFactoryBuilder,
-                                     String environmentId) {
-    this.databaseConnectable = databaseConnectable;
-    this.databaseSessionFactoryBuilder = databaseSessionFactoryBuilder;
-    this.environmentId = environmentId;
+  public ExpenseReportDatabaseReader(SqlSession sqlSession) {
+    this.sqlSession = Objects.requireNonNull(sqlSession);
   }
 
   @Override
-  public List<ExpenseReport> getExpenseTransactions() throws SQLException, IOException {
-    return importDataFromDatabase();
-  }
-
-  /**
-   * Returns all the expenses stored in the database of expense manager application
-   *
-   * @return a list of expenses representing the transaction amount, category, subcategory, payment method,
-   * description, time of expense, and other related field
-   * @throws SQLException when there is an error accessing the database
-   */
-  private List<ExpenseReport> importDataFromDatabase() throws SQLException, IOException {
-    // Connect to expense_tally.model.persistence
-    try (Connection databaseConnection = databaseConnectable.connect()) {
-      return importDataFromConnection(databaseConnection);
-    } catch (SQLException sqlException) {
-      LOGGER.atError().withThrowable(sqlException).log("Cannot create a database connection");
-      throw sqlException;
-    } catch (IOException ioException) {
-      LOGGER.atError().withThrowable(ioException).log("Cannot read from database source");
-      throw ioException;
-    }
-  }
-
-  private List<ExpenseReport> importDataFromConnection(Connection databaseConnection) throws SQLException, IOException {
-    SqlSessionFactory sqlSessionFactory = databaseSessionFactoryBuilder.buildSessionFactory(environmentId);
-    try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.REUSE, databaseConnection)) {
+  public List<ExpenseReport> getExpenseTransactions() {
+    try{
       ExpenseReportMapper expenseReportMapper = sqlSession.getMapper(ExpenseReportMapper.class);
       return expenseReportMapper.getAllExpenseReports();
-    } catch (RuntimeException runtimeException) {
-      LOGGER.atError().withThrowable(runtimeException).log("Unable to retrieve expense report from database. " +
-              "environment ID: \"{}\", scheme: \"{}\"", environmentId, databaseConnection.getSchema());
-      throw runtimeException;
+    } catch (RuntimeException exception) {
+      LOGGER.atError()
+          .withThrowable(exception)
+          .log("Unable to retrieve expense report from database. configuration:{}, connection:{}",
+              sqlSession.getConfiguration(),
+              sqlSession.getConnection());
+      throw exception;
     }
   }
 }
