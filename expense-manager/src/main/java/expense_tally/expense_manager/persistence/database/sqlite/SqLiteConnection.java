@@ -1,5 +1,7 @@
 package expense_tally.expense_manager.persistence.database.sqlite;
 
+import expense_tally.exception.StringResolver;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sqlite.JDBC;
@@ -18,18 +20,24 @@ public final class SqLiteConnection {
   private static final Logger LOGGER = LogManager.getLogger(SqLiteConnection.class);
 
   /**
+   * Private constructor
+   * Utility classes, which are collections of static members, are not meant to be instantiated
+   */
+  private SqLiteConnection() {
+  }
+
+  /**
    * Create a new data source based on the given parameters.
    * @param databaseFilePath URL of the database connection. Does not need to include database scheme.
-   * @param database name of the database to be connected
-   * @param username username to login to the database system
-   * @param password password to login to the database system.
-   *   <p>
-   *      username needs to be provided as well if password is needed.
-   *   </p>
    * @return a newly created instance of <i>data source</i> if creation succeeds.
    */
-  public static DataSource createDataSource(String databaseFilePath, String database, String username,
-                                            String password) {
+  public static DataSource createDataSource(String databaseFilePath) {
+    if (StringUtils.isBlank(databaseFilePath)) {
+      LOGGER.atWarn()
+          .log("databaseFilePath is blank. databaseFilePath:{}",
+              StringResolver.resolveNullableString(databaseFilePath));
+      throw new IllegalArgumentException("database file path cannot be blank.");
+    }
     SQLiteDataSource sqLiteDataSource = new SQLiteDataSource();
     String connectionUrl = constructConnectionUrl(databaseFilePath);
     sqLiteDataSource.setUrl(connectionUrl);

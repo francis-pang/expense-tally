@@ -74,8 +74,7 @@ public final class CommandLineRunner {
     DataSource dataSource;
     switch(databaseEnvironmentId) {
       case SQLITE:
-        dataSource = SqLiteConnection.createDataSource(databaseConnectionUrl, databaseName, username,
-            password);
+        dataSource = SqLiteConnection.createDataSource(databaseConnectionUrl);
         break;
       case MYSQL:
         dataSource = MySqlConnection.createDataSource(databaseConnectionUrl, databaseName, username, password);

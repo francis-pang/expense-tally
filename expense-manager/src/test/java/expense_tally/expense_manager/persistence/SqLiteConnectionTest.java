@@ -1,29 +1,42 @@
 package expense_tally.expense_manager.persistence;
 
 import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class SqLiteConnectionTest {
-  @Mock
-  private DataSource mockDataSource;
-
-  @InjectMocks
-  private SqLiteConnection sqLiteConnection;
+  @Test
+  void createDataSource_pass() {
+    String testDatabaseConnection = "testSql";
+    assertThat(SqLiteConnection.createDataSource(testDatabaseConnection))
+        .isNotNull();
+  }
 
   @Test
-  void create() {
-    String testDatabaseConnection = "testSql";
-    assertThat(SqLiteConnection.createDataSource(testDatabaseConnection, null, null, null))
-        .isNotNull();
+  void createDataSource_null() {
+    assertThatThrownBy(() -> SqLiteConnection.createDataSource(null))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("database file path cannot be blank.");
+  }
+
+  @Test
+  void createDataSource_empty() {
+    assertThatThrownBy(() -> SqLiteConnection.createDataSource(StringUtils.EMPTY))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("database file path cannot be blank.");
+  }
+
+  @Test
+  void createDataSource_spaceOnly() {
+    assertThatThrownBy(() -> SqLiteConnection.createDataSource(StringUtils.SPACE))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("database file path cannot be blank.");
   }
 }
 

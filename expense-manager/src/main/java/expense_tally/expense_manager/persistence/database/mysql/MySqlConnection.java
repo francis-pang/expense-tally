@@ -16,6 +16,13 @@ import java.sql.SQLException;
 public class MySqlConnection {
   private static final Logger LOGGER = LogManager.getLogger(MySqlConnection.class);
 
+  /**
+   * Private constructor
+   * Utility classes, which are collections of static members, are not meant to be instantiated
+   */
+  private MySqlConnection() {
+  }
+
   public static DataSource createDataSource(String connectionUrl, String database, String username, String password)
       throws SQLException {
     if (StringUtils.isBlank(connectionUrl)) {
