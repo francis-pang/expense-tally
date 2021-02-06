@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.persistence.database.mysql;
+package expense_tally.database.mysql;
 
 import com.mysql.cj.conf.ConnectionUrl;
 import com.mysql.cj.jdbc.MysqlDataSource;

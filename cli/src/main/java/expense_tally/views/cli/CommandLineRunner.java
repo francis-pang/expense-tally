@@ -1,13 +1,13 @@
 package expense_tally.views.cli;
 
+import expense_tally.database.DatabaseEnvironmentId;
+import expense_tally.database.DatabaseSessionBuilder;
+import expense_tally.database.mysql.MySqlConnection;
+import expense_tally.database.sqlite.SqLiteConnection;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
-import expense_tally.expense_manager.persistence.database.DatabaseEnvironmentId;
-import expense_tally.expense_manager.persistence.database.DatabaseSessionBuilder;
 import expense_tally.expense_manager.persistence.database.ExpenseManagerTransactionDatabaseProxy;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
-import expense_tally.expense_manager.persistence.database.mysql.MySqlConnection;
-import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
 import expense_tally.views.AppParameter;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSession;

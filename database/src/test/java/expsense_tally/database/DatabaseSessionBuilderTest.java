@@ -1,6 +1,6 @@
-package expense_tally.expense_manager.persistence;
+package expsense_tally.database;
 
-import expense_tally.expense_manager.persistence.database.DatabaseSessionBuilder;
+import expense_tally.database.DatabaseSessionBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;

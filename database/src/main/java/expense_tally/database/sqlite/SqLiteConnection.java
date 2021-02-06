@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.persistence.database.sqlite;
+package expense_tally.database.sqlite;
 
 import expense_tally.exception.StringResolver;
 import org.apache.commons.lang3.StringUtils;

@@ -12,6 +12,7 @@
         <module>expense-manager</module>
         <module>reconciliator</module>
         <module>cli</module>
+        <module>database</module>
     </modules>
 
     <!-- Application information -->

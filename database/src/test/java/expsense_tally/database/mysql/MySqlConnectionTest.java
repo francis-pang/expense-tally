@@ -1,5 +1,6 @@
-package expense_tally.expense_manager.persistence.database.mysql;
+package expsense_tally.database.mysql;
 
+import expense_tally.database.mysql.MySqlConnection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.Test;

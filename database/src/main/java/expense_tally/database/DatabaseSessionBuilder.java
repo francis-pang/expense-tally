@@ -1,4 +1,4 @@
-package expense_tally.expense_manager.persistence.database;
+package expense_tally.database;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Environment;

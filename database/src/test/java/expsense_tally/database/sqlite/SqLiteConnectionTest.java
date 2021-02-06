@@ -1,6 +1,6 @@
-package expense_tally.expense_manager.persistence;
+package expsense_tally.database.sqlite;
 
-import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
+import expense_tally.database.sqlite.SqLiteConnection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.Test;

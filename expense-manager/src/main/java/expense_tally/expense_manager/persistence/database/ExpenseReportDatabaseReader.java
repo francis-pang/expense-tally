@@ -20,7 +20,7 @@ import java.util.Objects;
  *
  * <p><b>Implementation Note:</b></p>
  * <p>
- *     This class use {@link DatabaseSessionBuilder} as a dependency, instead of {@link SqlSessionFactory}.
+ *     This class use {@link expense_tally.database.DatabaseSessionBuilder} as a dependency, instead of {@link SqlSessionFactory}.
  *     This is because I want to abstract away the knowledge of myBatis dependency from the caller.
  * </p>
  */
