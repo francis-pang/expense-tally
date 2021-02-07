@@ -70,7 +70,7 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
           StringUtils.defaultString(description, AppStringConstant.NULL.value()));
       throw new IllegalArgumentException("Description cannot be null or empty.");
     }
-    Instant expensedTime = expenseManagerTransaction.getExpendedTime();
+    Instant expensedTime = expenseManagerTransaction.getExpensedTime();
     Instant currentInstant = Instant.now();
     if (expensedTime == null || expensedTime.isAfter(currentInstant)) {
       LOGGER.atWarn().log("expensedTime is null/ in future time:{}",
