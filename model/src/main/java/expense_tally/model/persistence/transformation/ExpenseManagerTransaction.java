@@ -1,9 +1,10 @@
 package expense_tally.model.persistence.transformation;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.time.Instant;
-import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * This class stores all the details of a transaction inside the Expense Manager app.
@@ -15,7 +16,7 @@ public final class ExpenseManagerTransaction {
   private ExpenseSubCategory subcategory;
   private PaymentMethod paymentMethod;
   private String description;
-  private Instant expendedTime;
+  private Instant expensedTime;
   private Double referenceAmount;
 
   /**
@@ -32,7 +33,7 @@ public final class ExpenseManagerTransaction {
    * @param subCategory transaction sub-category
    * @param paymentMethod transaction payment method
    * @param description transaction description
-   * @param expendedTime time when the transaction occurs
+   * @param expensedTime time when the transaction occurs
    * @see ExpenseCategory
    * @see ExpenseSubCategory
    * @return a new instance of {@link ExpenseManagerTransaction}
@@ -41,7 +42,7 @@ public final class ExpenseManagerTransaction {
   public static ExpenseManagerTransaction create(int id, double amount, ExpenseCategory category,
                                                  ExpenseSubCategory subCategory,
                                                  PaymentMethod paymentMethod, String description,
-                                                 Instant expendedTime) {
+                                                 Instant expensedTime) {
     ExpenseManagerTransaction expenseManagerTransaction = new ExpenseManagerTransaction();
     if (id <= 0) {
       throw new IllegalArgumentException("ID cannot 0 or negative");
@@ -65,10 +66,10 @@ public final class ExpenseManagerTransaction {
     }
     expenseManagerTransaction.description = description;
     Instant currentInstant = Instant.now();
-    if (expendedTime == null || expendedTime.isAfter(currentInstant)) {
+    if (expensedTime == null || expensedTime.isAfter(currentInstant)) {
       throw new IllegalArgumentException("Expensed time cannot be null or in the future");
     }
-    expenseManagerTransaction.expendedTime = expendedTime;
+    expenseManagerTransaction.expensedTime = expensedTime;
     return expenseManagerTransaction;
   }
 
@@ -96,8 +97,8 @@ public final class ExpenseManagerTransaction {
     return paymentMethod;
   }
 
-  public Instant getExpendedTime() {
-    return expendedTime;
+  public Instant getExpensedTime() {
+    return expensedTime;
   }
 
   public Double getReferenceAmount() {
@@ -111,34 +112,48 @@ public final class ExpenseManagerTransaction {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
+
     if (o == null || getClass() != o.getClass()) return false;
+
     ExpenseManagerTransaction that = (ExpenseManagerTransaction) o;
-    return id == that.id &&
-        amount.equals(that.amount) &&
-        category == that.category &&
-        subcategory == that.subcategory &&
-        paymentMethod == that.paymentMethod &&
-        description.equals(that.description) &&
-        expendedTime.equals(that.expendedTime) &&
-        Objects.equals(referenceAmount, that.referenceAmount);
+
+    return new EqualsBuilder()
+        .append(id, that.id)
+        .append(amount, that.amount)
+        .append(category, that.category)
+        .append(subcategory, that.subcategory)
+        .append(paymentMethod, that.paymentMethod)
+        .append(description, that.description)
+        .append(expensedTime, that.expensedTime)
+        .append(referenceAmount, that.referenceAmount)
+        .isEquals();
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, amount, category, subcategory, paymentMethod, description, expendedTime, referenceAmount);
+    return new HashCodeBuilder(17, 37)
+        .append(id)
+        .append(amount)
+        .append(category)
+        .append(subcategory)
+        .append(paymentMethod)
+        .append(description)
+        .append(expensedTime)
+        .append(referenceAmount)
+        .toHashCode();
   }
 
   @Override
   public String toString() {
-    return new ToStringBuilder(this)
-        .append("id", id)
-        .append("amount", amount)
-        .append("category", category)
-        .append("subcategory", subcategory)
-        .append("paymentMethod", paymentMethod)
-        .append("description", description)
-        .append("expendedTime", expendedTime)
-        .append("referenceAmount", referenceAmount)
+    return new StringJoiner(", ", ExpenseManagerTransaction.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("amount=" + amount)
+        .add("category=" + category)
+        .add("subcategory=" + subcategory)
+        .add("paymentMethod=" + paymentMethod)
+        .add("description='" + description + "'")
+        .add("expendedTime=" + expensedTime)
+        .add("referenceAmount=" + referenceAmount)
         .toString();
   }
 }

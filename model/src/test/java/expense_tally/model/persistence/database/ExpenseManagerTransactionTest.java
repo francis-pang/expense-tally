@@ -171,7 +171,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    assertThat(testExpenseManagerTransaction.getExpendedTime())
+    assertThat(testExpenseManagerTransaction.getExpensedTime())
         .isNotNull()
         .isEqualTo(testTime);
   }
@@ -544,7 +544,7 @@ class ExpenseManagerTransactionTest {
         testTime
     );
     assertThat(testExpenseManagerTransaction.toString())
-        .contains("[id=77,amount=5.48,category=ENTERTAINMENT,subcategory=CLOTHING,paymentMethod=GRAY_PAY," +
-            "description=sd,expendedTime=2020-05-27T01:19:00Z,referenceAmount=<null>]");
+        .isEqualTo("ExpenseManagerTransaction[id=77, amount=5.48, category=ENTERTAINMENT, subcategory=CLOTHING, " +
+            "paymentMethod=GRAY_PAY, description='sd', expendedTime=2020-05-27T01:19:00Z, referenceAmount=null]");
   }
 }
