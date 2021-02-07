@@ -96,6 +96,7 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
           .log("Unable to insert expense manager transaction. expenseManagerTransaction:{}", expenseManagerTransaction);
       throw  runtimeException;
     }
+    sqlSession.commit();
     return (numberOfInsertedEntry == 1);
   }
 
@@ -105,7 +106,11 @@ public class ExpenseManagerTransactionDatabaseProxy implements ExpenseReadable, 
     try {
       ExpenseManagerTransactionMapper expenseManagerTransactionMapper =
           sqlSession.getMapper(ExpenseManagerTransactionMapper.class);
-      return expenseManagerTransactionMapper.deleteAllExpenseManagerTransactions();
+      boolean deleteIsSuccessful = expenseManagerTransactionMapper.deleteAllExpenseManagerTransactions();
+      if (deleteIsSuccessful) {
+        sqlSession.commit();
+      }
+      return deleteIsSuccessful;
     } catch (RuntimeException runtimeException) {
       LOGGER
           .atWarn()
