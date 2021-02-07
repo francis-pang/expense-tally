@@ -457,6 +457,18 @@ class ExpenseManagerTransactionDatabaseProxyTest {
   }
 
   @Test
+  void clear_fail() {
+    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
+        Mockito.mock(ExpenseManagerTransactionMapper.class);
+    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
+        .thenReturn(mockExpenseManagerTransactionMapper);
+    Mockito.when(mockExpenseManagerTransactionMapper.deleteAllExpenseManagerTransactions())
+        .thenReturn(false);
+    assertThat(expenseManagerTransactionDatabaseProxy.clear())
+        .isFalse();
+  }
+
+  @Test
   void clear_sqlSessionGetMapperException() {
     Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
         .thenThrow(new BindingException("Type ExpenseManagerTransactionMapper is not known to the MapperRegistry."));
