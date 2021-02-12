@@ -1,13 +1,11 @@
 package expense_tally.expense_manager.persistence.database.mysql;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,124 +13,225 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class MySqlConnectionTest {
-  @Mock
-  private DataSource mockDataSource;
-
-  @InjectMocks
-  private MySqlConnection mySqlConnection;
-
   @Test
-  void create_okay() throws SQLException {
+  void createDataSource_okay() throws SQLException {
     assertThat(MySqlConnection.createDataSource(
         "172.22.18.96",
         "expense_manager",
         "expensetally",
-        "Password1"
+        "Password1",
+        3500
     )).isNotNull();
   }
 
   @Test
-  void create_connectionUrlIsNull() {
-    assertThatThrownBy(() -> MySqlConnection.createDataSource( null, "expense_manager", "expensetally", "Password1"))
+  void createDataSource_connectionUrlIsNull() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( null, "expense_manager", "expensetally", "Password1",
+        3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Connection URL should not be null or blank.");
   }
 
   @Test
-  void create_connectionUrlIsEmpty() {
-    assertThatThrownBy(() -> MySqlConnection.createDataSource(StringUtils.EMPTY, "expense_manager", "expensetally", "Password1"))
+  void createDataSource_connectionUrlIsEmpty() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource(StringUtils.EMPTY, "expense_manager", "expensetally",
+        "Password1", 3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Connection URL should not be null or blank.");
   }
 
   @Test
-  void create_connectionUrlIsBlank() {
-    assertThatThrownBy(() -> MySqlConnection.createDataSource(StringUtils.SPACE, "expense_manager", "expensetally", "Password1"))
+  void createDataSource_connectionUrlIsBlank() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource(StringUtils.SPACE, "expense_manager", "expensetally",
+        "Password1", 3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Connection URL should not be null or blank.");
   }
 
   @Test
-  void create_databaseIsNull() {
-    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", null, "expensetally", "Password1"))
+  void createDataSource_databaseIsNull() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", null, "expensetally", "Password1", 3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Database name should not be null or blank.");
   }
 
   @Test
-  void create_databaseIsEmpty() {
-    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", StringUtils.EMPTY, "expensetally", "Password1"))
+  void createDataSource_databaseIsEmpty() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", StringUtils.EMPTY, "expensetally",
+        "Password1", 3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Database name should not be null or blank.");
   }
 
   @Test
-  void create_databaseIsBlank() {
-    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", StringUtils.SPACE, "expensetally", "Password1"))
+  void createDataSource_databaseIsBlank() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", StringUtils.SPACE, "expensetally",
+        "Password1", 3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Database name should not be null or blank.");
   }
 
   @Test
-  void create_usernameIsNull() {
+  void createDataSource_usernameIsNull() {
     assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", "expense_manager", StringUtils.EMPTY,
-        "Password1"))
+        "Password1", 3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Password needs to be accompanied by username.");
   }
 
   @Test
-  void create_usernameIsEmpty() {
-    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", "expense_manager", null, "Password1"))
+  void createDataSource_usernameIsEmpty() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", "expense_manager", null, "Password1",
+        3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Password needs to be accompanied by username.");
   }
 
   @Test
-  void create_usernameIsBlank() {
+  void createDataSource_usernameIsBlank() {
     assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", "expense_manager", StringUtils.SPACE,
-        "Password1"))
+        "Password1", 3500))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Password needs to be accompanied by username.");
   }
 
   @Test
-  void create_passwordIsNull() throws SQLException {
+  void createDataSource_passwordIsNull() throws SQLException {
     assertThat(MySqlConnection.createDataSource(
         "172.22.18.96",
         "expense_manager",
         "expense_manager",
-        null
+        null,
+        3500
     )).isNotNull();
   }
 
   @Test
-  void create_passwordIsEmpty() throws SQLException {
+  void createDataSource_passwordIsEmpty() throws SQLException {
     assertThat(MySqlConnection.createDataSource(
         "172.22.18.96",
         "expense_manager",
         "expense_manager",
-        StringUtils.EMPTY
+        StringUtils.EMPTY,
+        3500
     )).isNotNull();
   }
 
   @Test
-  void create_passwordIsBlank() throws SQLException {
+  void createDataSource_passwordIsBlank() throws SQLException {
     assertThat(MySqlConnection.createDataSource(
         "172.22.18.96",
         "expense_manager",
         "expense_manager",
-        StringUtils.SPACE
+        StringUtils.SPACE,
+        4500
     )).isNotNull();
   }
 
   @Test
-  void create_usernameAndPasswordNull() throws SQLException {
+  void createDataSource_usernameAndPasswordNull() throws SQLException {
     assertThat(MySqlConnection.createDataSource(
         "172.22.18.96",
         "expense_manager",
         null,
-        null
+        null,
+        3500
     )).isNotNull();
+  }
+
+  @Test
+  void createDataSource_negativeLoginTimeout() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource("172.22.18.96","expense_manager",null,null, -7))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Login time out value cannot be negative.");
+  }
+
+  @Test
+  void createDataSource_zeroLoginTimeout() throws SQLException {
+    assertThat(MySqlConnection.createDataSource("172.22.18.96",
+        "expense_manager",
+        null,
+        null,
+        NumberUtils.INTEGER_ZERO
+    )).isNotNull();
+  }
+
+  @Test
+  void createDataSource_minusOneLoginTimeout() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource("172.22.18.96", "expense_manager", null, null, NumberUtils.INTEGER_MINUS_ONE))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Login time out value cannot be negative.");
+  }
+
+  @Test
+  void createDataSource_noUserPwOkay() throws SQLException {
+    assertThat(MySqlConnection.createDataSource(
+        "172.22.18.96",
+        "expense_manager",
+        3500
+    )).isNotNull();
+  }
+
+  @Test
+  void createDataSource_noUserPwConnectionUrlIsNull() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( null, "expense_manager", 3500))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Connection URL should not be null or blank.");
+  }
+
+  @Test
+  void createDataSource_noUserPwConnectionUrlIsEmpty() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource(StringUtils.EMPTY, "expense_manager", 3500))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Connection URL should not be null or blank.");
+  }
+
+  @Test
+  void createDataSource_noUserPwConnectionUrlIsBlank() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource(StringUtils.SPACE, "expense_manager", 3500))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Connection URL should not be null or blank.");
+  }
+
+  @Test
+  void createDataSource_noUserPwDatabaseIsNull() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", null, 3500))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Database name should not be null or blank.");
+  }
+
+  @Test
+  void createDataSource_noUserPwDatabaseIsEmpty() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", StringUtils.EMPTY, 3500))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Database name should not be null or blank.");
+  }
+
+  @Test
+  void createDataSource_noUserPwDatabaseIsBlank() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource( "172.22.18.96", StringUtils.SPACE, 3500))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Database name should not be null or blank.");
+  }
+
+  @Test
+  void createDataSource_noUserPwNegativeLoginTimeout() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource("172.22.18.96","expense_manager", -7))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Login time out value cannot be negative.");
+  }
+
+  @Test
+  void createDataSource_noUserPwZeroLoginTimeout() throws SQLException {
+    assertThat(MySqlConnection.createDataSource("172.22.18.96", "expense_manager", NumberUtils.INTEGER_ZERO))
+        .isNotNull();
+  }
+
+  @Test
+  void createDataSource_NoUserPwMinusOneLoginTimeout() {
+    assertThatThrownBy(() -> MySqlConnection.createDataSource("172.22.18.96", "expense_manager",
+        NumberUtils.INTEGER_MINUS_ONE))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Login time out value cannot be negative.");
   }
 }
