@@ -8,6 +8,7 @@ import org.sqlite.JDBC;
 import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Manages the database connection to SQLite embedded database engine.
@@ -29,9 +30,12 @@ public final class SqLiteConnection {
   /**
    * Create a new data source based on the given parameters.
    * @param databaseFilePath URL of the database connection. Does not need to include database scheme.
+   * @param loginTimeout maximum time in milliseconds that this data source can wait while attempting to connect to a
+   *                     database.
    * @return a newly created instance of <i>data source</i> if creation succeeds.
+   * @throws IllegalArgumentException if <i>databaseFilePath</i> is blank, or if <i>loginTimeout</i> is negative.
    */
-  public static DataSource createDataSource(String databaseFilePath) {
+  public static DataSource createDataSource(String databaseFilePath, int loginTimeout) throws SQLException {
     if (StringUtils.isBlank(databaseFilePath)) {
       LOGGER.atWarn()
           .log("databaseFilePath is blank. databaseFilePath:{}",
@@ -41,10 +45,21 @@ public final class SqLiteConnection {
     SQLiteDataSource sqLiteDataSource = new SQLiteDataSource();
     String connectionUrl = constructConnectionUrl(databaseFilePath);
     sqLiteDataSource.setUrl(connectionUrl);
+    if (loginTimeout < 0) {
+      LOGGER.atError().log("loginTimeout is negative: {}", loginTimeout);
+      throw new IllegalArgumentException("Login time out value cannot be negative.");
+    }
+    int loginTimeoutSec = loginTimeout / 1000;
+    sqLiteDataSource.setLoginTimeout(loginTimeoutSec);
     LOGGER.atDebug().log("Creating new sqLiteDataSource. connectionUrl:{}", connectionUrl);
     return sqLiteDataSource;
   }
 
+  /**
+   * Return connection URL of the database server based on the file path given in <i>databaseFile</i>
+   * @param databaseFile file path given in <i>databaseFile</i>
+   * @return connection URL of the database server based on the file path given in <i>databaseFile</i>
+   */
   private static String constructConnectionUrl(String databaseFile) {
     return JDBC.PREFIX + databaseFile;
   }

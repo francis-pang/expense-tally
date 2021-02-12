@@ -11,7 +11,8 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * This class provide the default implementation to connection to a MySQL database.
+ * This class provides implementation to common method to retrieve object to connect to a MySQL database server.
+ * @see DataSource
  */
 public class MySqlConnection {
   private static final Logger LOGGER = LogManager.getLogger(MySqlConnection.class);
@@ -23,7 +24,37 @@ public class MySqlConnection {
   private MySqlConnection() {
   }
 
-  public static DataSource createDataSource(String connectionUrl, String database, String username, String password)
+  /**
+   * Returns a data source based on the provided parameters.
+   * @param connectionUrl hostname of the database connection. Port is not needed, default to be 3006.
+   * @param database name of the database to be connected
+   * @param loginTimeout maximum time in milliseconds that this data source can wait while attempting to connect to a
+   *                     database.
+   * @return a data source based on the provided parameters.
+   * @throws SQLException if database access error occurs
+   * @throws IllegalArgumentException if <i>connectionUrl</i> or <i>database</i> are blank, or when loginTimeout is
+   * negative.
+   */
+  public static DataSource createDataSource(String connectionUrl, String database, int loginTimeout)
+      throws SQLException {
+    return createDataSource(connectionUrl, database, StringUtils.EMPTY, StringUtils.EMPTY, loginTimeout);
+  }
+
+  /**
+   * Returns a data source based on the provided parameters.
+   * @param connectionUrl hostname of the database connection. Port is not needed, default to be 3006.
+   * @param database name of the database to be connected
+   * @param username username to login to database server. This needs to be provided together with password.
+   * @param password password to login to database server. This needs to be provided together with username.
+   * @param loginTimeout maximum time in milliseconds that this data source can wait while attempting to connect to a
+   *                     database.
+   * @return a data source based on the provided parameters.
+   * @throws SQLException if database access error occurs
+   * @throws IllegalArgumentException if <i>connectionUrl</i>  or <i>database</i> are blank, or only one of the fields
+   * <i>username</i> and <i>password</i> is filled, or when loginTimeout is negative.
+   */
+  public static DataSource createDataSource(String connectionUrl, String database, String username, String password,
+                                            int loginTimeout)
       throws SQLException {
     if (StringUtils.isBlank(connectionUrl)) {
       LOGGER.atError().log("connectionUrl is blank:{}", StringResolver.resolveNullableString(connectionUrl));
@@ -37,6 +68,13 @@ public class MySqlConnection {
     String connectionString = constructConnectionString(connectionUrl, database);
     mysqlDataSource.setUrl(connectionString);
     mysqlDataSource.setDatabaseName(database);
+    if (loginTimeout < 0) {
+      LOGGER.atError().log("loginTimeout is negative: {}", loginTimeout);
+      throw new IllegalArgumentException("Login time out value cannot be negative.");
+    }
+    int loginTimeSeconds = (int) Math.ceil(loginTimeout / 1000.0);
+    mysqlDataSource.setLoginTimeout(loginTimeSeconds);
+    mysqlDataSource.setConnectTimeout(loginTimeSeconds);
     boolean isUserNameBlank = StringUtils.isBlank(username);
     boolean isPasswordBlank = StringUtils.isBlank(password);
     if (!isUserNameBlank) {
