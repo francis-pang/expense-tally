@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.francis-pang</groupId>
         <artifactId>expense-tally</artifactId>
-        <version>72</version>
+        <version>73-SNAPSHOT</version>
     </parent>
     <artifactId>expense-tally-base</artifactId>
 
