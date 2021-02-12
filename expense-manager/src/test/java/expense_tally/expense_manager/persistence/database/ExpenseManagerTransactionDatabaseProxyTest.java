@@ -296,7 +296,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
     Mockito.when(mockExpenseManagerTransaction.getDescription()).thenReturn("Dinner.");
-    Mockito.when(mockExpenseManagerTransaction.getExpendedTime()).thenReturn(null);
+    Mockito.when(mockExpenseManagerTransaction.getExpensedTime()).thenReturn(null);
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Expensed time cannot be null or in future.");
@@ -311,7 +311,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
     Mockito.when(mockExpenseManagerTransaction.getDescription()).thenReturn("Dinner.");
     Instant futureInstant = Instant.MAX;
-    Mockito.when(mockExpenseManagerTransaction.getExpendedTime()).thenReturn(futureInstant);
+    Mockito.when(mockExpenseManagerTransaction.getExpensedTime()).thenReturn(futureInstant);
     assertThatThrownBy(() -> expenseManagerTransactionDatabaseProxy.add(mockExpenseManagerTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Expensed time cannot be null or in future.");
@@ -327,7 +327,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
     Mockito.when(mockExpenseManagerTransaction.getDescription())
         .thenReturn("Dinner. Sbcd Korean tofu house. Millenia walk.");
-    Mockito.when(mockExpenseManagerTransaction.getExpendedTime())
+    Mockito.when(mockExpenseManagerTransaction.getExpensedTime())
         .thenReturn(Instant.ofEpochMilli(Long.parseLong("1514813160000")));
     ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
         Mockito.mock(ExpenseManagerTransactionMapper.class);
@@ -357,7 +357,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
     Mockito.when(mockExpenseManagerTransaction.getDescription())
         .thenReturn("Dinner. Sbcd Korean tofu house. Millenia walk.");
-    Mockito.when(mockExpenseManagerTransaction.getExpendedTime())
+    Mockito.when(mockExpenseManagerTransaction.getExpensedTime())
         .thenReturn(Instant.ofEpochMilli(Long.parseLong("1514813160000")));
     Mockito.when(mockExpenseManagerTransaction.getReferenceAmount())
         .thenReturn(Double.parseDouble("0"));
@@ -387,7 +387,7 @@ class ExpenseManagerTransactionDatabaseProxyTest {
     Mockito.when(mockExpenseManagerTransaction.getSubcategory()).thenReturn(ExpenseSubCategory.ALCOHOL_AND_RESTAURANT);
     Mockito.when(mockExpenseManagerTransaction.getPaymentMethod()).thenReturn(PaymentMethod.CASH);
     Mockito.when(mockExpenseManagerTransaction.getDescription()).thenReturn("Dinner.");
-    Mockito.when(mockExpenseManagerTransaction.getExpendedTime())
+    Mockito.when(mockExpenseManagerTransaction.getExpensedTime())
         .thenReturn(Instant.ofEpochMilli(Long.parseLong("1514813160000")));
     Mockito.when(mockExpenseManagerTransaction.getReferenceAmount())
         .thenReturn(Double.parseDouble("-7.0"));
@@ -454,6 +454,18 @@ class ExpenseManagerTransactionDatabaseProxyTest {
         .thenReturn(true);
     assertThat(expenseManagerTransactionDatabaseProxy.clear())
         .isTrue();
+  }
+
+  @Test
+  void clear_fail() {
+    ExpenseManagerTransactionMapper mockExpenseManagerTransactionMapper =
+        Mockito.mock(ExpenseManagerTransactionMapper.class);
+    Mockito.when(mockSqlSession.getMapper(ExpenseManagerTransactionMapper.class))
+        .thenReturn(mockExpenseManagerTransactionMapper);
+    Mockito.when(mockExpenseManagerTransactionMapper.deleteAllExpenseManagerTransactions())
+        .thenReturn(false);
+    assertThat(expenseManagerTransactionDatabaseProxy.clear())
+        .isFalse();
   }
 
   @Test

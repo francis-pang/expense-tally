@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -108,17 +109,52 @@ class ExpenseManagerTransactionTest {
 
   @Test
   void create_IdIsNegative() {
+    double amount = Double.parseDouble("-7.0");
+    Instant currentTime = Instant.now();
     assertThatThrownBy(() -> ExpenseManagerTransaction.create(
         0,
-        Double.parseDouble("-7.0"),
+        amount,
         ExpenseCategory.AESTHETIC,
         ExpenseSubCategory.CLOTHING,
         PaymentMethod.CREDIT_CARD,
         "Some test clothes",
-        Instant.now()
+        currentTime
     ))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("ID cannot 0 or negative");
+  }
+
+  @Test
+  void create_nullExpensedTime() {
+    double amount = Double.parseDouble("7.0");
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
+        58,
+        amount,
+        ExpenseCategory.AESTHETIC,
+        ExpenseSubCategory.CLOTHING,
+        PaymentMethod.CREDIT_CARD,
+        "Some test clothes",
+        null
+    ))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Expensed time cannot be null or in the future");
+  }
+
+  @Test
+  void create_futureExpensedTime() {
+    double amount = Double.parseDouble("7.0");
+    Instant futureTime = Instant.now().plus(1, ChronoUnit.HOURS);
+    assertThatThrownBy(() -> ExpenseManagerTransaction.create(
+        58,
+        amount,
+        ExpenseCategory.AESTHETIC,
+        ExpenseSubCategory.CLOTHING,
+        PaymentMethod.CREDIT_CARD,
+        "Some test clothes",
+        futureTime
+    ))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Expensed time cannot be null or in the future");
   }
 
   @Test
@@ -171,7 +207,7 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    assertThat(testExpenseManagerTransaction.getExpendedTime())
+    assertThat(testExpenseManagerTransaction.getExpensedTime())
         .isNotNull()
         .isEqualTo(testTime);
   }
@@ -543,8 +579,8 @@ class ExpenseManagerTransactionTest {
         "sd",
         testTime
     );
-    assertThat(testExpenseManagerTransaction.toString())
-        .contains("[id=77,amount=5.48,category=ENTERTAINMENT,subcategory=CLOTHING,paymentMethod=GRAY_PAY," +
-            "description=sd,expendedTime=2020-05-27T01:19:00Z,referenceAmount=<null>]");
+    assertThat(testExpenseManagerTransaction)
+        .hasToString("ExpenseManagerTransaction[id=77, amount=5.48, category=ENTERTAINMENT, subcategory=CLOTHING, " +
+        "paymentMethod=GRAY_PAY, description='sd', expendedTime=2020-05-27T01:19:00Z, referenceAmount=null]");
   }
 }

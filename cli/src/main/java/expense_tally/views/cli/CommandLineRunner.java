@@ -32,6 +32,7 @@ public final class CommandLineRunner {
   private static final String REMOTE_DATABASE_NAME = "expense_manager";
   private static final String REMOTE_DATABASE_USERNAME = "expensetally";
   private static final String REMOTE_DATABASE_PASSWORD = "Password1";
+  private static final int DATABASE_CONNECT_TIMEOUT = 10000;
 
   public static void main(String[] args) {
     final int CSV_FILE_PARSING_ERR_CODE = 2;
@@ -57,12 +58,13 @@ public final class CommandLineRunner {
 
   private static ExpenseUpdatable constructExpenseUpdatable(String mysqlHost) throws SQLException, IOException {
     SqlSession sqlSession = createSqlSession(DatabaseEnvironmentId.MYSQL, mysqlHost, REMOTE_DATABASE_NAME,
-        REMOTE_DATABASE_USERNAME, REMOTE_DATABASE_PASSWORD);
+        REMOTE_DATABASE_USERNAME, REMOTE_DATABASE_PASSWORD, DATABASE_CONNECT_TIMEOUT);
     return new ExpenseManagerTransactionDatabaseProxy(sqlSession);
   }
 
   private static ExpenseReportReadable constructExpenseReportReadable(String sqLiteFilePath) throws IOException, SQLException {
-    SqlSession sqlSession = createSqlSession(DatabaseEnvironmentId.SQLITE, sqLiteFilePath, null, null, null);
+    SqlSession sqlSession = createSqlSession(DatabaseEnvironmentId.SQLITE, sqLiteFilePath, null, null, null,
+        DATABASE_CONNECT_TIMEOUT);
     return new ExpenseReportDatabaseReader(sqlSession);
   }
 
@@ -70,14 +72,16 @@ public final class CommandLineRunner {
                                              String databaseConnectionUrl,
                                              String databaseName,
                                              String username,
-                                             String password) throws SQLException, IOException {
+                                             String password,
+                                             int loginTimeout) throws SQLException, IOException {
     DataSource dataSource;
     switch(databaseEnvironmentId) {
       case SQLITE:
-        dataSource = SqLiteConnection.createDataSource(databaseConnectionUrl);
+        dataSource = SqLiteConnection.createDataSource(databaseConnectionUrl, loginTimeout);
         break;
       case MYSQL:
-        dataSource = MySqlConnection.createDataSource(databaseConnectionUrl, databaseName, username, password);
+        dataSource = MySqlConnection.createDataSource(databaseConnectionUrl, databaseName, username, password,
+            loginTimeout);
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + databaseEnvironmentId);

@@ -121,7 +121,7 @@ public final class ExpenseReconciler {
     expenseManagerTransactions
         .parallelStream()
         .forEach(expenseManagerTransaction -> {
-          Duration transactionTimeDifference = Duration.between(expenseManagerTransaction.getExpendedTime(),
+          Duration transactionTimeDifference = Duration.between(expenseManagerTransaction.getExpensedTime(),
               endOfDay(csvTransactionDate));
           if (transactionTimeDifference.toHours() >= 0 &&
               transactionTimeDifference.toHours() <= MAXIMUM_TIME_DIFFERENCE_ALLOWED) {
