@@ -3,8 +3,6 @@ package expense_tally.model.csv;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * The type of transaction.
  * <p>Normally, the value of the transaction type is the abbreviation for the actual description</p>

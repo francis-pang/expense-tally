@@ -2,8 +2,6 @@ package expense_tally.model.persistence.transformation;
 
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-
 public enum ExpenseSubCategory {
   ALCOHOL_AND_RESTAURANT("Alcohol/ Restaurant"),
   KARAOKE_PARTY("Karaoke/ Party"),
