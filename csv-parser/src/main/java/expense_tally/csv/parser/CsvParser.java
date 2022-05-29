@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import static expense_tally.csv.parser.CsvPosition.CREDIT_AMOUNT;
 import static expense_tally.csv.parser.CsvPosition.DEBIT_AMOUNT;
 import static expense_tally.csv.parser.CsvPosition.REFERENCE;
@@ -78,28 +78,22 @@ public class CsvParser {
       throws IOException {
     List<AbstractCsvTransaction> abstractCsvTransactions = new ArrayList<>();
     skipUntilHeaderLine(csvBufferedReader);
-    String line = csvBufferedReader.readLine();
-    while (line != null) { // Read until end of file
-      if (!line.isBlank()) {
-        parseSingleTransaction(line, abstractCsvTransactions);
-      }
-      line = csvBufferedReader.readLine();
-    }
+    csvBufferedReader
+      .lines()
+      .filter(line -> !line.isBlank())
+      .forEach(line -> parseSingleTransaction(line).ifPresent(
+        transaction -> abstractCsvTransactions.add(transaction)));
     return abstractCsvTransactions;
   }
 
-  private static void parseSingleTransaction(String line, List<AbstractCsvTransaction> abstractCsvTransactions) {
-    GenericCsvTransaction genericCsvTransaction = null;
+  private static Optional<AbstractCsvTransaction> parseSingleTransaction(String line) {
+    Optional<GenericCsvTransaction> optionalGenericCsvTransaction = Optional.empty();
     try {
-      genericCsvTransaction = parseSingleTransaction(line);
+      optionalGenericCsvTransaction = transformToGenericCsvTransaction(line);
     } catch (MonetaryAmountException e) {
       LOGGER.atError().withThrowable(e).log("Unable to parse transaction. line={}", line);
     }
-    if (genericCsvTransaction == null) {
-      return;
-    }
-    AbstractCsvTransaction abstractCsvTransaction = modifyBaseOnTransactionType(genericCsvTransaction);
-    abstractCsvTransactions.add(abstractCsvTransaction);
+    return optionalGenericCsvTransaction.map(t -> modifyBaseOnTransactionType(t));
   }
 
   private static void skipUntilHeaderLine(BufferedReader bufferedReader) throws IOException {
@@ -118,15 +112,17 @@ public class CsvParser {
    * file is fixed. If it is of a transaction not meant for processing, null will be returned.
    * @throws MonetaryAmountException if both the debit and credit amount isn't fill up as non-zero value
    */
-  private static GenericCsvTransaction parseSingleTransaction(String csvLine) throws MonetaryAmountException {
+  private static Optional<GenericCsvTransaction> transformToGenericCsvTransaction(String csvLine) 
+    throws MonetaryAmountException {
     String[] csvElements = csvLine.split(CSV_DELIMITER);
     String reference = csvElements[REFERENCE.position];
     TransactionType transactionType = resolve(reference);
-    if (transactionType == null) {
-      LOGGER.atInfo().log("Found a new transaction type: {}; csvLine: {}", reference, csvLine);
-      return null;
-    } else if (!transactionType.isMeantToBeProcessed()) {
-      return null;
+    boolean isNullTransactionType = transactionType == null;
+    if (isNullTransactionType || !transactionType.isMeantToBeProcessed()) {
+      if (isNullTransactionType) {
+        LOGGER.atInfo().log("Found a new transaction type: {}; csvLine: {}", reference, csvLine);   
+      }
+      return Optional.empty();
     }
     LocalDate transactionDate = LocalDate.parse(csvElements[TRANSACTION_DATE.position],
         CSV_TRANSACTION_DATE_FORMATTER);
@@ -146,7 +142,8 @@ public class CsvParser {
     if (csvElements.length >= 7) {
       builder.transactionRef3(csvElements[TRANSACTION_REF_3.position]);
     }
-    return builder.build();
+    GenericCsvTransaction genericCsvTransaction = builder.build();
+    return Optional.of(genericCsvTransaction);
   }
 
   /**
