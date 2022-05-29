@@ -1,5 +1,9 @@
 package expense_tally.model.persistence.transformation;
 
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
 public enum ExpenseSubCategory {
   ALCOHOL_AND_RESTAURANT("Alcohol/ Restaurant"),
   KARAOKE_PARTY("Karaoke/ Party"),
@@ -63,12 +67,11 @@ public enum ExpenseSubCategory {
     if (subExpenseCategoryStr == null || subExpenseCategoryStr.isBlank()) {
       return null;
     }
-    for (ExpenseSubCategory expenseSubCategory : values()) {
-      if (expenseSubCategory.value.equals(subExpenseCategoryStr)) {
-        return expenseSubCategory;
-      }
-    }
-    return null;
+
+    return Stream.of(values())
+      .filter(expenseSubCategory -> expenseSubCategory.value.equals(subExpenseCategoryStr))
+      .findFirst()
+      .orElse(null);
   }
 
   public String value() {

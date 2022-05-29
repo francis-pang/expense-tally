@@ -1,6 +1,9 @@
 package expense_tally.model.csv;
 
 import java.util.StringJoiner;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The type of transaction.
@@ -44,12 +47,14 @@ public enum TransactionType {
    * @return the type of transaction given its string form, null if not found
    */
   public static TransactionType resolve(String transactionTypeStr) {
-    for (TransactionType transactionType : values()) {
-      if (transactionType.value.equals(transactionTypeStr)) {
-        return transactionType;
-      }
+    if (transactionTypeStr == null || transactionTypeStr.isBlank()) {
+      return null;
     }
-    return null;
+    
+    return Stream.of(values())
+      .filter(transactionType -> transactionType.value.equals(transactionTypeStr))
+      .findFirst()
+      .orElse(null);
   }
 
   /**

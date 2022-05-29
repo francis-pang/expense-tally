@@ -2,6 +2,7 @@ package expense_tally.model.persistence.transformation;
 
 import expense_tally.exception.StringResolver;
 import org.apache.commons.lang3.StringUtils;
+import java.util.stream.Stream;
 
 /**
  *
@@ -42,12 +43,14 @@ public enum ExpenseCategory {
    * @return the category of the expense record given its string form, null if not found
    */
   public static ExpenseCategory resolve(String expenseCategoryStr) {
-    for (ExpenseCategory expenseCategory : values()) {
-      if (expenseCategory.value.equals(expenseCategoryStr)) {
-        return expenseCategory;
-      }
+    if (expenseCategoryStr == null || expenseCategoryStr.isBlank()) {
+      return null;
     }
-    return null;
+
+    return Stream.of(values())
+      .filter(expenseCategory -> expenseCategory.value.equals(expenseCategoryStr))
+      .findFirst()
+      .orElse(null);
   }
 
   public String value() {
