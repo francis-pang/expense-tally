@@ -81,31 +81,14 @@ class GenericCsvTransactionTest {
   }
 
   @Test
-  void builder_nullTransactionType() throws MonetaryAmountException {
+  void builder_nullTransactionType() {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = null;
     double debitAmount = 5.00;
 
-    assertThat(new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
-        .isNotNull()
-        .extracting(
-            "transactionDate",
-            "transactionType",
-            "debitAmount",
-            "creditAmount",
-            "transactionRef1",
-            "transactionRef2",
-            "transactionRef3"
-        )
-        .contains(
-            transactionDate,
-            null,
-            5.00,
-            0.00,
-            "",
-            "",
-            ""
-        );
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessage("transactionType cannot be null.");
   }
 
   @Test
@@ -425,7 +408,7 @@ class GenericCsvTransactionTest {
   }
 
   @Test
-  void builder_positiveDebitAndCredit() throws MonetaryAmountException {
+  void builder_positiveDebitAndCredit() {
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
     TransactionType transactionType = TransactionType.PAY_NOW;
     double debitAmount = 5.00;

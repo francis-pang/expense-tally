@@ -8,6 +8,7 @@ class PaymentCardValidatorTest {
 
   @Test
   void isPaymentCardValid_successWithDash() {
+    boolean result = PaymentCardValidator.isPaymentCardValid("5436-4163-3246-5823", TransactionType.MASTERCARD);
     assertThat(PaymentCardValidator.isPaymentCardValid("5436-4163-3246-5823", TransactionType.MASTERCARD))
         .isTrue();
   }

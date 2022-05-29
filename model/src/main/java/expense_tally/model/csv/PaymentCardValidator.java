@@ -46,6 +46,6 @@ public final class PaymentCardValidator {
         return false;
       }
     }
-    return cardNumber.matches(MASTER_CARD_PATTERN);
+    return trimmedCardNumber.matches(MASTER_CARD_PATTERN);
   }
 }
