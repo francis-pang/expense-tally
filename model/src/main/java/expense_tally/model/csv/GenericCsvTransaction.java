@@ -66,9 +66,11 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
 
   public static class Builder {
     private static final String NULL_TRANSACTION_DATE_ERR_MSG = "transactionDate cannot be null.";
+    private static final String NULL_TRANSACTION_TYPE_ERR_MSG = "transactionType cannot be null.";
     private static final String NEGATIVE_DEBIT_ERR_MSG = "Debit amount cannot be negative.";
     private static final String NEGATIVE_CREDIT_ERR_MSG = "Credit amount cannot be negative.";
     private static final String POSITIVE_CREDIT_DEBIT_ERR_MSG = "Debit and credit cannot be co-exist at same time.";
+
 
     private LocalDate transactionDate;
     private final TransactionType transactionType;
@@ -87,6 +89,9 @@ public final class GenericCsvTransaction extends AbstractCsvTransaction {
      */
     public Builder(LocalDate transactionDate, TransactionType transactionType, double debitAmount) {
       setTransactionDate(transactionDate);
+      if (transactionType == null) {
+        throw new IllegalArgumentException(NULL_TRANSACTION_TYPE_ERR_MSG);
+      }
       this.transactionType = transactionType;
       setDebitAmount(debitAmount);
     }
