@@ -299,10 +299,12 @@ class ExpenseReconcilerTest {
   @Test
   void reconcileBankData_testNullTransactionType() {
     List<GenericCsvTransaction> testGenericCsvTransactionList = new ArrayList<>();
-    testGenericCsvTransactionList.add(new CsvTransactionTestBuilder()
-        .transactionType(null)
-        .build()
-    );
+    GenericCsvTransaction testGenericCsvTransaction = new CsvTransactionTestBuilder()
+        .transactionType(TransactionType.BILL_PAYMENT)
+        .build();
+    testGenericCsvTransaction.setTransactionType(null);
+    testGenericCsvTransactionList.add(testGenericCsvTransaction);
+
 
     final Map<Double, Map<PaymentMethod, List<ExpenseManagerTransaction>>> expensesByAmountAndPaymentMethod =
         new ExpnseMngrTrnsctnTestMapBuilder(1)
