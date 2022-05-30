@@ -40,7 +40,7 @@ public final class MasterCard extends AbstractCsvTransaction {
    * @throws IllegalArgumentException if genericCsvTransaction is not of Master card transaction type
    */
   public static MasterCard from(GenericCsvTransaction genericCsvTransaction) {
-    TransactionType transactionType = genericCsvTransaction.getTransactionType();
+    TransactionType transactionType = genericCsvTransaction.transactionType;
     if (transactionType == null || !transactionType.equals(TransactionType.MASTERCARD)) {
       LOGGER.atWarn().log("This is not a MasterCard transaction: {}", genericCsvTransaction);
       throw new IllegalArgumentException(NOT_MASTER_CARD_ERR_MSG);
@@ -48,13 +48,14 @@ public final class MasterCard extends AbstractCsvTransaction {
     MasterCard masterCard = new MasterCard();
     masterCard.debitAmount = genericCsvTransaction.debitAmount;
     masterCard.creditAmount = genericCsvTransaction.creditAmount;
-    String ref1 = genericCsvTransaction.getTransactionRef1();
+    String ref1 = genericCsvTransaction.transactionRef1;
     masterCard.transactionRef1 = ref1;
-    LocalDate transactionDate = genericCsvTransaction.getTransactionDate();
+    LocalDate transactionDate = genericCsvTransaction.transactionDate;
     masterCard.transactionDate = computeTransactionDate(transactionDate, ref1);
-    String ref2 = genericCsvTransaction.getTransactionRef2();
+    String ref2 = genericCsvTransaction.transactionRef2;
     if (!ref2.isBlank()) {
-      masterCard.setCardNumber(ref2.trim());
+      String trimedRef2 = ref2.trim();
+      masterCard.setCardNumber(trimedRef2);
     } else {
       LOGGER.atDebug().log("This MasterCard transaction doesn't record the card number. {}", genericCsvTransaction);
     }

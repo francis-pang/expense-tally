@@ -3,8 +3,6 @@ package expense_tally.model.csv;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This class check on the validity of the payment card provided.
@@ -12,7 +10,7 @@ import java.util.regex.Pattern;
 public final class PaymentCardValidator {
   private static final List<Integer> MASTER_CARD_PREFIX_LIST = List.of(51, 52, 53, 54, 55);
   private static final int MASTER_CARD_LENGTH = 16;
-  private static final Pattern REGEX = Pattern.compile("\\d+"); // All digits
+  private static final String MASTER_CARD_PATTERN = "\\d+"; // All digits
 
   /**
    * Default constructor
@@ -28,6 +26,9 @@ public final class PaymentCardValidator {
    * @return true if payment card number is valid, or else return false
    */
   public static boolean isPaymentCardValid(String cardNumber, TransactionType transactionType) {
+    if (cardNumber == null || cardNumber.isBlank()) {
+      return false;
+    }
     String trimmedCardNumber = cardNumber.replace("-", StringUtils.EMPTY);
     if (trimmedCardNumber.length() != MASTER_CARD_LENGTH) {
       return false;
@@ -45,7 +46,6 @@ public final class PaymentCardValidator {
         return false;
       }
     }
-    Matcher matcher = REGEX.matcher(trimmedCardNumber);
-    return matcher.matches();
+    return trimmedCardNumber.matches(MASTER_CARD_PATTERN);
   }
 }

@@ -22,6 +22,18 @@ class ExpenseCategoryTest {
   }
 
   @Test
+  void value_null() {
+    assertThat(ExpenseCategory.resolve(null))
+        .isNull();
+  }
+
+  @Test
+  void value_emptyString() {
+    assertThat(ExpenseCategory.resolve("    "))
+        .isNull();
+  }
+
+  @Test
   void value_Food() {
     assertThat(ExpenseCategory.FOOD.value())
         .isNotBlank()

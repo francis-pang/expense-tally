@@ -1,5 +1,7 @@
 package expense_tally;
 
+import java.util.stream.Stream;
+
 /**
  * This enum stores all the string constants used throughout the application, regardless of module.
  */
@@ -29,12 +31,11 @@ public enum AppStringConstant {
     if (value == null || value.isBlank()) {
       throw new IllegalArgumentException("value cannot be null or empty");
     }
-    for (AppStringConstant appStringConstant : values()) {
-      if (appStringConstant.value.contentEquals(value)) {
-        return appStringConstant;
-      }
-    }
-    return null;
+
+    return Stream.of(values())
+        .filter(appStringConstant -> appStringConstant.value.equals(value))
+        .findFirst()
+        .orElse(null);
   }
 
   /**

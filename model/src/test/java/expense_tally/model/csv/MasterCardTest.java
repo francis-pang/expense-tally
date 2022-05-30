@@ -186,10 +186,11 @@ class MasterCardTest extends AbstractCsvTransaction {
   void from_noTransactionType() throws MonetaryAmountException {
     // Create GenericCsvTransaction
     LocalDate transactionDate = LocalDate.of(2019, 12, 27);
-    GenericCsvTransaction testGenericCsvTransaction = new GenericCsvTransaction.Builder(transactionDate, null, 4.55)
+    GenericCsvTransaction testGenericCsvTransaction = new GenericCsvTransaction.Builder(transactionDate, TransactionType.BILL_PAYMENT, 4.55)
         .transactionRef1("TAPAS SI NG 20DEC")
         .transactionRef2("5632-4172-5981-4347")
         .build();
+    testGenericCsvTransaction.setTransactionType(null);
     assertThatThrownBy(() -> MasterCard.from(testGenericCsvTransaction))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("GenericCsvTransaction is not of MasterCard type.");
