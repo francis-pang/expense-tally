@@ -86,7 +86,7 @@ class GenericCsvTransactionTest {
     TransactionType transactionType = null;
     double debitAmount = 5.00;
 
-    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount).build())
+    assertThatThrownBy(() -> new GenericCsvTransaction.Builder(transactionDate, transactionType, debitAmount))
         .isExactlyInstanceOf(IllegalArgumentException.class)
         .hasMessage("transactionType cannot be null.");
   }

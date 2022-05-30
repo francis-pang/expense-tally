@@ -81,8 +81,7 @@ public class CsvParser {
     csvBufferedReader
       .lines()
       .filter(line -> !line.isBlank())
-      .forEach(line -> parseSingleTransaction(line).ifPresent(
-        transaction -> abstractCsvTransactions.add(transaction)));
+      .forEach(line -> parseSingleTransaction(line).ifPresent(abstractCsvTransactions::add));
     return abstractCsvTransactions;
   }
 
@@ -93,7 +92,7 @@ public class CsvParser {
     } catch (MonetaryAmountException e) {
       LOGGER.atError().withThrowable(e).log("Unable to parse transaction. line={}", line);
     }
-    return optionalGenericCsvTransaction.map(t -> modifyBaseOnTransactionType(t));
+    return optionalGenericCsvTransaction.map(CsvParser::modifyBaseOnTransactionType);
   }
 
   private static void skipUntilHeaderLine(BufferedReader bufferedReader) throws IOException {
