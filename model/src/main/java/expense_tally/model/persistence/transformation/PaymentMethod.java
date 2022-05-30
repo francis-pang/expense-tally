@@ -1,5 +1,7 @@
 package expense_tally.model.persistence.transformation;
 
+import java.util.stream.Stream;
+
 /**
  * Different type of payment method for {@link ExpenseManagerTransaction}
  */
@@ -36,12 +38,11 @@ public enum PaymentMethod {
     if (paymentMethodStr == null || paymentMethodStr.isBlank()) {
       return null;
     }
-    for (PaymentMethod paymentMethod : values()) {
-      if (paymentMethod.value.equals(paymentMethodStr)) {
-        return paymentMethod;
-      }
-    }
-    return null;
+
+    return Stream.of(values())
+      .filter(paymentMethod -> paymentMethod.value.equals(paymentMethodStr))
+      .findFirst()
+      .orElse(null);
   }
 
   public String value() {

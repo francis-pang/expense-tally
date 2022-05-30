@@ -8,6 +8,7 @@ class PaymentCardValidatorTest {
 
   @Test
   void isPaymentCardValid_successWithDash() {
+    boolean result = PaymentCardValidator.isPaymentCardValid("5436-4163-3246-5823", TransactionType.MASTERCARD);
     assertThat(PaymentCardValidator.isPaymentCardValid("5436-4163-3246-5823", TransactionType.MASTERCARD))
         .isTrue();
   }
@@ -39,6 +40,18 @@ class PaymentCardValidatorTest {
   @Test
   void isPaymentCardValid_transactionTypeNotRight() {
     assertThat(PaymentCardValidator.isPaymentCardValid("5436-4a63-3246-5823", TransactionType.PAY_NOW))
+        .isFalse();
+  }
+
+  @Test
+  void isPaymentCardValid_null() {
+    assertThat(PaymentCardValidator.isPaymentCardValid(null, TransactionType.MASTERCARD))
+        .isFalse();
+  }
+
+  @Test
+  void isPaymentCardValid_emptySpace() {
+    assertThat(PaymentCardValidator.isPaymentCardValid("    ", TransactionType.MASTERCARD))
         .isFalse();
   }
 }
