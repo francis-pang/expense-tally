@@ -42,4 +42,16 @@ class PaymentCardValidatorTest {
     assertThat(PaymentCardValidator.isPaymentCardValid("5436-4a63-3246-5823", TransactionType.PAY_NOW))
         .isFalse();
   }
+
+  @Test
+  void isPaymentCardValid_null() {
+    assertThat(PaymentCardValidator.isPaymentCardValid(null, TransactionType.MASTERCARD))
+        .isFalse();
+  }
+
+  @Test
+  void isPaymentCardValid_emptySpace() {
+    assertThat(PaymentCardValidator.isPaymentCardValid("    ", TransactionType.MASTERCARD))
+        .isFalse();
+  }
 }
