@@ -6,7 +6,7 @@ on:
 jobs:
   quality:
     name: 'Static code analysis'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-22.04'
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v2
@@ -16,8 +16,8 @@ jobs:
       - name: 'Set up JDK'
         uses: actions/setup-java@master
         with:
-          distribution: 'adopt-hotspot'
-          java-version: '15.0.1' # The JDK version to make available on the path.
+          distribution: 'corretto'
+          java-version: '18' # The JDK version to make available on the path.
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
           server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
@@ -34,7 +34,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ''
   release:
     name: 'Maven release'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-22.04'
     # Skip commit made by maven-release
     if: "!contains(github.event.head_commit.message, 'maven-release-plugin')"
     steps:
@@ -46,8 +46,8 @@ jobs:
       - name: 'Set up JDK'
         uses: actions/setup-java@master
         with:
-          distribution: 'adopt-hotspot'
-          java-version: '15.0.1' # The JDK version to make available on the path.
+          distribution: 'corretto'
+          java-version: '18' # The JDK version to make available on the path.
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
           server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
