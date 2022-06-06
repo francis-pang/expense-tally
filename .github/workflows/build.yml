@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     name: 'Deploy snapshot to nexus repository'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-22.04'
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
 
   quality:
     name: 'Static code analysis'
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-22.04'
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v2
