@@ -34,3 +34,11 @@ out/
 # Maven release build file
 pom.xml.releaseBackup
 release.properties
+
+# V2 specific
+v2/frontend/node_modules/
+v2/frontend/dist/
+v2/backend/bootstrap
+.aws-sam/
+*.env
+!*.env.example
