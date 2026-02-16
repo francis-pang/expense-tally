@@ -2,20 +2,23 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
-	"expense-tally-v2/internal/model"
-	"expense-tally-v2/internal/repository"
+	"expense-tally/internal/model"
+	"expense-tally/internal/provider"
+	"expense-tally/internal/repository"
 )
 
 // ConnectionsHandler handles connection HTTP requests.
 type ConnectionsHandler struct {
-	repo *repository.ConnectionRepository
+	repo           *repository.ConnectionRepository
+	adapterFactory func(string) provider.ProviderAdapter
 }
 
 // NewConnectionsHandler creates a new ConnectionsHandler.
-func NewConnectionsHandler(repo *repository.ConnectionRepository) *ConnectionsHandler {
-	return &ConnectionsHandler{repo: repo}
+func NewConnectionsHandler(repo *repository.ConnectionRepository, adapterFactory func(string) provider.ProviderAdapter) *ConnectionsHandler {
+	return &ConnectionsHandler{repo: repo, adapterFactory: adapterFactory}
 }
 
 // List returns all connections.
@@ -28,34 +31,57 @@ func (h *ConnectionsHandler) List(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, conns)
 }
 
-// CreateTeller creates a Teller connection.
-func (h *ConnectionsHandler) CreateTeller(w http.ResponseWriter, r *http.Request) {
-	var req model.TellerEnrollRequest
+// CreateSimpleFIN creates SimpleFIN connections from a setup token.
+// It claims the access URL, lists accounts, and creates a connection per account.
+func (h *ConnectionsHandler) CreateSimpleFIN(w http.ResponseWriter, r *http.Request) {
+	var req model.SimpleFINSetupRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	if req.AccountID == "" || req.AccessToken == "" {
-		writeError(w, http.StatusBadRequest, "accountId and accessToken required")
+	if req.SetupToken == "" {
+		writeError(w, http.StatusBadRequest, "setupToken is required")
 		return
 	}
-	// Store access token in Secrets Manager and save ARN in connection
-	// For now, use a placeholder - SAM template would set up Secrets Manager
-	// accessTokenRef could be the Secrets Manager ARN after storing the token
-	secretARN := "arn:aws:secretsmanager:us-east-1:123456789012:secret:placeholder"
-	// In production: create secret, get ARN
-	_ = secretARN
 
-	pk := "CONN#teller#" + req.AccountID
-	conn := &model.ProviderConnection{
-		PK:             pk,
-		Provider:       "teller",
-		AccessTokenRef: req.AccessToken, // Simplified: store token directly for dev; use Secrets Manager ARN in prod
-		SyncCursor:     req.AccountID,  // Initial cursor contains account_id for Teller
-	}
-	if err := h.repo.Put(r.Context(), conn); err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+	adapter := h.adapterFactory("simplefin")
+	if adapter == nil {
+		writeError(w, http.StatusInternalServerError, "simplefin adapter not configured")
 		return
 	}
-	writeJSON(w, http.StatusCreated, conn)
+	sfinAdapter, ok := adapter.(*provider.SimpleFINAdapter)
+	if !ok {
+		writeError(w, http.StatusInternalServerError, "invalid simplefin adapter")
+		return
+	}
+
+	// Exchange setup token for access URL
+	accessURL, err := sfinAdapter.ClaimAccessURL(r.Context(), req.SetupToken)
+	if err != nil {
+		writeError(w, http.StatusBadGateway, fmt.Sprintf("failed to claim access URL: %v", err))
+		return
+	}
+
+	// List accounts to discover what's available
+	accounts, err := sfinAdapter.ListAccounts(r.Context(), accessURL)
+	if err != nil {
+		writeError(w, http.StatusBadGateway, fmt.Sprintf("failed to list accounts from SimpleFIN: %v", err))
+		return
+	}
+
+	// Create one connection per account, all sharing the same access URL
+	var created []model.ProviderConnection
+	for _, acct := range accounts {
+		pk := "CONN#simplefin#" + acct.ID
+		conn := &model.ProviderConnection{
+			PK:             pk,
+			Provider:       "simplefin",
+			AccessTokenRef: accessURL,
+		}
+		if err := h.repo.Put(r.Context(), conn); err != nil {
+			continue
+		}
+		created = append(created, *conn)
+	}
+	writeJSON(w, http.StatusCreated, created)
 }

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"expense-tally-v2/internal/model"
-	"expense-tally-v2/internal/repository"
+	"expense-tally/internal/model"
+	"expense-tally/internal/repository"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"

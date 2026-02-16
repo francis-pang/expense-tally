@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"expense-tally-v2/internal/model"
-	"expense-tally-v2/internal/repository"
+	"expense-tally/internal/model"
+	"expense-tally/internal/repository"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
@@ -13,8 +13,8 @@ import (
 
 // TransactionService handles transaction business logic.
 type TransactionService struct {
-	txnRepo   *repository.TransactionRepository
-	catRepo   *repository.CategoryRepository
+	txnRepo    *repository.TransactionRepository
+	catRepo    *repository.CategoryRepository
 	keywordSvc *KeywordService
 }
 
@@ -25,8 +25,8 @@ func NewTransactionService(
 	keywordSvc *KeywordService,
 ) *TransactionService {
 	return &TransactionService{
-		txnRepo:   txnRepo,
-		catRepo:   catRepo,
+		txnRepo:    txnRepo,
+		catRepo:    catRepo,
 		keywordSvc: keywordSvc,
 	}
 }

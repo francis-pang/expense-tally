@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strconv"
 
-	"expense-tally-v2/internal/model"
-	"expense-tally-v2/internal/service"
+	"expense-tally/internal/model"
+	"expense-tally/internal/service"
 )
 
 // DashboardHandler handles dashboard HTTP requests.
@@ -52,9 +52,9 @@ func (h *DashboardHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := model.DashboardResponse{
-		ByCategory:        []model.CategorySpend{},
-		ByMonth:           []model.MonthlySpend{},
-		ByPaymentMethod:   []model.PaymentMethodSpend{},
+		ByCategory:         []model.CategorySpend{},
+		ByMonth:            []model.MonthlySpend{},
+		ByPaymentMethod:    []model.PaymentMethodSpend{},
 		RecentTransactions: []model.Transaction{},
 	}
 

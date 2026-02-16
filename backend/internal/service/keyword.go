@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"expense-tally-v2/internal/repository"
+	"expense-tally/internal/repository"
 )
 
 var wordRegex = regexp.MustCompile(`[a-zA-Z0-9]+`)
@@ -62,7 +62,7 @@ func (s *KeywordService) SuggestCategory(ctx context.Context, description, merch
 	}
 	type catScore struct {
 		categoryID string
-		score     int
+		score      int
 	}
 	scores := make(map[string]int)
 	for _, assocs := range assocsByKw {

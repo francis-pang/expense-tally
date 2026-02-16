@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Expense Tally v2 - AWS SAM infrastructure
+Description: Expense Tally - AWS SAM infrastructure
 
 Parameters:
   Environment:

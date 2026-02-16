@@ -2,20 +2,29 @@ package provider
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
-	"expense-tally-v2/internal/model"
+	"expense-tally/internal/model"
 )
 
 const tellerBaseURL = "https://api.teller.io"
 
 // TellerAdapter implements ProviderAdapter for Teller API.
+// Teller requires mTLS (mutual TLS) for all API calls in development and production.
 type TellerAdapter struct {
-	client *http.Client
+	client   *http.Client
+	certFile string
+	keyFile  string
+}
+
+// NewTellerAdapter creates a TellerAdapter configured with mTLS client certificate paths.
+func NewTellerAdapter(certFile, keyFile string) *TellerAdapter {
+	return &TellerAdapter{certFile: certFile, keyFile: keyFile}
 }
 
 // TellerTransaction represents a transaction from Teller API.
@@ -30,27 +39,63 @@ type TellerTransaction struct {
 	} `json:"details"`
 }
 
-func (t *TellerAdapter) getClient() *http.Client {
-	if t.client == nil {
+func (t *TellerAdapter) getClient() (*http.Client, error) {
+	if t.client != nil {
+		return t.client, nil
+	}
+	if t.certFile != "" && t.keyFile != "" {
+		cert, err := tls.LoadX509KeyPair(t.certFile, t.keyFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load Teller client certificate: %w", err)
+		}
+		t.client = &http.Client{
+			Timeout: 30 * time.Second,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					Certificates: []tls.Certificate{cert},
+				},
+			},
+		}
+	} else {
+		// Sandbox mode: mTLS is optional
 		t.client = &http.Client{Timeout: 30 * time.Second}
 	}
-	return t.client
+	return t.client, nil
+}
+
+// ListAccounts fetches all accounts for the given access token from Teller API.
+func (t *TellerAdapter) ListAccounts(ctx context.Context, accessToken string) ([]model.TellerAccount, error) {
+	url := tellerBaseURL + "/accounts"
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.SetBasicAuth(accessToken, "")
+
+	client, err := t.getClient()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("teller API error listing accounts: %d", resp.StatusCode)
+	}
+
+	var accounts []model.TellerAccount
+	if err := json.NewDecoder(resp.Body).Decode(&accounts); err != nil {
+		return nil, err
+	}
+	return accounts, nil
 }
 
 // FetchTransactions fetches transactions from Teller API.
+// Cursor format: "account_id" or "account_id|last_txn_id" for pagination.
 func (t *TellerAdapter) FetchTransactions(ctx context.Context, accessToken string, cursor string) ([]model.Transaction, string, error) {
-	// Teller API: GET /accounts/{account_id}/transactions
-	// We need account_id - for now we'll need it from the connection
-	// The connection PK is CONN#provider#account_id, so we can extract account_id
-	// But we don't have it here - the adapter receives accessToken and cursor
-	// The connection has the full context. We need to pass account_id to the adapter.
-	// Let me check the interface - it only has accessToken and cursor.
-	// We could encode account_id in the cursor, or we need to change the interface.
-	// For Teller, the URL is /accounts/{account_id}/transactions. So we need account_id.
-	// The SyncConnection has conn - we could pass account_id. Let me add it to the adapter.
-	// Actually, a simpler approach: the cursor could contain the account_id for the first request,
-	// or we add a method that takes connection. For now, let's assume the cursor format is
-	// "account_id" or "account_id|last_id" for pagination.
 	parts := strings.SplitN(cursor, "|", 2)
 	accountID := parts[0]
 	if accountID == "" {
@@ -62,9 +107,14 @@ func (t *TellerAdapter) FetchTransactions(ctx context.Context, accessToken strin
 	if err != nil {
 		return nil, "", err
 	}
-	req.Header.Set("Authorization", "Bearer "+accessToken)
+	// Teller uses HTTP Basic Auth: access token as username, empty password
+	req.SetBasicAuth(accessToken, "")
 
-	resp, err := t.getClient().Do(req)
+	client, err := t.getClient()
+	if err != nil {
+		return nil, "", err
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, "", err
 	}

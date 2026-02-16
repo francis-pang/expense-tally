@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"expense-tally-v2/internal/model"
-	"expense-tally-v2/internal/service"
+	"expense-tally/internal/model"
+	"expense-tally/internal/service"
 
 	"github.com/go-chi/chi/v5"
 )

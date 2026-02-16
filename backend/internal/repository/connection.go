@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"expense-tally-v2/internal/model"
+	"expense-tally/internal/model"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -116,7 +116,7 @@ func (r *ConnectionRepository) Update(ctx context.Context, pk string, updates ma
 
 func connectionToItem(c *model.ProviderConnection) map[string]types.AttributeValue {
 	item := map[string]types.AttributeValue{
-		"PK":              &types.AttributeValueMemberS{Value: c.PK},
+		"PK":             &types.AttributeValueMemberS{Value: c.PK},
 		"provider":       &types.AttributeValueMemberS{Value: c.Provider},
 		"accessTokenRef": &types.AttributeValueMemberS{Value: c.AccessTokenRef},
 		"syncCursor":     &types.AttributeValueMemberS{Value: c.SyncCursor},

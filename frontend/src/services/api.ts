@@ -102,7 +102,5 @@ export const getSyncLogs = () => api.get<SyncLog[]>('/sync/logs');
 
 // Connections
 export const getConnections = () => api.get<Connection[]>('/connections');
-export const createTellerConnection = (data: {
-  accountId: string;
-  accessToken: string;
-}) => api.post('/connections/teller', data);
+export const createSimpleFINConnection = (setupToken: string) =>
+  api.post('/connections/simplefin', { setupToken });

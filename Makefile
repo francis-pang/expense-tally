@@ -8,8 +8,8 @@ deploy: build
 
 deploy-frontend: build
 	cd frontend && npm run build
-	aws s3 sync frontend/dist s3://$$(aws cloudformation describe-stacks --stack-name expense-tally-v2 --query 'Stacks[0].Outputs[?OutputKey==`FrontendBucketName`].OutputValue' --output text) --delete
-	aws cloudfront create-invalidation --distribution-id $$(aws cloudformation describe-stacks --stack-name expense-tally-v2 --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontDistributionId`].OutputValue' --output text) --paths "/*"
+	aws s3 sync frontend/dist s3://$$(aws cloudformation describe-stacks --stack-name expense-tally --query 'Stacks[0].Outputs[?OutputKey==`FrontendBucketName`].OutputValue' --output text) --delete
+	aws cloudfront create-invalidation --distribution-id $$(aws cloudformation describe-stacks --stack-name expense-tally --query 'Stacks[0].Outputs[?OutputKey==`CloudFrontDistributionId`].OutputValue' --output text) --paths "/*"
 
 local:
 	sam local start-api

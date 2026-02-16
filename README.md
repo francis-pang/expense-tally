@@ -1,79 +1,131 @@
-# expense-tally #
-[![Build Status](https://travis-ci.com/francis-pang/expense-tally.svg?branch=master)](https://travis-ci.com/francis-pang/expense-tally)
-[![Comments (%)](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=security_rating)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=coverage)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=boyshawn_expense-tally&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=boyshawn_expense-tally)
+# Expense Tally
 
-# Overview #
-This application will aim to reconcilate the past transaction history against my expense tracker application
+A serverless expense tracking application with automatic bank transaction syncing, category management, and a dashboard for spending insights.
 
-The command line version of the application needs to be provided 2 information before it is able to execute. They are:
+## Architecture
 
-| Option             | Description |
-|--------------------|-------------|
-|  database-filepath | The absolute or relative path to a database file which stores the transaction of the Expense Manager |
-| csv-filepath       | The absolute or relative path to a comma-separated value file which stores the bank transactions |
+- **Backend**: Go (AWS Lambda + API Gateway), DynamoDB
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
+- **Auth**: Amazon Cognito (email + OAuth)
+- **Infrastructure**: AWS SAM (CloudFormation)
+- **Bank Integration**: Teller API
 
-The application accepts the parameters in 3 different formats:
-1. option=XXXX
-2. option = XXXX
-3. option XXXX
+## Project Structure
 
-Any other format of input is unacceptable, and will result in system error. 
-
-# Architecture Diagram #
-![Expense Tally Architecture Diagram](docs/architecture-diagram.svg)
-
-There are a few processes that expense tally serves to fulfill the need to reconcile the data inside the Expense Manager
-application against the bank provided data. Below is a brief overview of the typical user process:
-
-1. User downloads the comma-separated values file from the bank website. He will upload the file to the S3 bucket. This 
-   will trigger the parsing of the file, and perform a expense reconciliation.
-2. User update the Android app Expense Manager, then the corresponding database file is updated on Dropbox. This trigger 
-   an update to the server database.
-3. User enters a URL to view all the discrepant transaction entries. He can resolve those discrepant entries, and the 
-   database file in Dropbox will be updated.
-
-# Database #
-Due to the requirement, there is a Docker file inside the _expense-tally-expense-manager_ module. This Docker file 
-define all the necessary ingredient to set up a new database server used by the _expense-tally-expense-manager_ module 
-to persist SQLite exported data file. Developer/ operator can use the following command to run the created Docker image:
-```Shell
-# Run this at the root directory
-# This set the following option:
-# -d detached
-# --name name of the container
-# -p  Use the -p flag to explicitly map a single port or range of ports. The port number inside the container (where 
-# the service listens) does not need to match the port number exposed on the outside of the container (where clients 
-# connect).
-docker container run -d=true --name=em-db -p 3306:3306/tcp expense-tally/em-db:latest
-mysql --host=172.27.53.120 --port=3306 --user=expensetally --database=expense_manager --password
+```
+expense-tally/
+├── template.yaml          # AWS SAM infrastructure definition
+├── samconfig.toml         # SAM deployment configuration
+├── Makefile               # Build and deploy orchestration
+├── backend/
+│   ├── cmd/
+│   │   ├── api/main.go    # API Lambda handler
+│   │   └── sync/main.go   # Scheduled sync Lambda handler
+│   └── internal/
+│       ├── handler/       # HTTP route handlers
+│       ├── model/         # Domain models
+│       ├── repository/    # DynamoDB data access
+│       ├── service/       # Business logic
+│       └── provider/      # Bank API adapters (Teller)
+└── frontend/
+    └── src/
+        ├── pages/         # Dashboard, Transactions, Categories, ReviewQueue, ManualEntry, Login
+        ├── components/    # Shared UI components
+        ├── services/      # API client
+        └── config/        # Amplify / auth configuration
 ```
 
-# Coding Standard #
-* The javadocs in this project are inspired by the guidelines in 
-  [Liferay Portal Advanced Javadoc Guidelines](https://github.com/liferay/liferay-portal/blob/master/readme/ADVANCED_JAVADOC_GUIDELINES.markdown).
-* The package naming convention adopts this 
-  [Stack Exchange answer](https://softwareengineering.stackexchange.com/a/75929/88556):
-> Use **plural for packages with homogeneous contents** and **singular for packages with heterogeneous contents**.
->
-> For example, a package named `com.myproject.task` does not mean that each contained class is an instance of a `task`. 
-> There might be a `TaskHandler`, a `TaskFactory` and etc. However, a package named `com.myproject.tasks` would contain
-> different types that are all tasks: `TakeOutGarbageTask`, `DoTheDishesTask` and etc.
-* For code comment, double forward slashes ("//") is preferred over multiple lined comment block. This is because it is 
-  easier to commented in block and there will not be issue due to nested comments.
-* For unit test, the convention is to write the method name under test, followed by the testing purpose separated with 
-  an underscore character ("_"). For example, *isPaymentCardValid_incorrectLengthFail*.
-* There will not be be any JavaDocs documentation for getter and setter methods.
-* All assertJ method calls are statically imported.
+## Features
 
-## Short form ##
+- **Dashboard** - Spending aggregations by category, month, and payment method
+- **Transaction Management** - View, edit, and confirm synced transactions
+- **Category Management** - Organize transactions with categories and keyword-based auto-suggestions
+- **Bank Sync** - Automatic transaction syncing via Teller API (daily scheduled + manual trigger)
+- **Review Queue** - Review and confirm unconfirmed transactions
+- **Manual Entry** - Add transactions manually
 
-| Short form | Long form |
-|------------|-----------|
-| csv        | comma separated values |
-| err        | error |
-| msg        | message | 
-| app        | application |
+## Database
+
+All data is stored in DynamoDB with the following tables:
+
+| Table | Key | Purpose |
+|-------|-----|---------|
+| `{env}-expense-transactions` | PK (transaction ID) | Transaction records with GSIs for date range queries and unconfirmed filtering |
+| `{env}-expense-categories` | PK (category ID) | Expense categories |
+| `{env}-expense-keyword-associations` | PK + categoryId (SK) | Keyword-to-category mappings for auto-categorization |
+| `{env}-expense-provider-connections` | PK (connection ID) | Bank provider connections and sync state |
+| `{env}-expense-sync-logs` | PK (source) + SK (timestamp) | Sync operation logs |
+
+## Prerequisites
+
+- Go 1.23+
+- Node.js 20+
+- AWS SAM CLI
+- AWS credentials configured
+
+## Development
+
+### Backend
+
+```bash
+cd backend
+go test ./...
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Local API (SAM)
+
+```bash
+make local
+```
+
+## Deployment
+
+```bash
+make deploy
+```
+
+Or deploy frontend only:
+
+```bash
+make deploy-frontend
+```
+
+## Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) directory:
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/ARCHITECTURE.md) | System architecture overview with diagrams, component summary, data flow |
+| [Backend](docs/BACKEND.md) | Go backend architecture, layered design, domain models, keyword learning |
+| [Frontend](docs/FRONTEND.md) | React/TypeScript frontend architecture, UI guidelines, component patterns |
+| [Security](docs/SECURITY.md) | Authentication, authorization, transport security, secrets management |
+| [Observability](docs/OBSERVABILITY.md) | Logging, monitoring, alerting, tracing recommendations |
+| [Developer Guide](docs/DEVELOPER-GUIDE.md) | Setup, coding conventions, Git workflow, development patterns |
+| [Deployment](docs/DEPLOYMENT.md) | CI/CD pipelines, SAM infrastructure, deployment procedures |
+| [API Reference](docs/API.md) | Full API endpoint reference with request/response examples |
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/health` | Health check |
+| GET/POST | `/api/categories` | List / create categories |
+| GET/PUT/DELETE | `/api/categories/{id}` | Get / update / delete category |
+| GET/POST | `/api/transactions` | List / create transactions |
+| GET/PUT/DELETE | `/api/transactions/{id}` | Get / update / delete transaction |
+| PUT | `/api/transactions/{id}/confirm` | Confirm a transaction |
+| GET | `/api/transactions/unconfirmed` | List unconfirmed transactions |
+| GET | `/api/dashboard` | Dashboard aggregations |
+| POST | `/api/sync/trigger` | Trigger manual bank sync |
+| GET | `/api/sync/logs` | View sync logs |
+| GET | `/api/connections` | List bank connections |
+| POST | `/api/connections/teller` | Register Teller connection |

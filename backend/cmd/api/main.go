@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	"expense-tally-v2/internal/handler"
-	"expense-tally-v2/internal/provider"
-	"expense-tally-v2/internal/repository"
-	"expense-tally-v2/internal/service"
+	"expense-tally/internal/handler"
+	"expense-tally/internal/provider"
+	"expense-tally/internal/repository"
+	"expense-tally/internal/service"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -36,17 +36,19 @@ func init() {
 	connRepo := repository.NewConnectionRepository(ddb, connectionsTable)
 	syncRepo := repository.NewSyncLogRepository(ddb, syncLogsTable)
 
+	adapterFactory := provider.NewAdapterFactory()
+
 	keywordSvc := service.NewKeywordService(kwRepo)
 	catSvc := service.NewCategoryService(catRepo)
 	txnSvc := service.NewTransactionService(txnRepo, catRepo, keywordSvc)
-	syncSvc := service.NewSyncService(connRepo, txnRepo, syncRepo, keywordSvc, provider.NewProviderAdapter)
+	syncSvc := service.NewSyncService(connRepo, txnRepo, syncRepo, keywordSvc, adapterFactory)
 
 	healthH := handler.NewHealthHandler()
 	categoriesH := handler.NewCategoriesHandler(catSvc)
 	transactionsH := handler.NewTransactionsHandler(txnSvc)
 	dashboardH := handler.NewDashboardHandler(txnSvc, catSvc)
 	syncH := handler.NewSyncHandler(syncSvc)
-	connectionsH := handler.NewConnectionsHandler(connRepo)
+	connectionsH := handler.NewConnectionsHandler(connRepo, adapterFactory)
 
 	r := handler.NewRouter(healthH, categoriesH, transactionsH, dashboardH, syncH, connectionsH)
 	proxy = chiadapter.New(r)
