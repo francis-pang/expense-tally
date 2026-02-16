@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"expense-tally-v2/internal/service"
+	"expense-tally/internal/service"
 )
 
 // SyncHandler handles sync HTTP requests.

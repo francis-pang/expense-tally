@@ -5,6 +5,7 @@ import {
   ClipboardDocumentCheckIcon,
   FolderIcon,
   PlusCircleIcon,
+  BuildingLibraryIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
@@ -15,6 +16,7 @@ import {
   ClipboardDocumentCheckIcon as ClipboardDocumentCheckIconSolid,
   FolderIcon as FolderIconSolid,
   PlusCircleIcon as PlusCircleIconSolid,
+  BuildingLibraryIcon as BuildingLibraryIconSolid,
 } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -38,6 +40,12 @@ const navItems = [
     icon: FolderIcon,
     iconActive: FolderIconSolid,
     label: 'Categories',
+  },
+  {
+    to: '/connections',
+    icon: BuildingLibraryIcon,
+    iconActive: BuildingLibraryIconSolid,
+    label: 'Banks',
   },
   {
     to: '/add',

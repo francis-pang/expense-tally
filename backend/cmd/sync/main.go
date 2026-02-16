@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"expense-tally-v2/internal/provider"
-	"expense-tally-v2/internal/repository"
-	"expense-tally-v2/internal/service"
+	"expense-tally/internal/provider"
+	"expense-tally/internal/repository"
+	"expense-tally/internal/service"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 	syncRepo := repository.NewSyncLogRepository(ddb, syncLogsTable)
 
 	keywordSvc := service.NewKeywordService(kwRepo)
-	syncSvc := service.NewSyncService(connRepo, txnRepo, syncRepo, keywordSvc, provider.NewProviderAdapter)
+	syncSvc := service.NewSyncService(connRepo, txnRepo, syncRepo, keywordSvc, provider.NewAdapterFactory())
 
 	if err := syncSvc.SyncAll(ctx); err != nil {
 		log.Fatalf("sync failed: %v", err)

@@ -1,9 +1,9 @@
 version = 0.1
 
 [default.deploy.parameters]
-stack_name = "expense-tally-v2"
+stack_name = "expense-tally"
 resolve_s3 = true
-s3_prefix = "expense-tally-v2"
+s3_prefix = "expense-tally"
 region = "us-east-1"
 capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
 confirm_changeset = true

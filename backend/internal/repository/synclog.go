@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"expense-tally-v2/internal/model"
+	"expense-tally/internal/model"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
@@ -40,8 +40,8 @@ func (r *SyncLogRepository) ListBySource(ctx context.Context, source string, lim
 		KeyConditionExpression:    expr.KeyCondition(),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
-		ScanIndexForward:         aws.Bool(false),
-		Limit:                    aws.Int32(int32(limit)),
+		ScanIndexForward:          aws.Bool(false),
+		Limit:                     aws.Int32(int32(limit)),
 	})
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-module expense-tally-v2
+module expense-tally
 
 go 1.23
 

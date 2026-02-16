@@ -13,8 +13,7 @@ interface TransactionRowProps {
 }
 
 const SOURCE_COLORS: Record<string, string> = {
-  teller: 'bg-blue-100 text-blue-800',
-  finverse: 'bg-emerald-100 text-emerald-800',
+  simplefin: 'bg-blue-100 text-blue-800',
   manual: 'bg-slate-100 text-slate-700',
 };
 

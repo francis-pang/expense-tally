@@ -59,7 +59,7 @@ func NewRouter(
 
 	r.Route("/api/connections", func(r chi.Router) {
 		r.Get("/", connections.List)
-		r.Post("/teller", connections.CreateTeller)
+		r.Post("/simplefin", connections.CreateSimpleFIN)
 	})
 
 	return r

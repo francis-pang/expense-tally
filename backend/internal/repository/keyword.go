@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"expense-tally-v2/internal/model"
+	"expense-tally/internal/model"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -26,7 +26,7 @@ func NewKeywordRepository(client *dynamodb.Client, table string) *KeywordReposit
 func (r *KeywordRepository) GetByKeyword(ctx context.Context, keyword string) ([]model.KeywordAssociation, error) {
 	pk := "KW#" + keyword
 	out, err := r.client.Query(ctx, &dynamodb.QueryInput{
-		TableName: aws.String(r.table),
+		TableName:              aws.String(r.table),
 		KeyConditionExpression: aws.String("PK = :pk"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":pk": &types.AttributeValueMemberS{Value: pk},

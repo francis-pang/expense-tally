@@ -6,6 +6,7 @@ import { Transactions } from '@/pages/Transactions';
 import { ReviewQueue } from '@/pages/ReviewQueue';
 import { Categories } from '@/pages/Categories';
 import { ManualEntry } from '@/pages/ManualEntry';
+import { Connections } from '@/pages/Connections';
 import { Login } from '@/pages/Login';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -42,6 +43,7 @@ function AppRoutes() {
         <Route path="transactions" element={<Transactions />} />
         <Route path="review" element={<ReviewQueue />} />
         <Route path="categories" element={<Categories />} />
+        <Route path="connections" element={<Connections />} />
         <Route path="add" element={<ManualEntry />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
