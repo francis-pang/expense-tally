@@ -35,20 +35,23 @@ type simpleFINAccountSet struct {
 
 // simpleFINAccount represents an account in the SimpleFIN response.
 type simpleFINAccount struct {
-	Org          simpleFINOrg          `json:"org"`
-	ID           string                `json:"id"`
-	Name         string                `json:"name"`
-	Currency     string                `json:"currency"`
-	Balance      string                `json:"balance"`
-	BalanceDate  int64                 `json:"balance-date"`
-	Transactions []simpleFINTransaction `json:"transactions"`
+	Org              simpleFINOrg          `json:"org"`
+	ID               string                `json:"id"`
+	Name             string                `json:"name"`
+	Currency         string                `json:"currency"`
+	Balance          string                `json:"balance"`
+	AvailableBalance string                `json:"available-balance"`
+	BalanceDate      int64                 `json:"balance-date"`
+	Transactions     []simpleFINTransaction `json:"transactions"`
 }
 
 // simpleFINOrg represents the organization (institution) in SimpleFIN.
 type simpleFINOrg struct {
 	Domain  string `json:"domain"`
 	SfinURL string `json:"sfin-url"`
+	URL     string `json:"url"`
 	Name    string `json:"name"`
+	ID      string `json:"id"`
 }
 
 // simpleFINTransaction represents a transaction in the SimpleFIN response.
@@ -57,6 +60,8 @@ type simpleFINTransaction struct {
 	Posted       int64           `json:"posted"`
 	Amount       string          `json:"amount"`
 	Description  string          `json:"description"`
+	Payee        string          `json:"payee"`
+	Memo         string          `json:"memo"`
 	Pending      bool            `json:"pending"`
 	TransactedAt int64           `json:"transacted_at"`
 	Extra        json.RawMessage `json:"extra,omitempty"`
@@ -109,12 +114,28 @@ func (s *SimpleFINAdapter) ListAccounts(ctx context.Context, accessURL string) (
 		if orgName == "" {
 			orgName = acct.Org.Domain
 		}
-		accounts = append(accounts, model.SimpleFINAccount{
+		sa := model.SimpleFINAccount{
 			ID:              acct.ID,
 			Name:            acct.Name,
 			Currency:        acct.Currency,
 			InstitutionName: orgName,
-		})
+			OrgDomain:       acct.Org.Domain,
+			OrgURL:          acct.Org.URL,
+			OrgID:           acct.Org.ID,
+		}
+		if acct.Balance != "" {
+			bal := acct.Balance
+			sa.Balance = &bal
+		}
+		if acct.AvailableBalance != "" {
+			avail := acct.AvailableBalance
+			sa.AvailableBalance = &avail
+		}
+		if acct.BalanceDate > 0 {
+			bd := time.Unix(acct.BalanceDate, 0).UTC().Format(time.RFC3339)
+			sa.BalanceDate = &bd
+		}
+		accounts = append(accounts, sa)
 	}
 	return accounts, nil
 }
@@ -158,36 +179,44 @@ func (s *SimpleFINAdapter) FetchTransactions(ctx context.Context, accessToken st
 			date := posted.Format("2006-01-02")
 			year := posted.Format("2006")
 
-			// Format transacted_at if present (non-zero)
 			var transactedAt string
 			if st.TransactedAt != 0 {
 				transactedAt = time.Unix(st.TransactedAt, 0).UTC().Format("2006-01-02")
 			}
 
-			// Serialize the full SimpleFIN transaction JSON as raw payload
 			rawPayload, _ := json.Marshal(st)
+
+			// Use payee as merchant when available; fall back to institution name.
+			merchant := st.Payee
+			if merchant == "" {
+				merchant = orgName
+			}
 
 			pk := "TXN#simplefin#" + acct.ID + "#" + st.ID
 
 			txn := model.Transaction{
-				PK:            pk,
-				Date:          date,
-				TransactedAt:  transactedAt,
-				Source:        "simplefin",
-				Amount:        amount,
-				Currency:      acct.Currency,
-				Description:   st.Description,
-				Merchant:      orgName,
-				IsConfirmed:   false,
-				Pending:       st.Pending,
-				PaymentMethod: "card",
-				AccountID:     acct.ID,
-				AccountName:   acct.Name,
-				RawPayload:    string(rawPayload),
-				CreatedAt:     now,
-				UpdatedAt:     now,
-				GSI1PK:        "YEAR#" + year,
-				GSI2PK:        "UNCONFIRMED",
+				PK:              pk,
+				Date:            date,
+				TransactedAt:    transactedAt,
+				Source:          "simplefin",
+				Amount:          amount,
+				Currency:        acct.Currency,
+				Description:     st.Description,
+				Merchant:        merchant,
+				Payee:           st.Payee,
+				Memo:            st.Memo,
+				InstitutionName: orgName,
+				InstitutionID:   acct.Org.ID,
+				IsConfirmed:     false,
+				Pending:         st.Pending,
+				PaymentMethod:   "card",
+				AccountID:       acct.ID,
+				AccountName:     acct.Name,
+				RawPayload:      string(rawPayload),
+				CreatedAt:       now,
+				UpdatedAt:       now,
+				GSI1PK:          "YEAR#" + year,
+				GSI2PK:          "UNCONFIRMED",
 			}
 			txns = append(txns, txn)
 

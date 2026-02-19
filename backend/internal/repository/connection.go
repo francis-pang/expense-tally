@@ -124,6 +124,39 @@ func connectionToItem(c *model.ProviderConnection) map[string]types.AttributeVal
 	if c.LastSyncedAt != nil {
 		item["lastSyncedAt"] = &types.AttributeValueMemberS{Value: *c.LastSyncedAt}
 	}
+	if c.AccountName != "" {
+		item["accountName"] = &types.AttributeValueMemberS{Value: c.AccountName}
+	}
+	if c.AccountType != "" {
+		item["accountType"] = &types.AttributeValueMemberS{Value: c.AccountType}
+	}
+	if c.AccountSubtype != "" {
+		item["accountSubtype"] = &types.AttributeValueMemberS{Value: c.AccountSubtype}
+	}
+	if c.InstitutionName != "" {
+		item["institutionName"] = &types.AttributeValueMemberS{Value: c.InstitutionName}
+	}
+	if c.InstitutionID != "" {
+		item["institutionId"] = &types.AttributeValueMemberS{Value: c.InstitutionID}
+	}
+	if c.Currency != "" {
+		item["currency"] = &types.AttributeValueMemberS{Value: c.Currency}
+	}
+	if c.LastFour != "" {
+		item["lastFour"] = &types.AttributeValueMemberS{Value: c.LastFour}
+	}
+	if c.Balance != nil {
+		item["balance"] = &types.AttributeValueMemberS{Value: *c.Balance}
+	}
+	if c.AvailableBalance != nil {
+		item["availableBalance"] = &types.AttributeValueMemberS{Value: *c.AvailableBalance}
+	}
+	if c.BalanceUpdatedAt != nil {
+		item["balanceUpdatedAt"] = &types.AttributeValueMemberS{Value: *c.BalanceUpdatedAt}
+	}
+	if c.Status != "" {
+		item["status"] = &types.AttributeValueMemberS{Value: c.Status}
+	}
 	return item
 }
 
@@ -152,6 +185,61 @@ func itemToConnection(item map[string]types.AttributeValue) (*model.ProviderConn
 	if v, ok := item["lastSyncedAt"]; ok {
 		if s, ok := v.(*types.AttributeValueMemberS); ok {
 			c.LastSyncedAt = &s.Value
+		}
+	}
+	if v, ok := item["accountName"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.AccountName = s.Value
+		}
+	}
+	if v, ok := item["accountType"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.AccountType = s.Value
+		}
+	}
+	if v, ok := item["accountSubtype"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.AccountSubtype = s.Value
+		}
+	}
+	if v, ok := item["institutionName"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.InstitutionName = s.Value
+		}
+	}
+	if v, ok := item["institutionId"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.InstitutionID = s.Value
+		}
+	}
+	if v, ok := item["currency"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.Currency = s.Value
+		}
+	}
+	if v, ok := item["lastFour"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.LastFour = s.Value
+		}
+	}
+	if v, ok := item["balance"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.Balance = &s.Value
+		}
+	}
+	if v, ok := item["availableBalance"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.AvailableBalance = &s.Value
+		}
+	}
+	if v, ok := item["balanceUpdatedAt"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.BalanceUpdatedAt = &s.Value
+		}
+	}
+	if v, ok := item["status"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			c.Status = s.Value
 		}
 	}
 	return c, nil

@@ -138,19 +138,47 @@ List transactions with optional filters.
 ```json
 [
   {
-    "id": "TXN#manual#uuid-1234",
+    "id": "TXN#simplefin#acct-1#txn-5678",
     "date": "2026-02-15",
-    "source": "manual",
+    "source": "simplefin",
     "amount": 42.50,
     "currency": "USD",
-    "description": "Whole Foods Market",
-    "merchant": "Whole Foods",
+    "description": "WHOLE FOODS MKT #10234",
+    "merchant": "Whole Foods Market",
+    "payee": "Whole Foods Market",
+    "memo": "WHOLE FOODS MKT #10234 AUSTIN TX",
+    "institutionName": "Chase",
+    "institutionId": "chase-bank",
     "categoryId": "CAT#a1b2c3d4",
     "suggestedCategoryId": null,
     "isConfirmed": true,
-    "paymentMethod": "credit_card",
+    "pending": false,
+    "paymentMethod": "card",
+    "accountId": "acct-1",
+    "accountName": "Chase Checking",
     "createdAt": "2026-02-15T10:30:00Z",
     "updatedAt": "2026-02-15T10:30:00Z"
+  },
+  {
+    "id": "TXN#teller#txn-9012",
+    "date": "2026-02-14",
+    "source": "teller",
+    "amount": -15.99,
+    "currency": "USD",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "transactionType": "card_payment",
+    "providerCategory": "entertainment",
+    "counterpartyType": "organization",
+    "runningBalance": "1234.56",
+    "categoryId": null,
+    "suggestedCategoryId": null,
+    "isConfirmed": false,
+    "pending": false,
+    "paymentMethod": "card",
+    "accountId": "acc-12345",
+    "createdAt": "2026-02-14T06:00:00Z",
+    "updatedAt": "2026-02-14T06:00:00Z"
   }
 ]
 ```
@@ -371,7 +399,18 @@ List all bank provider connections.
   {
     "id": "CONN#teller#acc-12345",
     "provider": "teller",
-    "lastSyncedAt": "2026-02-15T06:00:00Z"
+    "lastSyncedAt": "2026-02-15T06:00:00Z",
+    "accountName": "Chase Checking",
+    "accountType": "depository",
+    "accountSubtype": "checking",
+    "institutionName": "Chase",
+    "institutionId": "chase",
+    "currency": "USD",
+    "lastFour": "4567",
+    "balance": "5432.10",
+    "availableBalance": "5200.00",
+    "balanceUpdatedAt": "2026-02-15T06:00:00Z",
+    "status": "open"
   }
 ]
 ```
@@ -436,15 +475,27 @@ The frontend defines these interfaces for API responses in `types/index.ts`:
 interface Transaction {
   id: string;
   date: string;
+  transactedAt?: string;
   source: string;
   amount: number;
   currency: string;
   description: string;
   merchant: string;
+  payee?: string;
+  memo?: string;
+  transactionType?: string;
+  providerCategory?: string;
+  counterpartyType?: string;
+  runningBalance?: string | null;
+  institutionName?: string;
+  institutionId?: string;
   categoryId: string | null;
   suggestedCategoryId: string | null;
   isConfirmed: boolean;
+  pending?: boolean;
   paymentMethod: string;
+  accountId?: string;
+  accountName?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -475,6 +526,17 @@ interface Connection {
   id: string;
   provider: string;
   lastSyncedAt: string;
+  accountName?: string;
+  accountType?: string;
+  accountSubtype?: string;
+  institutionName?: string;
+  institutionId?: string;
+  currency?: string;
+  lastFour?: string;
+  balance?: string | null;
+  availableBalance?: string | null;
+  balanceUpdatedAt?: string | null;
+  status?: string;
 }
 ```
 

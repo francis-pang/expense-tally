@@ -47,6 +47,7 @@ backend/
 │   │   └── time.go              # Time formatting utilities
 │   └── provider/                 # External provider adapters
 │       ├── adapter.go           # ProviderAdapter interface + factory
+│       ├── simplefin.go         # SimpleFIN Bridge implementation
 │       └── teller.go            # Teller API implementation
 ├── go.mod
 ├── go.sum
@@ -161,11 +162,13 @@ The Chi router applies the following middleware in order:
 
 | Model | Key Pattern | Description |
 |-------|-------------|-------------|
-| `Transaction` | `TXN#{source}#{id}` | Financial transaction with category, confirmation status |
+| `Transaction` | `TXN#{source}#{id}` | Financial transaction with category, confirmation status, provider-enriched metadata |
 | `Category` | `CAT#{uuid}` | Expense category with optional parent (hierarchy) |
 | `KeywordAssociation` | `KW#{keyword}` + `categoryId` | Keyword-to-category mapping with frequency |
-| `ProviderConnection` | `CONN#{provider}#{accountId}` | Bank connection with sync cursor |
+| `ProviderConnection` | `CONN#{provider}#{accountId}` | Bank connection with sync cursor, account metadata, balances |
 | `SyncLog` | `SYNC#{source}` + `{timestamp}` | Sync operation audit log |
+| `SimpleFINAccount` | (in-memory) | Account data from SimpleFIN including balances and org metadata |
+| `TellerAccount` | (in-memory) | Account data from Teller including type, subtype, institution, last four |
 
 ### Request/Response DTOs
 
@@ -214,8 +217,27 @@ type ProviderAdapter interface {
 ```
 
 - **Factory function**: `NewProviderAdapter(provider string)` returns the appropriate adapter
-- **Current adapters**: Teller (`teller.go`)
+- **Current adapters**: SimpleFIN (`simplefin.go`), Teller (`teller.go`)
 - **Extensibility**: Add new providers by implementing the interface and registering in the factory
+
+### Data Mapping
+
+Each adapter maps provider-specific API fields to the unified `model.Transaction`:
+
+| Transaction Field | SimpleFIN Source | Teller Source |
+|-------------------|------------------|---------------|
+| `Merchant` | `payee` (fallback: `org.name`) | `details.counterparty_name` |
+| `Payee` | `payee` | -- |
+| `Memo` | `memo` | -- |
+| `TransactionType` | -- | `type` (card_payment, ach, atm, etc.) |
+| `ProviderCategory` | -- | `details.category` |
+| `CounterpartyType` | -- | `details.counterparty.type` |
+| `RunningBalance` | -- | `running_balance` |
+| `InstitutionName` | `org.name` | -- |
+| `InstitutionID` | `org.id` | -- |
+| `RawPayload` | Full JSON | Full JSON |
+
+See [ADR-001](adr/001-enrich-api-data-capture.md) for the rationale behind the data capture decisions.
 
 ## Error Handling
 

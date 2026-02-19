@@ -10,6 +10,14 @@ type Transaction struct {
 	Currency            string  `json:"currency"`
 	Description         string  `json:"description"`
 	Merchant            string  `json:"merchant"`
+	Payee               string  `json:"payee,omitempty"`
+	Memo                string  `json:"memo,omitempty"`
+	TransactionType     string  `json:"transactionType,omitempty"`
+	ProviderCategory    string  `json:"providerCategory,omitempty"`
+	CounterpartyType    string  `json:"counterpartyType,omitempty"`
+	RunningBalance      *string `json:"runningBalance,omitempty"`
+	InstitutionName     string  `json:"institutionName,omitempty"`
+	InstitutionID       string  `json:"institutionId,omitempty"`
 	CategoryID          *string `json:"categoryId,omitempty"`
 	SuggestedCategoryID *string `json:"suggestedCategoryId,omitempty"`
 	IsConfirmed         bool    `json:"isConfirmed"`
@@ -41,11 +49,22 @@ type KeywordAssociation struct {
 
 // ProviderConnection represents a bank connection.
 type ProviderConnection struct {
-	PK             string  `json:"id"`
-	Provider       string  `json:"provider"`
-	AccessTokenRef string  `json:"accessTokenRef"`
-	SyncCursor     string  `json:"syncCursor,omitempty"`
-	LastSyncedAt   *string `json:"lastSyncedAt,omitempty"`
+	PK               string  `json:"id"`
+	Provider         string  `json:"provider"`
+	AccessTokenRef   string  `json:"accessTokenRef"`
+	SyncCursor       string  `json:"syncCursor,omitempty"`
+	LastSyncedAt     *string `json:"lastSyncedAt,omitempty"`
+	AccountName      string  `json:"accountName,omitempty"`
+	AccountType      string  `json:"accountType,omitempty"`
+	AccountSubtype   string  `json:"accountSubtype,omitempty"`
+	InstitutionName  string  `json:"institutionName,omitempty"`
+	InstitutionID    string  `json:"institutionId,omitempty"`
+	Currency         string  `json:"currency,omitempty"`
+	LastFour         string  `json:"lastFour,omitempty"`
+	Balance          *string `json:"balance,omitempty"`
+	AvailableBalance *string `json:"availableBalance,omitempty"`
+	BalanceUpdatedAt *string `json:"balanceUpdatedAt,omitempty"`
+	Status           string  `json:"status,omitempty"`
 }
 
 // SyncLog represents a sync run log.
@@ -120,8 +139,28 @@ type SimpleFINSetupRequest struct {
 
 // SimpleFINAccount represents an account from SimpleFIN Bridge.
 type SimpleFINAccount struct {
+	ID               string  `json:"id"`
+	Name             string  `json:"name"`
+	Currency         string  `json:"currency"`
+	InstitutionName  string  `json:"institutionName"`
+	Balance          *string `json:"balance,omitempty"`
+	AvailableBalance *string `json:"availableBalance,omitempty"`
+	BalanceDate      *string `json:"balanceDate,omitempty"`
+	OrgDomain        string  `json:"orgDomain,omitempty"`
+	OrgURL           string  `json:"orgUrl,omitempty"`
+	OrgID            string  `json:"orgId,omitempty"`
+}
+
+// TellerAccount represents an account from Teller API.
+type TellerAccount struct {
 	ID              string `json:"id"`
+	EnrollmentID    string `json:"enrollment_id"`
 	Name            string `json:"name"`
+	Type            string `json:"type"`
+	Subtype         string `json:"subtype"`
+	Status          string `json:"status"`
 	Currency        string `json:"currency"`
-	InstitutionName string `json:"institutionName"`
+	LastFour        string `json:"last_four"`
+	InstitutionID   string `json:"institution_id,omitempty"`
+	InstitutionName string `json:"institution_name,omitempty"`
 }

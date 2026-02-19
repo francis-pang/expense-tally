@@ -7,6 +7,14 @@ export interface Transaction {
   currency: string;
   description: string;
   merchant: string;
+  payee?: string;
+  memo?: string;
+  transactionType?: string;
+  providerCategory?: string;
+  counterpartyType?: string;
+  runningBalance?: string | null;
+  institutionName?: string;
+  institutionId?: string;
   categoryId: string | null;
   suggestedCategoryId: string | null;
   isConfirmed: boolean;
@@ -44,4 +52,15 @@ export interface Connection {
   id: string;
   provider: string;
   lastSyncedAt: string;
+  accountName?: string;
+  accountType?: string;
+  accountSubtype?: string;
+  institutionName?: string;
+  institutionId?: string;
+  currency?: string;
+  lastFour?: string;
+  balance?: string | null;
+  availableBalance?: string | null;
+  balanceUpdatedAt?: string | null;
+  status?: string;
 }

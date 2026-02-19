@@ -58,10 +58,10 @@ Expense Tally v2 is a full-stack serverless application hosted entirely on AWS. 
                          ▲
                          │
               ┌────────────────────┐          ┌──────────────────────┐
-              │  Sync Lambda       │─────────▶│  Teller API          │
-              │                    │          │  (Bank Provider)     │
-              │  EventBridge       │          └──────────────────────┘
-              │  rate(1 day)       │
+              │  Sync Lambda       │─────────▶│  SimpleFIN Bridge    │
+              │                    │          │  Teller API          │
+              │  EventBridge       │          │  (Bank Providers)    │
+              │  rate(1 day)       │          └──────────────────────┘
               └────────────────────┘
 ```
 
@@ -78,7 +78,7 @@ Expense Tally v2 is a full-stack serverless application hosted entirely on AWS. 
 | **Database** | Amazon DynamoDB (5 tables) | Primary data store, on-demand billing |
 | **Authentication** | Amazon Cognito | User management, OAuth 2.0 code flow, JWT tokens |
 | **Scheduler** | Amazon EventBridge | Daily sync trigger (rate 1 day) |
-| **Bank Integration** | Teller API | Financial transaction data provider |
+| **Bank Integration** | SimpleFIN Bridge, Teller API | Financial transaction data providers (see [ADR-001](adr/001-enrich-api-data-capture.md)) |
 | **Infrastructure** | AWS SAM (CloudFormation) | Infrastructure as code |
 | **CI/CD** | GitHub Actions | Automated build, test, and deploy |
 
@@ -153,6 +153,10 @@ Each entity gets its own table but uses composite key patterns for efficient que
 | Auth | Cognito Hosted UI | Managed OAuth 2.0 without custom auth UI |
 | IaC | AWS SAM | CloudFormation-based, first-class Lambda support |
 | CI/CD | GitHub Actions | Tightly integrated with source control |
+
+## Architecture Decision Records
+
+- [ADR-001: Enrich Database to Capture Full Provider API Data](adr/001-enrich-api-data-capture.md)
 
 ## Related Documentation
 
