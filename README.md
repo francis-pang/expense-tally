@@ -8,7 +8,7 @@ A serverless expense tracking application with automatic bank transaction syncin
 - **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
 - **Auth**: Amazon Cognito (email + OAuth)
 - **Infrastructure**: AWS SAM (CloudFormation)
-- **Bank Integration**: Teller API
+- **Bank Integration**: SimpleFIN Bridge, Teller API
 
 ## Project Structure
 
@@ -26,7 +26,7 @@ expense-tally/
 │       ├── model/         # Domain models
 │       ├── repository/    # DynamoDB data access
 │       ├── service/       # Business logic
-│       └── provider/      # Bank API adapters (Teller)
+│       └── provider/      # Bank API adapters (SimpleFIN, Teller)
 └── frontend/
     └── src/
         ├── pages/         # Dashboard, Transactions, Categories, ReviewQueue, ManualEntry, Login
@@ -40,7 +40,7 @@ expense-tally/
 - **Dashboard** - Spending aggregations by category, month, and payment method
 - **Transaction Management** - View, edit, and confirm synced transactions
 - **Category Management** - Organize transactions with categories and keyword-based auto-suggestions
-- **Bank Sync** - Automatic transaction syncing via Teller API (daily scheduled + manual trigger)
+- **Bank Sync** - Automatic transaction syncing via SimpleFIN Bridge and Teller API (daily scheduled + manual trigger)
 - **Review Queue** - Review and confirm unconfirmed transactions
 - **Manual Entry** - Add transactions manually
 
@@ -112,6 +112,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 | [Developer Guide](docs/DEVELOPER-GUIDE.md) | Setup, coding conventions, Git workflow, development patterns |
 | [Deployment](docs/DEPLOYMENT.md) | CI/CD pipelines, SAM infrastructure, deployment procedures |
 | [API Reference](docs/API.md) | Full API endpoint reference with request/response examples |
+| [ADR-001](docs/adr/001-enrich-api-data-capture.md) | Enrich database to capture full provider API data |
 
 ## API Endpoints
 

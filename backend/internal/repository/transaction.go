@@ -248,6 +248,30 @@ func transactionToItem(t *model.Transaction) map[string]types.AttributeValue {
 	if t.AccountName != "" {
 		item["accountName"] = &types.AttributeValueMemberS{Value: t.AccountName}
 	}
+	if t.Payee != "" {
+		item["payee"] = &types.AttributeValueMemberS{Value: t.Payee}
+	}
+	if t.Memo != "" {
+		item["memo"] = &types.AttributeValueMemberS{Value: t.Memo}
+	}
+	if t.TransactionType != "" {
+		item["transactionType"] = &types.AttributeValueMemberS{Value: t.TransactionType}
+	}
+	if t.ProviderCategory != "" {
+		item["providerCategory"] = &types.AttributeValueMemberS{Value: t.ProviderCategory}
+	}
+	if t.CounterpartyType != "" {
+		item["counterpartyType"] = &types.AttributeValueMemberS{Value: t.CounterpartyType}
+	}
+	if t.RunningBalance != nil {
+		item["runningBalance"] = &types.AttributeValueMemberS{Value: *t.RunningBalance}
+	}
+	if t.InstitutionName != "" {
+		item["institutionName"] = &types.AttributeValueMemberS{Value: t.InstitutionName}
+	}
+	if t.InstitutionID != "" {
+		item["institutionId"] = &types.AttributeValueMemberS{Value: t.InstitutionID}
+	}
 	if t.GSI2PK != "" {
 		item["gsi2pk"] = &types.AttributeValueMemberS{Value: t.GSI2PK}
 	}
@@ -331,6 +355,46 @@ func itemToTransaction(item map[string]types.AttributeValue) (*model.Transaction
 	if v, ok := item["accountName"]; ok {
 		if s, ok := v.(*types.AttributeValueMemberS); ok {
 			t.AccountName = s.Value
+		}
+	}
+	if v, ok := item["payee"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.Payee = s.Value
+		}
+	}
+	if v, ok := item["memo"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.Memo = s.Value
+		}
+	}
+	if v, ok := item["transactionType"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.TransactionType = s.Value
+		}
+	}
+	if v, ok := item["providerCategory"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.ProviderCategory = s.Value
+		}
+	}
+	if v, ok := item["counterpartyType"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.CounterpartyType = s.Value
+		}
+	}
+	if v, ok := item["runningBalance"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.RunningBalance = &s.Value
+		}
+	}
+	if v, ok := item["institutionName"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.InstitutionName = s.Value
+		}
+	}
+	if v, ok := item["institutionId"]; ok {
+		if s, ok := v.(*types.AttributeValueMemberS); ok {
+			t.InstitutionID = s.Value
 		}
 	}
 	if v, ok := item["rawPayload"]; ok {

@@ -243,10 +243,15 @@ Types:
 ### Adding a New Bank Provider
 
 1. Implement `ProviderAdapter` interface in `provider/newprovider.go`
-2. Register in `NewProviderAdapter()` factory function in `adapter.go`
-3. Create connection handler in `connections.go` (e.g., `CreateNewProvider`)
-4. Add route in `router.go`
-5. Frontend: Add connection creation UI
+2. Define provider-specific API response structs in the adapter file (see `simplefin.go` or `teller.go` for examples)
+3. Map all useful API fields to `model.Transaction` -- populate provider-specific fields like `TransactionType`, `ProviderCategory`, etc. where available, and always serialize the full API response as `RawPayload`
+4. If the provider has account-level data, add a corresponding model struct (e.g., `model.TellerAccount`) and populate enriched `ProviderConnection` fields
+5. Register in `NewAdapterFactory()` factory function in `adapter.go`
+6. Create connection handler in `connections.go` (e.g., `CreateNewProvider`)
+7. Add route in `router.go`
+8. Frontend: Add connection creation UI
+
+See [ADR-001](adr/001-enrich-api-data-capture.md) for the field mapping conventions used by existing providers.
 
 ### Adding a New DynamoDB Table
 

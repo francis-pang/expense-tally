@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,14 +30,37 @@ func NewTellerAdapter(certFile, keyFile string) *TellerAdapter {
 
 // TellerTransaction represents a transaction from Teller API.
 type TellerTransaction struct {
-	ID          string  `json:"id"`
-	Amount      float64 `json:"amount"`
-	Currency    string  `json:"currency"`
-	Description string  `json:"description"`
-	Date        string  `json:"date"`
-	Details     *struct {
+	ID             string  `json:"id"`
+	AccountID      string  `json:"account_id"`
+	Amount         string  `json:"amount"`
+	Currency       string  `json:"currency"`
+	Description    string  `json:"description"`
+	Date           string  `json:"date"`
+	Status         string  `json:"status"`
+	Type           string  `json:"type"`
+	RunningBalance *string `json:"running_balance"`
+	Details        *struct {
 		CounterpartyName string `json:"counterparty_name"`
+		CounterpartyType string `json:"counterparty_type"`
+		ProcessingStatus string `json:"processing_status"`
+		Category         string `json:"category"`
 	} `json:"details"`
+}
+
+// tellerAccountResponse represents an account from the Teller API response.
+type tellerAccountResponse struct {
+	ID           string `json:"id"`
+	EnrollmentID string `json:"enrollment_id"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Subtype      string `json:"subtype"`
+	Status       string `json:"status"`
+	Currency     string `json:"currency"`
+	LastFour     string `json:"last_four"`
+	Institution  struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"institution"`
 }
 
 func (t *TellerAdapter) getClient() (*http.Client, error) {
@@ -86,9 +110,24 @@ func (t *TellerAdapter) ListAccounts(ctx context.Context, accessToken string) ([
 		return nil, fmt.Errorf("teller API error listing accounts: %d", resp.StatusCode)
 	}
 
-	var accounts []model.TellerAccount
-	if err := json.NewDecoder(resp.Body).Decode(&accounts); err != nil {
+	var raw []tellerAccountResponse
+	if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
 		return nil, err
+	}
+	accounts := make([]model.TellerAccount, len(raw))
+	for i, r := range raw {
+		accounts[i] = model.TellerAccount{
+			ID:              r.ID,
+			EnrollmentID:    r.EnrollmentID,
+			Name:            r.Name,
+			Type:            r.Type,
+			Subtype:         r.Subtype,
+			Status:          r.Status,
+			Currency:        r.Currency,
+			LastFour:        r.LastFour,
+			InstitutionID:   r.Institution.ID,
+			InstitutionName: r.Institution.Name,
+		}
 	}
 	return accounts, nil
 }
@@ -133,8 +172,11 @@ func (t *TellerAdapter) FetchTransactions(ctx context.Context, accessToken strin
 	now := time.Now().UTC().Format(time.RFC3339)
 	for _, tt := range tellerTxns {
 		merchant := ""
+		var providerCategory, counterpartyType string
 		if tt.Details != nil {
 			merchant = tt.Details.CounterpartyName
+			providerCategory = tt.Details.Category
+			counterpartyType = tt.Details.CounterpartyType
 		}
 		date := tt.Date
 		if len(date) > 10 {
@@ -147,22 +189,33 @@ func (t *TellerAdapter) FetchTransactions(ctx context.Context, accessToken strin
 		if len(date) >= 4 {
 			year = date[:4]
 		}
+
+		amount, _ := strconv.ParseFloat(tt.Amount, 64)
+
+		rawPayload, _ := json.Marshal(tt)
+
 		pk := "TXN#teller#" + tt.ID
 		txn := model.Transaction{
-			PK:            pk,
-			Date:          date,
-			Source:        "teller",
-			Amount:        tt.Amount,
-			Currency:      tt.Currency,
-			Description:   tt.Description,
-			Merchant:      merchant,
-			IsConfirmed:   false,
-			PaymentMethod: "card",
-			RawPayload:    "",
-			CreatedAt:     now,
-			UpdatedAt:     now,
-			GSI1PK:        "YEAR#" + year,
-			GSI2PK:        "UNCONFIRMED",
+			PK:               pk,
+			Date:             date,
+			Source:           "teller",
+			Amount:           amount,
+			Currency:         tt.Currency,
+			Description:      tt.Description,
+			Merchant:         merchant,
+			TransactionType:  tt.Type,
+			ProviderCategory: providerCategory,
+			CounterpartyType: counterpartyType,
+			RunningBalance:   tt.RunningBalance,
+			AccountID:        tt.AccountID,
+			IsConfirmed:      false,
+			Pending:          tt.Status == "pending",
+			PaymentMethod:    "card",
+			RawPayload:       string(rawPayload),
+			CreatedAt:        now,
+			UpdatedAt:        now,
+			GSI1PK:           "YEAR#" + year,
+			GSI2PK:           "UNCONFIRMED",
 		}
 		txns = append(txns, txn)
 	}
